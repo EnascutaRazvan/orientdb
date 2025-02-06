@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import com.orientechnologies.orient.client.remote.OStorageRemote;
 import com.orientechnologies.orient.client.remote.db.document.ODatabaseDocumentRemote;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
-import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabasePool;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
@@ -153,7 +152,7 @@ public class SimpleConnectionStrategiesIT {
             OrientDBConfig.builder().addConfig(CLIENT_CONNECTION_FETCH_HOST_LIST, false).build());
     ODatabaseSession session = remote.open(databaseName, "admin", "admin");
     assertEquals(
-        ((OStorageRemote) ((ODatabaseDocumentInternal) session).getStorage())
+        ((OStorageRemote) ((ODatabaseDocumentRemote) session).getStorageRemote())
             .getServerURLs()
             .size(),
         1);
@@ -166,7 +165,7 @@ public class SimpleConnectionStrategiesIT {
             OrientDBConfig.builder().addConfig(CLIENT_CONNECTION_FETCH_HOST_LIST, true).build());
     ODatabaseSession session1 = remote1.open(databaseName, "admin", "admin");
     assertTrue(
-        ((OStorageRemote) ((ODatabaseDocumentInternal) session1).getStorage())
+        ((OStorageRemote) ((ODatabaseDocumentRemote) session1).getStorageRemote())
                 .getServerURLs()
                 .size()
             > 1);
@@ -184,7 +183,7 @@ public class SimpleConnectionStrategiesIT {
     ODatabasePool pool = new ODatabasePool(remote, databaseName, "admin", "admin");
     ODatabaseSession session = pool.acquire();
     assertEquals(
-        ((OStorageRemote) ((ODatabaseDocumentInternal) session).getStorage())
+        ((OStorageRemote) ((ODatabaseDocumentRemote) session).getStorageRemote())
             .getServerURLs()
             .size(),
         1);
@@ -199,7 +198,7 @@ public class SimpleConnectionStrategiesIT {
     ODatabasePool pool1 = new ODatabasePool(remote1, databaseName, "admin", "admin");
     ODatabaseSession session1 = pool1.acquire();
     assertTrue(
-        ((OStorageRemote) ((ODatabaseDocumentInternal) session1).getStorage())
+        ((OStorageRemote) ((ODatabaseDocumentRemote) session1).getStorageRemote())
                 .getServerURLs()
                 .size()
             > 1);
