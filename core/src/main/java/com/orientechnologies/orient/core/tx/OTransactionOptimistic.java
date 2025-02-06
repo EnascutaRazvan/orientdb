@@ -265,7 +265,6 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
       return null;
     }
 
-    // DELEGATE TO THE STORAGE, NO TOMBSTONES SUPPORT IN TX MODE
     final ORecord record =
         database.executeReadRecord(
             (ORecordId) rid,
@@ -307,7 +306,6 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
       throw new ORecordNotFoundException(rid);
     }
 
-    // DELEGATE TO THE STORAGE, NO TOMBSTONES SUPPORT IN TX MODE
     final ORecord record =
         database.executeReadRecord(
             (ORecordId) rid,
@@ -358,7 +356,6 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
       return null;
     }
 
-    // DELEGATE TO THE STORAGE, NO TOMBSTONES SUPPORT IN TX MODE
     final ORecord record;
     try {
       final RecordReader recordReader;

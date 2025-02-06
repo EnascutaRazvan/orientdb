@@ -563,14 +563,7 @@ public abstract class OAbstractPaginatedStorage
                   contextConfiguration.getValueAsInteger(
                       OGlobalConfiguration.STORAGE_ATOMIC_OPERATIONS_TABLE_COMPACTION_LIMIT),
                   idGen.getLastId() + 1);
-          atomicOperationsManager =
-              new OAtomicOperationsManager(
-                  this,
-                  contextConfiguration.getValueAsInteger(
-                          OGlobalConfiguration.STORAGE_PAGE_OPERATIONS_CACHE_SIZE)
-                      * 1024
-                      * 1024,
-                  atomicOperationsTable);
+          atomicOperationsManager = new OAtomicOperationsManager(this, atomicOperationsTable);
 
           recoverIfNeeded();
 
@@ -883,14 +876,7 @@ public abstract class OAbstractPaginatedStorage
             contextConfiguration.getValueAsInteger(
                 OGlobalConfiguration.STORAGE_ATOMIC_OPERATIONS_TABLE_COMPACTION_LIMIT),
             idGen.getLastId() + 1);
-    atomicOperationsManager =
-        new OAtomicOperationsManager(
-            this,
-            contextConfiguration.getValueAsInteger(
-                    OGlobalConfiguration.STORAGE_PAGE_OPERATIONS_CACHE_SIZE)
-                * 1024
-                * 1024,
-            atomicOperationsTable);
+    atomicOperationsManager = new OAtomicOperationsManager(this, atomicOperationsTable);
     transaction = new ThreadLocal<>();
 
     preCreateSteps();
@@ -2289,15 +2275,6 @@ public abstract class OAbstractPaginatedStorage
    */
   protected List<ORecordOperation> commit(
       final OTransactionInternal transaction, final boolean allocated) {
-    // XXX: At this moment, there are two implementations of the commit method. One for regular
-    // client transactions and one for
-    // implicit micro-transactions. The implementations are quite identical, but operate on slightly
-    // different data. If you change
-    // this method don't forget to change its counterpart:
-    //
-    //
-    // OAbstractPaginatedStorage.commit(com.orientechnologies.orient.core.storage.impl.local.OMicroTransaction)
-
     try {
       txBegun.increment();
 
@@ -6455,8 +6432,12 @@ public abstract class OAbstractPaginatedStorage
     return configuration;
   }
 
-  @Override
-  public final void setSchemaRecordId(final String schemaRecordId) {
+  private interface ModifyConfiguration {
+    public void modify(
+        OAtomicOperation atomicOperation, OClusterBasedStorageConfiguration configuratio);
+  }
+
+  private final void modifyConfiguration(ModifyConfiguration modify) {
     stateLock.readLock().lock();
     try {
 
@@ -6468,9 +6449,7 @@ public abstract class OAbstractPaginatedStorage
       makeStorageDirty();
 
       atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation ->
-              storageConfiguration.setSchemaRecordId(atomicOperation, schemaRecordId));
+          null, atomicOperation -> modify.modify(atomicOperation, storageConfiguration));
     } catch (final RuntimeException ee) {
       throw logAndPrepareForRethrow(ee);
     } catch (final Error ee) {
@@ -6480,214 +6459,51 @@ public abstract class OAbstractPaginatedStorage
     } finally {
       stateLock.readLock().unlock();
     }
+  }
+
+  @Override
+  public final void setSchemaRecordId(final String schemaRecordId) {
+    modifyConfiguration((ao, sc) -> sc.setSchemaRecordId(ao, schemaRecordId));
   }
 
   @Override
   public final void setDateFormat(final String dateFormat) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null, atomicOperation -> storageConfiguration.setDateFormat(atomicOperation, dateFormat));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setDateFormat(ao, dateFormat));
   }
 
   @Override
   public final void setTimeZone(final TimeZone timeZoneValue) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation -> storageConfiguration.setTimeZone(atomicOperation, timeZoneValue));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setTimeZone(ao, timeZoneValue));
   }
 
   @Override
   public final void setLocaleLanguage(final String locale) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null, atomicOperation -> storageConfiguration.setLocaleLanguage(atomicOperation, locale));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setLocaleLanguage(ao, locale));
   }
 
   @Override
   public final void setCharset(final String charset) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null, atomicOperation -> storageConfiguration.setCharset(atomicOperation, charset));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setCharset(ao, charset));
   }
 
   @Override
   public final void setIndexMgrRecordId(final String indexMgrRecordId) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation ->
-              storageConfiguration.setIndexMgrRecordId(atomicOperation, indexMgrRecordId));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setIndexMgrRecordId(ao, indexMgrRecordId));
   }
 
   @Override
   public final void setDateTimeFormat(final String dateTimeFormat) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation ->
-              storageConfiguration.setDateTimeFormat(atomicOperation, dateTimeFormat));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setDateTimeFormat(ao, dateTimeFormat));
   }
 
   @Override
   public final void setLocaleCountry(final String localeCountry) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation -> storageConfiguration.setLocaleCountry(atomicOperation, localeCountry));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setLocaleCountry(ao, localeCountry));
   }
 
   @Override
   public final void setClusterSelection(final String clusterSelection) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation ->
-              storageConfiguration.setClusterSelection(atomicOperation, clusterSelection));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setClusterSelection(ao, clusterSelection));
   }
 
   @Override
@@ -6716,132 +6532,31 @@ public abstract class OAbstractPaginatedStorage
 
   @Override
   public final void setValidation(final boolean validation) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null, atomicOperation -> storageConfiguration.setValidation(atomicOperation, validation));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setValidation(ao, validation));
   }
 
   @Override
   public final void removeProperty(final String property) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null, atomicOperation -> storageConfiguration.removeProperty(atomicOperation, property));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.removeProperty(ao, property));
   }
 
   @Override
   public final void setProperty(final String property, final String value) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation -> storageConfiguration.setProperty(atomicOperation, property, value));
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.setProperty(ao, property, value));
   }
 
   @Override
   public final void setRecordSerializer(final String recordSerializer, final int version) {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null,
-          atomicOperation -> {
-            storageConfiguration.setRecordSerializer(atomicOperation, recordSerializer);
-            storageConfiguration.setRecordSerializerVersion(atomicOperation, version);
-          });
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration(
+        (ao, sc) -> {
+          sc.setRecordSerializer(ao, recordSerializer);
+          sc.setRecordSerializerVersion(ao, version);
+        });
   }
 
   @Override
   public final void clearProperties() {
-    stateLock.readLock().lock();
-    try {
-
-      checkOpennessAndMigration();
-
-      final OClusterBasedStorageConfiguration storageConfiguration =
-          (OClusterBasedStorageConfiguration) configuration;
-
-      makeStorageDirty();
-
-      atomicOperationsManager.executeInsideAtomicOperation(
-          null, storageConfiguration::clearProperties);
-    } catch (final RuntimeException ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Error ee) {
-      throw logAndPrepareForRethrow(ee);
-    } catch (final Throwable t) {
-      throw logAndPrepareForRethrow(t);
-    } finally {
-      stateLock.readLock().unlock();
-    }
+    modifyConfiguration((ao, sc) -> sc.clearProperties(ao));
   }
 
   public Optional<byte[]> getLastMetadata() {
