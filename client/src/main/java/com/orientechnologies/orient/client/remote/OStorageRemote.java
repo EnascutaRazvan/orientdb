@@ -737,7 +737,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
     return response.getMetadata();
   }
 
-  public OStorageOperationResult<ORawBuffer> readRecordIfVersionIsNotLatest(
+  public ORawBuffer readRecordIfVersionIsNotLatest(
       final ORecordId rid,
       final String fetchPlan,
       final boolean ignoreCache,
@@ -745,17 +745,17 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
       throws ORecordNotFoundException {
     if (getCurrentSession().commandExecuting)
       // PENDING NETWORK OPERATION, CAN'T EXECUTE IT NOW
-      return new OStorageOperationResult<ORawBuffer>(null);
+      return null;
 
     OReadRecordIfVersionIsNotLatestRequest request =
         new OReadRecordIfVersionIsNotLatestRequest(rid, recordVersion, fetchPlan, ignoreCache);
     OReadRecordIfVersionIsNotLatestResponse response =
         networkOperation(request, "Error on read record " + rid);
 
-    return new OStorageOperationResult<ORawBuffer>(response.getResult());
+    return response.getResult();
   }
 
-  public OStorageOperationResult<ORawBuffer> readRecord(
+  public ORawBuffer readRecord(
       final ORecordId iRid,
       final String iFetchPlan,
       final boolean iIgnoreCache,
@@ -763,12 +763,12 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
 
     if (getCurrentSession().commandExecuting)
       // PENDING NETWORK OPERATION, CAN'T EXECUTE IT NOW
-      return new OStorageOperationResult<ORawBuffer>(null);
+      return null;
 
     OReadRecordRequest request = new OReadRecordRequest(iIgnoreCache, iRid, iFetchPlan, false);
     OReadRecordResponse response = networkOperation(request, "Error on read record " + iRid);
 
-    return new OStorageOperationResult<ORawBuffer>(response.getResult());
+    return response.getResult();
   }
 
   public String incrementalBackup(final String backupDirectory, OCallable<Void, Void> started) {

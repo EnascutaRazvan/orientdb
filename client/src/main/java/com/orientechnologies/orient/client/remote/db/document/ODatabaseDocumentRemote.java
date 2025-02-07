@@ -1262,13 +1262,12 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
 
   public ORawBuffer directRead(
       ORecordId rid, String fetchPlan, boolean ignoreCache, int recordVersion) {
-    return getStorageRemote().readRecord(rid, fetchPlan, ignoreCache, ignoreCache).getResult();
+    return getStorageRemote().readRecord(rid, fetchPlan, ignoreCache, ignoreCache);
   }
 
   public ORawBuffer readIfVersionIsNotLatest(
       ORecordId rid, String fetchPlan, boolean ignoreCache, int recordVersion) {
     return getStorageRemote()
-        .readRecordIfVersionIsNotLatest(rid, fetchPlan, ignoreCache, recordVersion)
-        .getResult();
+        .readRecordIfVersionIsNotLatest(rid, fetchPlan, ignoreCache, recordVersion);
   }
 }
