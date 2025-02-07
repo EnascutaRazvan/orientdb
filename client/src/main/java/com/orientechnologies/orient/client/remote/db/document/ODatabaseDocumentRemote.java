@@ -669,13 +669,13 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
           logger.warn(
               "You use deprecated record locking strategy: %s it may lead to deadlocks ",
               lockingStrategy);
-          record.lock(false);
+          getTransaction().lockRecord(iRecord, OStorage.LOCKING_STRATEGY.SHARED_LOCK);
 
         } else if (lockingStrategy == KEEP_EXCLUSIVE_LOCK) {
           logger.warn(
               "You use deprecated record locking strategy: %s it may lead to deadlocks ",
               lockingStrategy);
-          record.lock(true);
+          getTransaction().lockRecord(iRecord, OStorage.LOCKING_STRATEGY.EXCLUSIVE_LOCK);
         }
 
         afterReadOperations(record);
