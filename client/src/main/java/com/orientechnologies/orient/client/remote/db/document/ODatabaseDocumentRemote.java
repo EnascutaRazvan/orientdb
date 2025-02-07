@@ -94,7 +94,6 @@ import com.orientechnologies.orient.core.storage.cluster.OOfflineClusterExceptio
 import com.orientechnologies.orient.core.storage.ridbag.sbtree.OBonsaiCollectionPointer;
 import com.orientechnologies.orient.core.storage.ridbag.sbtree.OSBTreeCollectionManager;
 import com.orientechnologies.orient.core.tx.OTransaction;
-import com.orientechnologies.orient.core.tx.OTransactionAbstract;
 import com.orientechnologies.orient.core.tx.OTransactionIndexChanges;
 import com.orientechnologies.orient.core.tx.OTransactionInternal;
 import com.orientechnologies.orient.core.tx.OTransactionOptimistic;
@@ -641,15 +640,13 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     getMetadata().makeThreadLocalSchemaSnapshot();
     try {
 
-      // SEARCH IN LOCAL TX
-      ORecord record = getTransaction().getRecord(rid);
-      if (record == OTransactionAbstract.DELETED_RECORD)
-        // DELETED IN TX
-        return null;
-
-      if (record == null && !ignoreCache)
+      ORecord record;
+      if (!ignoreCache) {
         // SEARCH INTO THE CACHE
         record = getLocalCache().findRecord(rid);
+      } else {
+        record = null;
+      }
 
       if (record != null) {
         if (iRecord != null && iRecord != record) {

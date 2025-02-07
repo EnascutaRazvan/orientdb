@@ -1382,16 +1382,13 @@ public class ODatabaseDocumentEmbedded extends ODatabaseDocumentAbstract
           ORole.PERMISSION_READ,
           getClusterNameById(rid.getClusterId()));
 
-      // SEARCH IN LOCAL TX
-      ORecord record = getTransaction().getRecord(rid);
-      if (record == OTransactionAbstract.DELETED_RECORD)
-        // DELETED IN TX
-        return null;
-
-      if (record == null && !ignoreCache)
+      ORecord record;
+      if (!ignoreCache) {
         // SEARCH INTO THE CACHE
         record = getLocalCache().findRecord(rid);
-
+      } else {
+        record = null;
+      }
       if (record != null) {
         if (iRecord != null && iRecord != record) {
           ORecordInternal.fromStream(iRecord, record.toStream(), this);
