@@ -217,12 +217,6 @@ public class OSchemaProxyObject implements OSchemaObject {
   }
 
   @Override
-  public void create() {
-    underlying.create();
-  }
-
-  @Override
-  @Deprecated
   public int getVersion() {
     return underlying.getVersion();
   }

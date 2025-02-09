@@ -24,7 +24,6 @@ import java.util.Map;
  * Proxy implementation of the Scheduler. <<<<<<< HEAD
  *
  * @author Luca Garulli (l.garulli--(at)--orientdb.com) =======
- * @author Luca Garulli >>>>>>> 1b627a8... HA: fixed issues with distributed scheduler events
  * @author henryzhao81-at-gmail.com
  * @since Mar 28, 2013
  */
@@ -57,20 +56,5 @@ public class OSchedulerProxy extends OProxedResource<OSchedulerImpl> implements 
   @Override
   public OScheduledEvent getEvent(final String name) {
     return delegate.getEvent(name);
-  }
-
-  @Override
-  public void load() {
-    delegate.load(database);
-  }
-
-  @Override
-  public void close() {
-    // DO NOTHING THE DELEGATE CLOSE IS MANAGED IN A DIFFERENT CONTEXT
-  }
-
-  @Override
-  public void create() {
-    delegate.create(database);
   }
 }

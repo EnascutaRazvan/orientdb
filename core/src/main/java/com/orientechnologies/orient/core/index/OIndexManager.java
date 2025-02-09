@@ -35,26 +35,6 @@ import java.util.Set;
  */
 @Deprecated
 public interface OIndexManager {
-
-  /**
-   * Load index manager data from database.
-   *
-   * <p>IMPORTANT! Only for internal usage.
-   */
-  @Deprecated
-  void load();
-
-  /**
-   * Creates a document where index manager configuration is saved and creates a "dictionary" index.
-   *
-   * <p>IMPORTANT! Only for internal usage.
-   */
-  @Deprecated
-  void create();
-
-  @Deprecated
-  OIndexManager reload();
-
   /**
    * Drops all indexes and creates them from scratch.
    *
@@ -329,14 +309,6 @@ public interface OIndexManager {
   @SuppressWarnings("DeprecatedIsStillUsed")
   @Deprecated
   void removeClusterFromIndex(String clusterName, String indexName);
-
-  /**
-   * Saves index manager data.
-   *
-   * <p>IMPORTANT! Only for internal usage.
-   */
-  @Deprecated
-  OIndexManager save();
 
   /**
    * Removes index from class-property map.

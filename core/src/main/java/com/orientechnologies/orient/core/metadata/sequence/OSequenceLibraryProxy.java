@@ -111,21 +111,6 @@ public class OSequenceLibraryProxy extends OSequenceLibraryAbstract {
     }
   }
 
-  @Override
-  public void create() {
-    delegate.create(database);
-  }
-
-  @Override
-  public void load() {
-    delegate.load(database);
-  }
-
-  @Override
-  public void close() {
-    delegate.close();
-  }
-
   public OSequenceLibraryImpl getDelegate() {
     return delegate;
   }

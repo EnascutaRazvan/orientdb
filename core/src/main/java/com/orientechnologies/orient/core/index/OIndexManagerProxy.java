@@ -177,13 +177,6 @@ public class OIndexManagerProxy extends OProxedResource<OIndexManagerAbstract>
     delegate.removeClusterFromIndex(clusterName, indexName);
   }
 
-  @Override
-  @Deprecated
-  public OIndexManager save() {
-    delegate.save(database);
-    return this;
-  }
-
   public void removeClassPropertyIndex(final OIndex idx) {
     //noinspection deprecation
     delegate.removeClassPropertyIndex(idx);

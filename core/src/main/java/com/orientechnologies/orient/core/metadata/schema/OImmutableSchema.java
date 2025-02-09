@@ -222,16 +222,6 @@ public class OImmutableSchema implements OSchema {
   }
 
   @Override
-  public void create() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public int getVersion() {
-    return version;
-  }
-
-  @Override
   public ORID getIdentity() {
     return new ORecordId(identity);
   }
@@ -329,5 +319,10 @@ public class OImmutableSchema implements OSchema {
   @Override
   public void dropView(String name) {
     throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public int getVersion() {
+    return version;
   }
 }

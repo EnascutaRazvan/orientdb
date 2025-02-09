@@ -36,7 +36,6 @@ import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
 import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibraryProxy;
 import com.orientechnologies.orient.core.schedule.OScheduler;
 import com.orientechnologies.orient.core.schedule.OSchedulerProxy;
-import java.io.IOException;
 
 public class OMetadataDefault implements OMetadataInternal {
   public static final String CLUSTER_INTERNAL_NAME = "internal";
@@ -63,12 +62,6 @@ public class OMetadataDefault implements OMetadataInternal {
   public OMetadataDefault(ODatabaseDocumentInternal databaseDocument) {
     this.database = databaseDocument;
   }
-
-  @Deprecated
-  public void load() {}
-
-  @Deprecated
-  public void create() throws IOException {}
 
   public OSchemaProxy getSchema() {
     return schema;
@@ -135,13 +128,6 @@ public class OMetadataDefault implements OMetadataInternal {
     // RELOAD ALL THE SHARED CONTEXT
     database.getSharedContext().reload(database);
     // ADD HERE THE RELOAD OF A PROXY OBJECT IF NEEDED
-  }
-
-  /** Closes internal objects */
-  @Deprecated
-  public void close() {
-    // DO NOTHING BECAUSE THE PROXY OBJECT HAVE NO DIRECT STATE
-    // ADD HERE THE CLOSE OF A PROXY OBJECT IF NEEDED
   }
 
   protected ODatabaseDocumentInternal getDatabase() {

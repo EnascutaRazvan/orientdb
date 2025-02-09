@@ -50,10 +50,6 @@ public class OSchemaProxy extends OProxedResource<OSchemaShared> implements OSch
     return delegate.makeSnapshot(database);
   }
 
-  public void create() {
-    delegate.create(database);
-  }
-
   public int countClasses() {
     return delegate.countClasses(database);
   }
@@ -161,12 +157,6 @@ public class OSchemaProxy extends OProxedResource<OSchemaShared> implements OSch
     return delegate.getViews(database);
   }
 
-  @Deprecated
-  public void load() {
-
-    delegate.load(database);
-  }
-
   public OView getView(final String name) {
     if (name == null) return null;
 
@@ -208,11 +198,6 @@ public class OSchemaProxy extends OProxedResource<OSchemaShared> implements OSch
   public ORID getIdentity() {
 
     return delegate.getIdentity();
-  }
-
-  @Deprecated
-  public void close() {
-    // DO NOTHING THE DELEGATE CLOSE IS MANAGED IN A DIFFERENT CONTEXT
   }
 
   public String toString() {

@@ -826,7 +826,6 @@ public abstract class OSchemaShared implements OCloseable {
   @Override
   public void close() {}
 
-  @Deprecated
   public int getVersion() {
     return version;
   }

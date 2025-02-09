@@ -102,12 +102,6 @@ public interface OSchema {
 
   void dropView(String name);
 
-  @Deprecated
-  void create();
-
-  @Deprecated
-  int getVersion();
-
   ORID getIdentity();
 
   /**
@@ -130,4 +124,6 @@ public interface OSchema {
   OClusterSelectionFactory getClusterSelectionFactory();
 
   OImmutableSchema makeSnapshot();
+
+  int getVersion();
 }

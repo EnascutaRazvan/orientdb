@@ -28,7 +28,6 @@ import com.orientechnologies.orient.core.metadata.security.OSecurity;
 import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
 import com.orientechnologies.orient.core.schedule.OScheduler;
 import com.orientechnologies.orient.object.metadata.schema.OSchemaProxyObject;
-import java.io.IOException;
 
 /** @author Luca Molino (molino.luca--at--gmail.com) */
 public class OMetadataObject implements OMetadataInternal {
@@ -63,18 +62,6 @@ public class OMetadataObject implements OMetadataInternal {
   }
 
   @Override
-  @Deprecated
-  public void load() {
-    underlying.load();
-  }
-
-  @Override
-  @Deprecated
-  public void create() throws IOException {
-    underlying.create();
-  }
-
-  @Override
   public OSchemaProxyObject getSchema() {
     if (schema == null) schema = new OSchemaProxyObject(underlying.getSchema());
     return schema;
@@ -98,19 +85,8 @@ public class OMetadataObject implements OMetadataInternal {
   }
 
   @Override
-  public int getSchemaClusterId() {
-    return underlying.getSchemaClusterId();
-  }
-
-  @Override
   public void reload() {
     underlying.reload();
-  }
-
-  @Override
-  @Deprecated
-  public void close() {
-    underlying.close();
   }
 
   @Override

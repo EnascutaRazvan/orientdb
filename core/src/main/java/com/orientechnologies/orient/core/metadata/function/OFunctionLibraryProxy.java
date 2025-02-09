@@ -51,21 +51,6 @@ public class OFunctionLibraryProxy extends OProxedResource<OFunctionLibraryImpl>
   }
 
   @Override
-  public void create() {
-    delegate.create(database);
-  }
-
-  @Override
-  public void load() {
-    delegate.load(database);
-  }
-
-  @Override
-  public void close() {
-    delegate.close();
-  }
-
-  @Override
   public void dropFunction(OFunction function) {
     delegate.dropFunction(function);
   }

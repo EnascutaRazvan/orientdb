@@ -22,16 +22,9 @@ import com.orientechnologies.orient.core.metadata.schema.OSchema;
 import com.orientechnologies.orient.core.metadata.security.OSecurity;
 import com.orientechnologies.orient.core.metadata.sequence.OSequenceLibrary;
 import com.orientechnologies.orient.core.schedule.OScheduler;
-import java.io.IOException;
 
 /** @author Luca Molino (molino.luca--at--gmail.com) */
 public interface OMetadata {
-
-  @Deprecated
-  void load();
-
-  @Deprecated
-  void create() throws IOException;
 
   OSchema getSchema();
 
@@ -41,15 +34,8 @@ public interface OMetadata {
   @Deprecated
   OIndexManager getIndexManager();
 
-  @Deprecated
-  int getSchemaClusterId();
-
   /** Reloads the internal objects. */
   void reload();
-
-  /** Closes internal objects */
-  @Deprecated
-  void close();
 
   OFunctionLibrary getFunctionLibrary();
 
