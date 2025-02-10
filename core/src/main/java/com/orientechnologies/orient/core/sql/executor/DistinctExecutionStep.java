@@ -88,8 +88,8 @@ public class DistinctExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String result = OExecutionStepInternal.getIndent(depth, indent) + "+ DISTINCT";
+  public String prettyPrint(OPrintContext ctx) {
+    String result = OExecutionStepInternal.getIndent(ctx) + "+ DISTINCT";
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }

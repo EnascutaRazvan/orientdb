@@ -33,7 +33,7 @@ public class LimitExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    return OExecutionStepInternal.getIndent(depth, indent) + "+ LIMIT (" + limit.toString() + ")";
+  public String prettyPrint(OPrintContext ctx) {
+    return OExecutionStepInternal.getIndent(ctx) + "+ LIMIT (" + limit.toString() + ")";
   }
 }

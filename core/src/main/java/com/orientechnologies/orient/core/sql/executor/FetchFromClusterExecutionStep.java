@@ -147,10 +147,10 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     String orderString = ORDER_DESC.equals(order) ? "DESC" : "ASC";
     String result =
-        OExecutionStepInternal.getIndent(depth, indent)
+        OExecutionStepInternal.getIndent(ctx)
             + "+ FETCH FROM CLUSTER "
             + clusterId
             + " "

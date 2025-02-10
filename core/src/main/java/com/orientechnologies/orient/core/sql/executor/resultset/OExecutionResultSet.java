@@ -2,6 +2,7 @@ package com.orientechnologies.orient.core.sql.executor.resultset;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
 import java.util.Map;
@@ -20,7 +21,16 @@ public class OExecutionResultSet implements OResultSetInternal {
     super();
     this.stream = stream;
     this.context = context;
-    this.plan = Optional.ofNullable(plan);
+    this.plan =
+        Optional.ofNullable(plan)
+            .map(
+                (p) -> {
+                  if (p instanceof OInternalExecutionPlan) {
+                    return new OContextExecutionPlan((OInternalExecutionPlan) p, context);
+                  } else {
+                    return p;
+                  }
+                });
   }
 
   @Override

@@ -44,15 +44,15 @@ public class FilterByClassStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
-    result.append(OExecutionStepInternal.getIndent(depth, indent));
+    result.append(OExecutionStepInternal.getIndent(ctx));
     result.append("+ FILTER ITEMS BY CLASS");
     if (profilingEnabled) {
       result.append(" (" + getCostFormatted() + ")");
     }
     result.append(" \n");
-    result.append(OExecutionStepInternal.getIndent(depth, indent));
+    result.append(OExecutionStepInternal.getIndent(ctx));
     result.append("  ");
     result.append(identifier.getStringValue());
     return result.toString();

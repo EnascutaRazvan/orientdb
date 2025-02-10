@@ -36,9 +36,9 @@ public class WhileMatchStep extends AbstractUnrollStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String indentStep = OExecutionStepInternal.getIndent(1, indent);
-    String spaces = OExecutionStepInternal.getIndent(depth, indent);
+  public String prettyPrint(OPrintContext ctx) {
+    String indentStep = OExecutionStepInternal.getIndent(ctx);
+    String spaces = OExecutionStepInternal.getIndent(ctx);
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ WHILE\n");
@@ -51,7 +51,9 @@ public class WhileMatchStep extends AbstractUnrollStep {
     result.append(spaces);
     result.append("  DO\n");
 
-    result.append(body.prettyPrint(depth + 1, indent));
+    ctx.incDepth();
+    result.append(body.prettyPrint(ctx));
+    ctx.decDepth();
     result.append("\n");
 
     result.append(spaces);

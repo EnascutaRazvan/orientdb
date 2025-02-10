@@ -59,15 +59,25 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
+    return prettyPrint(new OPrintContexImpl());
+  }
+
+  @Override
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
     for (int i = 0; i < steps.size(); i++) {
       OExecutionStepInternal step = steps.get(i);
-      result.append(step.prettyPrint(depth, indent));
+      result.append(step.prettyPrint(ctx));
       if (i < steps.size() - 1) {
         result.append("\n");
       }
     }
     return result.toString();
+  }
+
+  @Override
+  public String prettyPrint() {
+    return prettyPrint(0, 0);
   }
 
   public void chain(OStatement nextStm, boolean profilingEnabled, OCommandContext ctx) {

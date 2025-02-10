@@ -37,9 +37,9 @@ public class FetchFromIndexedFunctionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     String result =
-        OExecutionStepInternal.getIndent(depth, indent)
+        OExecutionStepInternal.getIndent(ctx)
             + "+ FETCH FROM INDEXED FUNCTION "
             + functionCondition.toString();
     if (profilingEnabled) {

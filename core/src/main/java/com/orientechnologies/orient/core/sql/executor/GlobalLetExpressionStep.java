@@ -37,8 +37,8 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String spaces = OExecutionStepInternal.getIndent(depth, indent);
+  public String prettyPrint(OPrintContext ctx) {
+    String spaces = OExecutionStepInternal.getIndent(ctx);
     return spaces + "+ LET (once)\n" + spaces + "  " + varname + " = " + expression;
   }
 

@@ -40,18 +40,18 @@ public interface OExecutionStepInternal extends OExecutionStep {
 
   void close();
 
-  static String getIndent(int depth, int indent) {
+  static String getIndent(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
-    for (int i = 0; i < depth; i++) {
-      for (int j = 0; j < indent; j++) {
+    for (int i = 0; i < ctx.getDepth(); i++) {
+      for (int j = 0; j < ctx.getIdent(); j++) {
         result.append(" ");
       }
     }
     return result.toString();
   }
 
-  default String prettyPrint(int depth, int indent) {
-    String spaces = getIndent(depth, indent);
+  default String prettyPrint(OPrintContext ctx) {
+    String spaces = getIndent(ctx);
     return spaces + getClass().getSimpleName();
   }
 
@@ -64,7 +64,7 @@ public interface OExecutionStepInternal extends OExecutionStep {
   }
 
   default String getDescription() {
-    return prettyPrint(0, 3);
+    return prettyPrint(new OPrintContexImpl(null, 0, 3));
   }
 
   default String getTargetNode() {

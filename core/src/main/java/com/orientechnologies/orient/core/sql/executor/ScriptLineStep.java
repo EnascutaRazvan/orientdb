@@ -84,7 +84,7 @@ public class ScriptLineStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     if (statement == null) {
       return "Script Line";
     }

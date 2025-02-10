@@ -94,8 +94,8 @@ public class OrderByStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String result = OExecutionStepInternal.getIndent(depth, indent) + "+ " + orderBy;
+  public String prettyPrint(OPrintContext ctx) {
+    String result = OExecutionStepInternal.getIndent(ctx) + "+ " + orderBy;
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }

@@ -91,9 +91,9 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder builder = new StringBuilder();
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+    String ind = OExecutionStepInternal.getIndent(ctx);
     builder.append(ind);
     builder.append("+ FETCH FROM CLUSTERS");
     if (profilingEnabled) {
@@ -102,7 +102,7 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
     builder.append("\n");
     for (int i = 0; i < subSteps.size(); i++) {
       OExecutionStepInternal step = (OExecutionStepInternal) subSteps.get(i);
-      builder.append(step.prettyPrint(depth + 1, indent));
+      builder.append(step.prettyPrint(ctx));
       if (i < subSteps.size() - 1) {
         builder.append("\n");
       }

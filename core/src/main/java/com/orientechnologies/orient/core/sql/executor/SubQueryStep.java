@@ -42,12 +42,14 @@ public class SubQueryStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder builder = new StringBuilder();
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+    String ind = OExecutionStepInternal.getIndent(ctx);
     builder.append(ind);
     builder.append("+ FETCH FROM SUBQUERY \n");
-    builder.append(subExecuitonPlan.prettyPrint(depth + 1, indent));
+    ctx.incDepth();
+    builder.append(subExecuitonPlan.prettyPrint(ctx));
+    ctx.decDepth();
     return builder.toString();
   }
 

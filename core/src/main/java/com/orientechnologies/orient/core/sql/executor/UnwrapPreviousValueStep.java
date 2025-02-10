@@ -36,8 +36,8 @@ public class UnwrapPreviousValueStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String result = OExecutionStepInternal.getIndent(depth, indent) + "+ UNWRAP PREVIOUS VALUE";
+  public String prettyPrint(OPrintContext ctx) {
+    String result = OExecutionStepInternal.getIndent(ctx) + "+ UNWRAP PREVIOUS VALUE";
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }

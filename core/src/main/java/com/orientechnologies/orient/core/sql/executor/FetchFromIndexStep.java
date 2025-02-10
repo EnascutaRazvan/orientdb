@@ -698,11 +698,9 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     String result =
-        OExecutionStepInternal.getIndent(depth, indent)
-            + "+ FETCH FROM INDEX "
-            + desc.getIndex().getName();
+        OExecutionStepInternal.getIndent(ctx) + "+ FETCH FROM INDEX " + desc.getIndex().getName();
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }
@@ -713,7 +711,7 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
               .orElse("");
       result +=
           ("\n"
-              + OExecutionStepInternal.getIndent(depth, indent)
+              + OExecutionStepInternal.getIndent(ctx)
               + "  "
               + desc.getKeyCondition()
               + additional);

@@ -48,12 +48,21 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    String spaces = OExecutionStepInternal.getIndent(depth, indent);
+    return prettyPrint(new OPrintContexImpl());
+  }
+
+  public String prettyPrint(OPrintContext ctx) {
+    String spaces = OExecutionStepInternal.getIndent(ctx);
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ ");
     result.append(statement.toString());
     return result.toString();
+  }
+
+  @Override
+  public String prettyPrint() {
+    return prettyPrint(0, 0);
   }
 
   @Override

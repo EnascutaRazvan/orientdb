@@ -30,6 +30,11 @@ public class OGremlinExecutionPlan implements OExecutionPlan {
   }
 
   @Override
+  public String prettyPrint() {
+    return explanation.prettyPrint();
+  }
+
+  @Override
   public OResult toResult() {
     OResultInternal result = new OResultInternal();
     result.setProperty("type", "GremlinExecutionPlan");

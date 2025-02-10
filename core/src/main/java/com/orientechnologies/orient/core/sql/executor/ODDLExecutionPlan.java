@@ -50,13 +50,23 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    String spaces = OExecutionStepInternal.getIndent(depth, indent);
+    return prettyPrint(new OPrintContexImpl());
+  }
+
+  @Override
+  public String prettyPrint(OPrintContext ctx) {
+    String spaces = OExecutionStepInternal.getIndent(ctx);
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ DDL\n");
     result.append("  ");
-    result.append(statement.toString());
+    result.append(statement.prettyPrint(ctx));
     return result.toString();
+  }
+
+  @Override
+  public String prettyPrint() {
+    return prettyPrint(0, 0);
   }
 
   @Override

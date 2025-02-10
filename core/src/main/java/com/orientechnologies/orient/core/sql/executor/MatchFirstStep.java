@@ -54,8 +54,8 @@ public class MatchFirstStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String spaces = OExecutionStepInternal.getIndent(depth, indent);
+  public String prettyPrint(OPrintContext ctx) {
+    String spaces = OExecutionStepInternal.getIndent(ctx);
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ SET \n");
@@ -66,7 +66,9 @@ public class MatchFirstStep extends AbstractExecutionStep {
       result.append("\n");
       result.append(spaces);
       result.append("  AS\n");
-      result.append(executionPlan.prettyPrint(depth + 1, indent));
+      ctx.incDepth();
+      result.append(executionPlan.prettyPrint(ctx));
+      ctx.decDepth();
     }
 
     return result.toString();

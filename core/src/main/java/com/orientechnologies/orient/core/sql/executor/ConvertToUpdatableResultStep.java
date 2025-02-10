@@ -53,8 +53,8 @@ public class ConvertToUpdatableResultStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String result = OExecutionStepInternal.getIndent(depth, indent) + "+ CONVERT TO UPDATABLE ITEM";
+  public String prettyPrint(OPrintContext ctx) {
+    String result = OExecutionStepInternal.getIndent(ctx) + "+ CONVERT TO UPDATABLE ITEM";
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }

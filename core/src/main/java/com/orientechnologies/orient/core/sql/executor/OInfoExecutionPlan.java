@@ -25,6 +25,10 @@ public class OInfoExecutionPlan implements OExecutionPlan {
     return prettyPrint;
   }
 
+  public String prettyPrint() {
+    return prettyPrint;
+  }
+
   @Override
   public OResult toResult() {
     return null;

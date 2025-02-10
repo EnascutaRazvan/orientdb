@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.sql.executor.ODDLExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OPrintContext;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
@@ -54,5 +55,9 @@ public abstract class ODDLStatement extends OStatement {
 
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
     return new ODDLExecutionPlan(this);
+  }
+
+  public String prettyPrint(OPrintContext ctx) {
+    return toString();
   }
 }

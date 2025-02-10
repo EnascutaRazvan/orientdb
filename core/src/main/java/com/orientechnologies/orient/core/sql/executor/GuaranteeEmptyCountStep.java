@@ -41,9 +41,9 @@ public class GuaranteeEmptyCountStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
-    result.append(OExecutionStepInternal.getIndent(depth, indent) + "+ GUARANTEE FOR ZERO COUNT ");
+    result.append(OExecutionStepInternal.getIndent(ctx) + "+ GUARANTEE FOR ZERO COUNT ");
     return result.toString();
   }
 }

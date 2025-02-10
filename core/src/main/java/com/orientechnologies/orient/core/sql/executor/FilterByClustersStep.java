@@ -51,10 +51,10 @@ public class FilterByClustersStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    return OExecutionStepInternal.getIndent(depth, indent)
+  public String prettyPrint(OPrintContext ctx) {
+    return OExecutionStepInternal.getIndent(ctx)
         + "+ FILTER ITEMS BY CLUSTERS \n"
-        + OExecutionStepInternal.getIndent(depth, indent)
+        + OExecutionStepInternal.getIndent(ctx)
         + "  "
         + clusters.stream().collect(Collectors.joining(", "));
   }

@@ -40,12 +40,14 @@ public class DistributedExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder builder = new StringBuilder();
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+    String ind = OExecutionStepInternal.getIndent(ctx);
     builder.append(ind);
     builder.append("+ EXECUTE ON NODE " + nodeName + "----------- \n");
-    builder.append(subExecuitonPlan.prettyPrint(depth + 1, indent));
+    ctx.incDepth();
+    builder.append(subExecuitonPlan.prettyPrint(ctx));
+    ctx.decDepth();
     builder.append("  ------------------------------------------- \n");
     builder.append("   |\n");
     builder.append("   V\n");

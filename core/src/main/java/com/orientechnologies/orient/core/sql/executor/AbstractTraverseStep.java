@@ -104,6 +104,6 @@ public abstract class AbstractTraverseStep extends AbstractExecutionStep {
 
   @Override
   public String toString() {
-    return prettyPrint(0, 2);
+    return prettyPrint(new OPrintContexImpl(null, 0, 2));
   }
 }

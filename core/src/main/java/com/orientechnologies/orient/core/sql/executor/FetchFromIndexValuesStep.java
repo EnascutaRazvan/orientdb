@@ -11,13 +11,13 @@ public class FetchFromIndexValuesStep extends FetchFromIndexStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     if (isOrderAsc()) {
-      return OExecutionStepInternal.getIndent(depth, indent)
+      return OExecutionStepInternal.getIndent(ctx)
           + "+ FETCH FROM INDEX VAUES ASC "
           + desc.getIndex().getName();
     } else {
-      return OExecutionStepInternal.getIndent(depth, indent)
+      return OExecutionStepInternal.getIndent(ctx)
           + "+ FETCH FROM INDEX VAUES DESC "
           + desc.getIndex().getName();
     }

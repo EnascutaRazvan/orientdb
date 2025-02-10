@@ -43,12 +43,12 @@ public class CheckRecordTypeStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String result = OExecutionStepInternal.getIndent(depth, indent) + "+ CHECK RECORD TYPE";
+  public String prettyPrint(OPrintContext ctx) {
+    String result = OExecutionStepInternal.getIndent(ctx) + "+ CHECK RECORD TYPE";
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }
-    result += (OExecutionStepInternal.getIndent(depth, indent) + "  " + clazz);
+    result += (OExecutionStepInternal.getIndent(ctx) + "  " + clazz);
     return result;
   }
 }

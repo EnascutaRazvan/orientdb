@@ -73,15 +73,15 @@ public class CartesianProductStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     String result = "";
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+    String ind = OExecutionStepInternal.getIndent(ctx);
 
     int[] blockSizes = new int[subPlans.size()];
 
     for (int i = 0; i < subPlans.size(); i++) {
       OInternalExecutionPlan currentPlan = subPlans.get(subPlans.size() - 1 - i);
-      String partial = currentPlan.prettyPrint(0, indent);
+      String partial = currentPlan.prettyPrint(ctx);
 
       String[] partials = partial.split("\n");
       blockSizes[subPlans.size() - 1 - i] = partials.length + 2;
@@ -100,7 +100,7 @@ public class CartesianProductStep extends AbstractExecutionStep {
     result += foot(blockSizes);
     result = ind + result;
     result = result.replaceAll("\n", "\n" + ind);
-    result = head(depth, indent, subPlans.size()) + "\n" + result;
+    result = head(ctx, subPlans.size()) + "\n" + result;
     return result;
   }
 
@@ -162,8 +162,8 @@ public class CartesianProductStep extends AbstractExecutionStep {
     return false;
   }
 
-  private String head(int depth, int indent, int nItems) {
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+  private String head(OPrintContext ctx, int nItems) {
+    String ind = OExecutionStepInternal.getIndent(ctx);
     String result = ind + "+ CARTESIAN PRODUCT";
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";

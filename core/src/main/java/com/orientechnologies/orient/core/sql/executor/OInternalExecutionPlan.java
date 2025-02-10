@@ -49,4 +49,6 @@ public interface OInternalExecutionPlan extends OExecutionPlan {
   }
 
   default void setGenericStatement(String stm) {}
+
+  public String prettyPrint(OPrintContext ctx);
 }

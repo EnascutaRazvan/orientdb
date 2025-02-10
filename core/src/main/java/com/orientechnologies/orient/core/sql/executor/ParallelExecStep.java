@@ -32,15 +32,15 @@ public class ParallelExecStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     String result = "";
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+    String ind = OExecutionStepInternal.getIndent(ctx);
 
     int[] blockSizes = new int[subExecutionPlans.size()];
 
     for (int i = 0; i < subExecutionPlans.size(); i++) {
       OInternalExecutionPlan currentPlan = subExecutionPlans.get(subExecutionPlans.size() - 1 - i);
-      String partial = currentPlan.prettyPrint(0, indent);
+      String partial = currentPlan.prettyPrint(ctx);
 
       String[] partials = partial.split("\n");
       blockSizes[subExecutionPlans.size() - 1 - i] = partials.length + 2;
@@ -59,7 +59,7 @@ public class ParallelExecStep extends AbstractExecutionStep {
     result += foot(blockSizes);
     result = ind + result;
     result = result.replaceAll("\n", "\n" + ind);
-    result = head(depth, indent, subExecutionPlans.size()) + "\n" + result;
+    result = head(ctx, subExecutionPlans.size()) + "\n" + result;
     return result;
   }
 
@@ -121,8 +121,8 @@ public class ParallelExecStep extends AbstractExecutionStep {
     return false;
   }
 
-  private String head(int depth, int indent, int nItems) {
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+  private String head(OPrintContext ctx, int nItems) {
+    String ind = OExecutionStepInternal.getIndent(ctx);
     return ind + "+ PARALLEL";
   }
 

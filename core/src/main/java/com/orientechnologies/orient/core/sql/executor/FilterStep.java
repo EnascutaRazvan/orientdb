@@ -51,14 +51,14 @@ public class FilterStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
-    result.append(OExecutionStepInternal.getIndent(depth, indent) + "+ FILTER ITEMS WHERE ");
+    result.append(OExecutionStepInternal.getIndent(ctx) + "+ FILTER ITEMS WHERE ");
     if (profilingEnabled) {
       result.append(" (" + getCostFormatted() + ")");
     }
     result.append("\n");
-    result.append(OExecutionStepInternal.getIndent(depth, indent));
+    result.append(OExecutionStepInternal.getIndent(ctx));
     result.append("  ");
     result.append(whereClause.toString());
     return result.toString();

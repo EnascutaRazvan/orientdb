@@ -41,9 +41,8 @@ public class ConvertToResultInternalStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String result =
-        OExecutionStepInternal.getIndent(depth, indent) + "+ CONVERT TO REGULAR RESULT ITEM";
+  public String prettyPrint(OPrintContext ctx) {
+    String result = OExecutionStepInternal.getIndent(ctx) + "+ CONVERT TO REGULAR RESULT ITEM";
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }

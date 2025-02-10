@@ -32,9 +32,19 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
+    return prettyPrint(new OPrintContexImpl());
+  }
+
+  @Override
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
-    result.append(step.prettyPrint(depth, indent));
+    result.append(step.prettyPrint(ctx));
     return result.toString();
+  }
+
+  @Override
+  public String prettyPrint() {
+    return prettyPrint(0, 0);
   }
 
   public void chain(IfStep step) {

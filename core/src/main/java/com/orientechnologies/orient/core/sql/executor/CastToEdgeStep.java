@@ -36,8 +36,8 @@ public class CastToEdgeStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String result = OExecutionStepInternal.getIndent(depth, indent) + "+ CAST TO EDGE";
+  public String prettyPrint(OPrintContext ctx) {
+    String result = OExecutionStepInternal.getIndent(ctx) + "+ CAST TO EDGE";
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }

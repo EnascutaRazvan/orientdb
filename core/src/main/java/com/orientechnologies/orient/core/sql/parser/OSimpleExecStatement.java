@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OPrintContext;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OSingleOpExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
@@ -59,5 +60,9 @@ public abstract class OSimpleExecStatement extends OStatement {
 
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
     return new OSingleOpExecutionPlan(this);
+  }
+
+  public String prettyPrint(OPrintContext ctx) {
+    return toString();
   }
 }

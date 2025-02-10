@@ -57,10 +57,10 @@ public class FetchFromVariableStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    return OExecutionStepInternal.getIndent(depth, indent)
+  public String prettyPrint(OPrintContext ctx) {
+    return OExecutionStepInternal.getIndent(ctx)
         + "+ FETCH FROM VARIABLE\n"
-        + OExecutionStepInternal.getIndent(depth, indent)
+        + OExecutionStepInternal.getIndent(ctx)
         + "  "
         + variableName;
   }

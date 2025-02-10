@@ -52,9 +52,9 @@ public class FetchFromViewExecutionStep extends FetchFromClassExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     StringBuilder builder = new StringBuilder();
-    String ind = OExecutionStepInternal.getIndent(depth, indent);
+    String ind = OExecutionStepInternal.getIndent(ctx);
     builder.append(ind);
     builder.append("+ FETCH FROM VIEW " + className);
     if (profilingEnabled) {
@@ -63,7 +63,9 @@ public class FetchFromViewExecutionStep extends FetchFromClassExecutionStep {
     builder.append("\n");
     for (int i = 0; i < getSubSteps().size(); i++) {
       OExecutionStepInternal step = (OExecutionStepInternal) getSubSteps().get(i);
-      builder.append(step.prettyPrint(depth + 1, indent));
+      ctx.incDepth();
+      builder.append(step.prettyPrint(ctx));
+      ctx.decDepth();
       if (i < getSubSteps().size() - 1) {
         builder.append("\n");
       }

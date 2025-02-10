@@ -408,9 +408,9 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
+  public String prettyPrint(OPrintContext ctx) {
     String result =
-        OExecutionStepInternal.getIndent(depth, indent) + "+ DELETE FROM INDEX " + index.getName();
+        OExecutionStepInternal.getIndent(ctx) + "+ DELETE FROM INDEX " + index.getName();
     if (profilingEnabled) {
       result += " (" + getCostFormatted() + ")";
     }
@@ -423,7 +423,7 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
             .map(
                 oBooleanExpression ->
                     ("\n"
-                        + OExecutionStepInternal.getIndent(depth, indent)
+                        + OExecutionStepInternal.getIndent(ctx)
                         + "  "
                         + oBooleanExpression
                         + additional))

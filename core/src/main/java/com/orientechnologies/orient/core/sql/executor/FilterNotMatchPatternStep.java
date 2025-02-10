@@ -72,12 +72,17 @@ public class FilterNotMatchPatternStep extends AbstractExecutionStep {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    String spaces = OExecutionStepInternal.getIndent(depth, indent);
+  public String prettyPrint(OPrintContext ctx) {
+    String spaces = OExecutionStepInternal.getIndent(ctx);
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ NOT (\n");
-    this.subSteps.forEach(x -> result.append(x.prettyPrint(depth + 1, indent)).append("\n"));
+    this.subSteps.forEach(
+        x -> {
+          ctx.incDepth();
+          result.append(x.prettyPrint(ctx)).append("\n");
+          ctx.decDepth();
+        });
     result.append(spaces);
     result.append("  )");
     return result.toString();
