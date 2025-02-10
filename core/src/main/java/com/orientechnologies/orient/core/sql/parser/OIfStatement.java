@@ -78,14 +78,14 @@ public class OIfStatement extends OStatement {
 
     OIfExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (OIfExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OIfExecutionPlan) createExecutionPlanNoCache(ctx);
     }
 
     OExecutionStepInternal last = executionPlan.executeUntilReturn(ctx);
     if (last == null) {
-      last = new EmptyStep(ctx, false);
+      last = new EmptyStep(ctx);
     }
     if (isIdempotent()) {
       OSelectExecutionPlan finalPlan = new OSelectExecutionPlan();
@@ -110,14 +110,14 @@ public class OIfStatement extends OStatement {
 
     OIfExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (OIfExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OIfExecutionPlan) createExecutionPlanNoCache(ctx);
     }
 
     OExecutionStepInternal last = executionPlan.executeUntilReturn(ctx);
     if (last == null) {
-      last = new EmptyStep(ctx, false);
+      last = new EmptyStep(ctx);
     }
     if (isIdempotent()) {
       OSelectExecutionPlan finalPlan = new OSelectExecutionPlan();
@@ -132,11 +132,11 @@ public class OIfStatement extends OStatement {
   }
 
   @Override
-  public OIfExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OIfExecutionPlan createExecutionPlan(OCommandContext ctx) {
 
     OIfExecutionPlan plan = new OIfExecutionPlan();
 
-    IfStep step = new IfStep(ctx, enableProfiling);
+    IfStep step = new IfStep(ctx);
     step.setCondition(this.expression);
     plan.chain(step);
 

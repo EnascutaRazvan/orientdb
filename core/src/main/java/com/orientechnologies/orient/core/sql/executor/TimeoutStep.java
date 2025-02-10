@@ -10,8 +10,8 @@ import com.orientechnologies.orient.core.sql.parser.OTimeout;
 public class TimeoutStep extends AbstractExecutionStep {
   private final OTimeout timeout;
 
-  public TimeoutStep(OTimeout timeout, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public TimeoutStep(OTimeout timeout, OCommandContext ctx) {
+    super(ctx);
     this.timeout = timeout;
   }
 
@@ -48,6 +48,6 @@ public class TimeoutStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new TimeoutStep(this.timeout.copy(), ctx, profilingEnabled);
+    return new TimeoutStep(this.timeout.copy(), ctx);
   }
 }

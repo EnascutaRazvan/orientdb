@@ -17,11 +17,9 @@ public class GetValueFromIndexEntryStep extends AbstractExecutionStep {
    * @param ctx the execution context
    * @param filterClusterIds only extract values from these clusters. Pass null if no filtering is
    *     needed
-   * @param profilingEnabled enable profiling
    */
-  public GetValueFromIndexEntryStep(
-      OCommandContext ctx, int[] filterClusterIds, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public GetValueFromIndexEntryStep(OCommandContext ctx, int[] filterClusterIds) {
+    super(ctx);
     this.filterClusterIds = filterClusterIds;
     if (this.filterClusterIds != null) {
       Arrays.sort(this.filterClusterIds);
@@ -63,8 +61,8 @@ public class GetValueFromIndexEntryStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     String result = spaces + "+ EXTRACT VALUE FROM INDEX ENTRY";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     if (filterClusterIds != null) {
       result += "\n";
@@ -84,6 +82,6 @@ public class GetValueFromIndexEntryStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new GetValueFromIndexEntryStep(ctx, this.filterClusterIds, this.profilingEnabled);
+    return new GetValueFromIndexEntryStep(ctx, this.filterClusterIds);
   }
 }

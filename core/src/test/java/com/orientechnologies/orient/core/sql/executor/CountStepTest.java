@@ -19,10 +19,10 @@ public class CountStepTest {
   @Test
   public void shouldCountRecords() {
     OCommandContext context = new OBasicCommandContext();
-    CountStep step = new CountStep(context, false);
+    CountStep step = new CountStep(context);
 
     AbstractExecutionStep previous =
-        new AbstractExecutionStep(context, false) {
+        new AbstractExecutionStep(context) {
           boolean done = false;
 
           @Override

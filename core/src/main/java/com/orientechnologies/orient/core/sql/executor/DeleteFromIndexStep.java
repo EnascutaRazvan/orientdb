@@ -45,9 +45,8 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
       OBooleanExpression condition,
       OBinaryCondition additionalRangeCondition,
       OBooleanExpression ridCondition,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    this(index, condition, additionalRangeCondition, ridCondition, true, ctx, profilingEnabled);
+      OCommandContext ctx) {
+    this(index, condition, additionalRangeCondition, ridCondition, true, ctx);
   }
 
   private DeleteFromIndexStep(
@@ -56,9 +55,8 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
       OBinaryCondition additionalRangeCondition,
       OBooleanExpression ridCondition,
       boolean orderAsc,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OCommandContext ctx) {
+    super(ctx);
     this.index = index.getInternal();
     this.condition = condition;
     this.additional = additionalRangeCondition;
@@ -411,8 +409,8 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     String result =
         OExecutionStepInternal.getIndent(ctx) + "+ DELETE FROM INDEX " + index.getName();
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     String additional =
         Optional.ofNullable(this.additional)

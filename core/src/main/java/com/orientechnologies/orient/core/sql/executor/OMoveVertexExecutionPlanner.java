@@ -27,15 +27,15 @@ public class OMoveVertexExecutionPlanner {
     this.batch = oStatement.getBatch();
   }
 
-  public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OUpdateExecutionPlan result = new OUpdateExecutionPlan();
 
-    handleSource(result, ctx, this.source, enableProfiling);
-    convertToModifiableResult(result, ctx, enableProfiling);
-    handleTarget(result, targetClass, targetCluster, ctx, enableProfiling);
-    handleOperations(result, ctx, this.updateOperations, enableProfiling);
-    handleBatch(result, ctx, this.batch, enableProfiling);
-    handleSave(result, ctx, enableProfiling);
+    handleSource(result, ctx, this.source);
+    convertToModifiableResult(result, ctx);
+    handleTarget(result, targetClass, targetCluster, ctx);
+    handleOperations(result, ctx, this.updateOperations);
+    handleBatch(result, ctx, this.batch);
+    handleSave(result, ctx);
     return result;
   }
 
@@ -43,15 +43,13 @@ public class OMoveVertexExecutionPlanner {
       OUpdateExecutionPlan result,
       OIdentifier targetClass,
       OCluster targetCluster,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    result.chain(new MoveVertexStep(targetClass, targetCluster, ctx, profilingEnabled));
+      OCommandContext ctx) {
+    result.chain(new MoveVertexStep(targetClass, targetCluster, ctx));
   }
 
-  private void handleBatch(
-      OUpdateExecutionPlan result, OCommandContext ctx, OBatch batch, boolean profilingEnabled) {
+  private void handleBatch(OUpdateExecutionPlan result, OCommandContext ctx, OBatch batch) {
     if (batch != null) {
-      result.chain(new BatchStep(batch, ctx, profilingEnabled));
+      result.chain(new BatchStep(batch, ctx));
     }
   }
 
@@ -62,34 +60,29 @@ public class OMoveVertexExecutionPlanner {
    * @param plan the execution plan
    * @param ctx the executino context
    */
-  private void convertToModifiableResult(
-      OUpdateExecutionPlan plan, OCommandContext ctx, boolean profilingEnabled) {
-    plan.chain(new ConvertToUpdatableResultStep(ctx, profilingEnabled));
+  private void convertToModifiableResult(OUpdateExecutionPlan plan, OCommandContext ctx) {
+    plan.chain(new ConvertToUpdatableResultStep(ctx));
   }
 
-  private void handleSave(
-      OUpdateExecutionPlan result, OCommandContext ctx, boolean profilingEnabled) {
-    result.chain(new SaveElementStep(ctx, profilingEnabled));
+  private void handleSave(OUpdateExecutionPlan result, OCommandContext ctx) {
+    result.chain(new SaveElementStep(ctx));
   }
 
   private void handleOperations(
-      OUpdateExecutionPlan plan,
-      OCommandContext ctx,
-      OUpdateOperations op,
-      boolean profilingEnabled) {
+      OUpdateExecutionPlan plan, OCommandContext ctx, OUpdateOperations op) {
     if (op != null) {
       switch (op.getType()) {
         case OUpdateOperations.TYPE_SET:
-          plan.chain(new UpdateSetStep(op.getUpdateItems(), ctx, profilingEnabled));
+          plan.chain(new UpdateSetStep(op.getUpdateItems(), ctx));
           break;
         case OUpdateOperations.TYPE_REMOVE:
-          plan.chain(new UpdateRemoveStep(op.getUpdateRemoveItems(), ctx, profilingEnabled));
+          plan.chain(new UpdateRemoveStep(op.getUpdateRemoveItems(), ctx));
           break;
         case OUpdateOperations.TYPE_MERGE:
-          plan.chain(new UpdateMergeStep(op.getJson(), ctx, profilingEnabled));
+          plan.chain(new UpdateMergeStep(op.getJson(), ctx));
           break;
         case OUpdateOperations.TYPE_CONTENT:
-          plan.chain(new UpdateContentStep(op.getJson(), ctx, profilingEnabled));
+          plan.chain(new UpdateContentStep(op.getJson(), ctx));
           break;
         case OUpdateOperations.TYPE_PUT:
         case OUpdateOperations.TYPE_INCREMENT:
@@ -100,17 +93,11 @@ public class OMoveVertexExecutionPlanner {
     }
   }
 
-  private void handleSource(
-      OUpdateExecutionPlan result,
-      OCommandContext ctx,
-      OFromItem source,
-      boolean profilingEnabled) {
+  private void handleSource(OUpdateExecutionPlan result, OCommandContext ctx, OFromItem source) {
     OSelectStatement sourceStatement = new OSelectStatement(-1);
     sourceStatement.setTarget(new OFromClause(-1));
     sourceStatement.getTarget().setItem(source);
     OSelectExecutionPlanner planner = new OSelectExecutionPlanner(sourceStatement);
-    result.chain(
-        new SubQueryStep(
-            planner.createExecutionPlan(ctx, profilingEnabled, false), ctx, ctx, profilingEnabled));
+    result.chain(new SubQueryStep(planner.createExecutionPlan(ctx, false), ctx, ctx));
   }
 }

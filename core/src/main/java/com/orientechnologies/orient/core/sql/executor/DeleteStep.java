@@ -13,8 +13,8 @@ import java.util.Optional;
  */
 public class DeleteStep extends AbstractExecutionStep {
 
-  public DeleteStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public DeleteStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -37,15 +37,15 @@ public class DeleteStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ DELETE");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     return result.toString();
   }
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new DeleteStep(ctx, this.profilingEnabled);
+    return new DeleteStep(ctx);
   }
 
   @Override

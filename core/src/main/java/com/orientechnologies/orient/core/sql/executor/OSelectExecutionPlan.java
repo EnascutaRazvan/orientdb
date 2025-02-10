@@ -20,6 +20,8 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
   private String statement;
   private String genericStatement;
 
+  private OCommandContext context;
+
   public OSelectExecutionPlan() {}
 
   @Override
@@ -34,7 +36,7 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl());
+    return prettyPrint(new OPrintContexImpl(context, depth, indent));
   }
 
   @Override
@@ -187,5 +189,10 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
       OExecutionStepInternal.fillIndexes(chilStep, indexes);
     }
     return indexes;
+  }
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
   }
 }

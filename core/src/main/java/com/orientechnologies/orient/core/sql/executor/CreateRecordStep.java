@@ -12,9 +12,8 @@ public class CreateRecordStep extends AbstractExecutionStep {
   private int total = 0;
   private Optional<String> cl;
 
-  public CreateRecordStep(
-      OCommandContext ctx, int total, boolean profilingEnabled, Optional<String> cl) {
-    super(ctx, profilingEnabled);
+  public CreateRecordStep(OCommandContext ctx, int total, Optional<String> cl) {
+    super(ctx);
     this.total = total;
     this.cl = cl;
   }
@@ -38,8 +37,8 @@ public class CreateRecordStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ CREATE EMPTY RECORDS");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     result.append("\n");
     result.append(spaces);

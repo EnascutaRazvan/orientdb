@@ -38,9 +38,9 @@ public class OCreateVertexStatement extends OStatement {
     ctx.setInputParameters(params);
     OInsertExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = (OInsertExecutionPlan) createExecutionPlan(ctx, false);
+      executionPlan = (OInsertExecutionPlan) createExecutionPlan(ctx);
     } else {
-      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
@@ -62,18 +62,18 @@ public class OCreateVertexStatement extends OStatement {
     ctx.setInputParameters(params);
     OInsertExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = (OInsertExecutionPlan) createExecutionPlan(ctx, false);
+      executionPlan = (OInsertExecutionPlan) createExecutionPlan(ctx);
     } else {
-      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
   }
 
   @Override
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OCreateVertexExecutionPlanner planner = new OCreateVertexExecutionPlanner(this);
-    OInternalExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling);
+    OInternalExecutionPlan result = planner.createExecutionPlan(ctx);
     result.setStatement(this.originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;

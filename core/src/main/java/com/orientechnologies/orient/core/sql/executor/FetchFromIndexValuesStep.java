@@ -6,8 +6,8 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 public class FetchFromIndexValuesStep extends FetchFromIndexStep {
 
   public FetchFromIndexValuesStep(
-      IndexSearchDescriptor desc, boolean orderAsc, OCommandContext ctx, boolean profilingEnabled) {
-    super(desc, orderAsc, ctx, profilingEnabled);
+      IndexSearchDescriptor desc, boolean orderAsc, OCommandContext ctx) {
+    super(desc, orderAsc, ctx);
   }
 
   @Override

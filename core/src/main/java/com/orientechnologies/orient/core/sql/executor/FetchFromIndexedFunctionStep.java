@@ -16,11 +16,8 @@ public class FetchFromIndexedFunctionStep extends AbstractExecutionStep {
   private OFromClause queryTarget;
 
   public FetchFromIndexedFunctionStep(
-      OBinaryCondition functionCondition,
-      OFromClause queryTarget,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OBinaryCondition functionCondition, OFromClause queryTarget, OCommandContext ctx) {
+    super(ctx);
     this.functionCondition = functionCondition;
     this.queryTarget = queryTarget;
   }
@@ -42,8 +39,8 @@ public class FetchFromIndexedFunctionStep extends AbstractExecutionStep {
         OExecutionStepInternal.getIndent(ctx)
             + "+ FETCH FROM INDEXED FUNCTION "
             + functionCondition.toString();
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

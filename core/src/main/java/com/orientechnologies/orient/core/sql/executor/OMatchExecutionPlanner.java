@@ -101,8 +101,7 @@ public class OMatchExecutionPlanner {
     this.unwind = stm.getUnwind() == null ? null : stm.getUnwind().copy();
   }
 
-  public OInternalExecutionPlan createExecutionPlan(
-      OCommandContext context, boolean enableProfiling) {
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext context) {
 
     buildPatterns(context);
     splitDisjointPatterns(context);
@@ -118,41 +117,39 @@ public class OMatchExecutionPlanner {
             .collect(Collectors.toSet());
     for (Map.Entry<String, Long> entry : estimatedRootEntries.entrySet()) {
       if (entry.getValue() == 0L && !isOptional(entry.getKey())) {
-        result.chain(new EmptyStep(context, enableProfiling));
+        result.chain(new EmptyStep(context));
         return result;
       }
     }
 
-    addPrefetchSteps(result, aliasesToPrefetch, context, enableProfiling);
+    addPrefetchSteps(result, aliasesToPrefetch, context);
 
     if (subPatterns.size() > 1) {
-      CartesianProductStep step = new CartesianProductStep(context, enableProfiling);
+      CartesianProductStep step = new CartesianProductStep(context);
       for (Pattern subPattern : subPatterns) {
         step.addSubPlan(
-            createPlanForPattern(
-                subPattern, context, estimatedRootEntries, aliasesToPrefetch, enableProfiling));
+            createPlanForPattern(subPattern, context, estimatedRootEntries, aliasesToPrefetch));
       }
       result.chain(step);
     } else {
       OInternalExecutionPlan plan =
-          createPlanForPattern(
-              pattern, context, estimatedRootEntries, aliasesToPrefetch, enableProfiling);
+          createPlanForPattern(pattern, context, estimatedRootEntries, aliasesToPrefetch);
       for (OExecutionStep step : plan.getSteps()) {
         result.chain((OExecutionStepInternal) step);
       }
     }
 
-    manageNotPatterns(result, pattern, notMatchExpressions, context, enableProfiling);
+    manageNotPatterns(result, pattern, notMatchExpressions, context);
 
     if (foundOptional) {
-      result.chain(new RemoveEmptyOptionalsStep(context, enableProfiling));
+      result.chain(new RemoveEmptyOptionalsStep(context));
     }
 
     if (returnElements || returnPaths || returnPatterns || returnPathElements) {
-      addReturnStep(result, context, enableProfiling);
+      addReturnStep(result, context);
 
       if (this.returnDistinct) {
-        result.chain(new DistinctExecutionStep(context, enableProfiling));
+        result.chain(new DistinctExecutionStep(context));
       }
       if (groupBy != null) {
         throw new OCommandExecutionException(
@@ -161,18 +158,18 @@ public class OMatchExecutionPlanner {
       }
 
       if (this.orderBy != null) {
-        result.chain(new OrderByStep(orderBy, context, -1, enableProfiling));
+        result.chain(new OrderByStep(orderBy, context, -1));
       }
 
       if (this.unwind != null) {
-        result.chain(new UnwindStep(unwind, context, enableProfiling));
+        result.chain(new UnwindStep(unwind, context));
       }
 
       if (this.skip != null && skip.getValue(context) >= 0) {
-        result.chain(new SkipExecutionStep(skip, context, enableProfiling));
+        result.chain(new SkipExecutionStep(skip, context));
       }
       if (this.limit != null && limit.getValue(context) >= 0) {
-        result.chain(new LimitExecutionStep(limit, context, enableProfiling));
+        result.chain(new LimitExecutionStep(limit, context));
       }
     } else {
       QueryPlanningInfo info = new QueryPlanningInfo();
@@ -198,7 +195,7 @@ public class OMatchExecutionPlanner {
       info.limit = this.limit;
 
       OSelectExecutionPlanner.optimizeQuery(info, context);
-      OSelectExecutionPlanner.handleProjectionsBlock(result, info, context, enableProfiling);
+      OSelectExecutionPlanner.handleProjectionsBlock(result, info, context);
     }
 
     return result;
@@ -227,8 +224,7 @@ public class OMatchExecutionPlanner {
       OSelectExecutionPlan result,
       Pattern pattern,
       List<OMatchExpression> notMatchExpressions,
-      OCommandContext context,
-      boolean enableProfiling) {
+      OCommandContext context) {
     for (OMatchExpression exp : notMatchExpressions) {
       if (pattern.aliasToNode.get(exp.getOrigin().getAlias()) == null) {
         throw new OCommandExecutionException(
@@ -254,24 +250,23 @@ public class OMatchExecutionPlanner {
         PatternNode out = new PatternNode(lastFilter.getAlias());
         PatternEdge edge = new PatternEdge(item, in, out);
         EdgeTraversal traversal = new EdgeTraversal(edge, true);
-        MatchStep step = new MatchStep(context, traversal, enableProfiling);
+        MatchStep step = new MatchStep(context, traversal);
         steps.add(step);
         lastFilter = item.getFilter();
       }
-      result.chain(new FilterNotMatchPatternStep(steps, context, enableProfiling));
+      result.chain(new FilterNotMatchPatternStep(steps, context));
     }
   }
 
-  private void addReturnStep(
-      OSelectExecutionPlan result, OCommandContext context, boolean profilingEnabled) {
+  private void addReturnStep(OSelectExecutionPlan result, OCommandContext context) {
     if (returnElements) {
-      result.chain(new ReturnMatchElementsStep(context, profilingEnabled));
+      result.chain(new ReturnMatchElementsStep(context));
     } else if (returnPaths) {
-      result.chain(new ReturnMatchPathsStep(context, profilingEnabled));
+      result.chain(new ReturnMatchPathsStep(context));
     } else if (returnPatterns) {
-      result.chain(new ReturnMatchPatternsStep(context, profilingEnabled));
+      result.chain(new ReturnMatchPatternsStep(context));
     } else if (returnPathElements) {
-      result.chain(new ReturnMatchPathElementsStep(context, profilingEnabled));
+      result.chain(new ReturnMatchPathElementsStep(context));
     } else {
       OProjection projection = new OProjection(-1);
       projection.setItems(new ArrayList<>());
@@ -282,7 +277,7 @@ public class OMatchExecutionPlanner {
         item.setNestedProjection(returnNestedProjections.get(i));
         projection.getItems().add(item);
       }
-      result.chain(new ProjectionCalculationStep(projection, context, profilingEnabled));
+      result.chain(new ProjectionCalculationStep(projection, context));
     }
   }
 
@@ -290,8 +285,7 @@ public class OMatchExecutionPlanner {
       Pattern pattern,
       OCommandContext context,
       Map<String, Long> estimatedRootEntries,
-      Set<String> prefetchedAliases,
-      boolean profilingEnabled) {
+      Set<String> prefetchedAliases) {
     OSelectExecutionPlan plan = new OSelectExecutionPlan();
     List<EdgeTraversal> sortedEdges = getTopologicalSortedSchedule(estimatedRootEntries, pattern);
 
@@ -305,14 +299,14 @@ public class OMatchExecutionPlanner {
           edge.setLeftClass(aliasClasses.get(edge.edge.getOut().getAlias()));
           edge.setLeftFilter(aliasFilters.get(edge.edge.getOut().getAlias()));
         }
-        addStepsFor(plan, edge, context, first, profilingEnabled);
+        addStepsFor(plan, edge, context, first);
         first = false;
       }
     } else {
       PatternNode node = pattern.getAliasToNode().values().iterator().next();
       if (prefetchedAliases.contains(node.getAlias())) {
         // from prefetch
-        plan.chain(new MatchFirstStep(context, node, profilingEnabled));
+        plan.chain(new MatchFirstStep(context, node));
       } else {
         // from actual execution plan
         String clazz = aliasClasses.get(node.getAlias());
@@ -320,12 +314,7 @@ public class OMatchExecutionPlanner {
         ORid rid = aliasRids.get(node.getAlias());
         OWhereClause filter = aliasFilters.get(node.getAlias());
         OSelectStatement select = createSelectStatement(clazz, cluster, rid, filter);
-        plan.chain(
-            new MatchFirstStep(
-                context,
-                node,
-                select.createExecutionPlan(context, profilingEnabled),
-                profilingEnabled));
+        plan.chain(new MatchFirstStep(context, node, select.createExecutionPlan(context)));
       }
     }
     return plan;
@@ -590,11 +579,7 @@ public class OMatchExecutionPlanner {
   }
 
   private void addStepsFor(
-      OSelectExecutionPlan plan,
-      EdgeTraversal edge,
-      OCommandContext context,
-      boolean first,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan plan, EdgeTraversal edge, OCommandContext context, boolean first) {
     if (first) {
       PatternNode patternNode = edge.out ? edge.edge.getOut() : edge.edge.getIn();
       String clazz = this.aliasClasses.get(patternNode.getAlias());
@@ -614,26 +599,18 @@ public class OMatchExecutionPlanner {
       select.setWhereClause(where == null ? null : where.copy());
       OBasicCommandContext subContxt = new OBasicCommandContext();
       subContxt.setParentWithoutOverridingChild(context);
-      plan.chain(
-          new MatchFirstStep(
-              context,
-              patternNode,
-              select.createExecutionPlan(subContxt, profilingEnabled),
-              profilingEnabled));
+      plan.chain(new MatchFirstStep(context, patternNode, select.createExecutionPlan(subContxt)));
     }
     if (edge.edge.getIn().isOptionalNode()) {
       foundOptional = true;
-      plan.chain(new OptionalMatchStep(context, edge, profilingEnabled));
+      plan.chain(new OptionalMatchStep(context, edge));
     } else {
-      plan.chain(new MatchStep(context, edge, profilingEnabled));
+      plan.chain(new MatchStep(context, edge));
     }
   }
 
   private void addPrefetchSteps(
-      OSelectExecutionPlan result,
-      Set<String> aliasesToPrefetch,
-      OCommandContext context,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan result, Set<String> aliasesToPrefetch, OCommandContext context) {
     for (String alias : aliasesToPrefetch) {
       String targetClass = aliasClasses.get(alias);
       String targetCluster = aliasClusters.get(alias);
@@ -643,11 +620,7 @@ public class OMatchExecutionPlanner {
           createSelectStatement(targetClass, targetCluster, targetRid, filter);
 
       MatchPrefetchStep step =
-          new MatchPrefetchStep(
-              context,
-              prefetchStm.createExecutionPlan(context, profilingEnabled),
-              alias,
-              profilingEnabled);
+          new MatchPrefetchStep(context, prefetchStm.createExecutionPlan(context), alias);
       result.chain(step);
     }
   }

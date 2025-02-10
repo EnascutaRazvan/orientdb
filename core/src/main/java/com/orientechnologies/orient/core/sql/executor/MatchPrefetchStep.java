@@ -15,11 +15,8 @@ public class MatchPrefetchStep extends AbstractExecutionStep {
   private final OInternalExecutionPlan prefetchExecutionPlan;
 
   public MatchPrefetchStep(
-      OCommandContext ctx,
-      OInternalExecutionPlan prefetchExecPlan,
-      String alias,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OCommandContext ctx, OInternalExecutionPlan prefetchExecPlan, String alias) {
+    super(ctx);
     this.prefetchExecutionPlan = prefetchExecPlan;
     this.alias = alias;
   }

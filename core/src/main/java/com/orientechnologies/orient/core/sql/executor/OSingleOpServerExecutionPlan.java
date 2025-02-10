@@ -14,6 +14,7 @@ import java.util.Set;
 public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
 
   protected final OSimpleExecServerStatement statement;
+  private OCommandContext context;
 
   public OSingleOpServerExecutionPlan(OSimpleExecServerStatement stm) {
     this.statement = stm;
@@ -84,4 +85,9 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
 
   @Override
   public void close() {}
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
+  }
 }

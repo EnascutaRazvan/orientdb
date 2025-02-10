@@ -13,6 +13,7 @@ import java.util.Set;
 public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   private final ODDLStatement statement;
+  private OCommandContext context;
 
   public ODDLExecutionPlan(ODDLStatement stm) {
     this.statement = stm;
@@ -50,7 +51,7 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl());
+    return prettyPrint(new OPrintContexImpl(context, depth, indent));
   }
 
   @Override
@@ -83,5 +84,10 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
   @Override
   public Set<String> getIndexes() {
     return Collections.emptySet();
+  }
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
   }
 }

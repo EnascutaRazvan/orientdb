@@ -1,12 +1,13 @@
 package com.orientechnologies.orient.core.sql.executor;
 
+import com.orientechnologies.orient.core.command.OCommandContext;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /** Created by luigidellaquila on 19/12/16. */
-public class OInfoExecutionPlan implements OExecutionPlan {
+public class OInfoExecutionPlan implements OExecutionPlanContextOps {
 
   private List<OExecutionStep> steps = new ArrayList<>();
   private String prettyPrint;
@@ -14,6 +15,7 @@ public class OInfoExecutionPlan implements OExecutionPlan {
   private String javaType;
   private Integer cost;
   private String stmText;
+  private OCommandContext context;
 
   @Override
   public List<OExecutionStep> getSteps() {
@@ -90,5 +92,10 @@ public class OInfoExecutionPlan implements OExecutionPlan {
       OExecutionStepInternal.fillIndexes(chilStep, indexes);
     }
     return indexes;
+  }
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
   }
 }

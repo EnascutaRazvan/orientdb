@@ -10,9 +10,8 @@ public class GuaranteeEmptyCountStep extends AbstractExecutionStep {
 
   private final OProjectionItem item;
 
-  public GuaranteeEmptyCountStep(
-      OProjectionItem oProjectionItem, OCommandContext ctx, boolean enableProfiling) {
-    super(ctx, enableProfiling);
+  public GuaranteeEmptyCountStep(OProjectionItem oProjectionItem, OCommandContext ctx) {
+    super(ctx);
     this.item = oProjectionItem;
   }
 
@@ -33,7 +32,7 @@ public class GuaranteeEmptyCountStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new GuaranteeEmptyCountStep(item.copy(), ctx, profilingEnabled);
+    return new GuaranteeEmptyCountStep(item.copy(), ctx);
   }
 
   public boolean canBeCached() {

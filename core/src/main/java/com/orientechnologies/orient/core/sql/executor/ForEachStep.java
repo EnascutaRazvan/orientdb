@@ -24,9 +24,8 @@ public class ForEachStep extends AbstractExecutionStep {
       OIdentifier loopVariable,
       OExpression oExpression,
       List<OStatement> statements,
-      OCommandContext ctx,
-      boolean enableProfiling) {
-    super(ctx, enableProfiling);
+      OCommandContext ctx) {
+    super(ctx);
     this.loopVariable = loopVariable;
     this.source = oExpression;
     this.body = statements;
@@ -46,7 +45,7 @@ public class ForEachStep extends AbstractExecutionStep {
       }
     }
 
-    return new EmptyStep(ctx, false).start(ctx);
+    return new EmptyStep(ctx).start(ctx);
   }
 
   protected Iterator<Object> init(OCommandContext ctx) {
@@ -59,7 +58,7 @@ public class ForEachStep extends AbstractExecutionStep {
     subCtx1.setParent(ctx);
     OScriptExecutionPlan plan = new OScriptExecutionPlan();
     for (OStatement stm : body) {
-      plan.chain(stm, profilingEnabled, subCtx1);
+      plan.chain(stm, subCtx1);
     }
     return plan;
   }

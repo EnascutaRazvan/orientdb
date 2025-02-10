@@ -23,16 +23,14 @@ public class CheckClusterTypeStep extends AbstractExecutionStep {
   private String clusterName;
   private String targetClass;
 
-  public CheckClusterTypeStep(
-      String targetClusterName, String clazz, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CheckClusterTypeStep(String targetClusterName, String clazz, OCommandContext ctx) {
+    super(ctx);
     this.clusterName = targetClusterName;
     this.targetClass = clazz;
   }
 
-  public CheckClusterTypeStep(
-      OCluster targetCluster, String clazz, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CheckClusterTypeStep(OCluster targetCluster, String clazz, OCommandContext ctx) {
+    super(ctx);
     this.cluster = targetCluster;
     this.targetClass = clazz;
   }
@@ -82,8 +80,8 @@ public class CheckClusterTypeStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ CHECK TARGET CLUSTER FOR CLASS");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     result.append("\n");
     result.append(spaces);

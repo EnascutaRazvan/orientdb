@@ -10,11 +10,8 @@ import java.util.stream.Collectors;
 public class ParallelExecStep extends AbstractExecutionStep {
   private final List<OInternalExecutionPlan> subExecutionPlans;
 
-  public ParallelExecStep(
-      List<OInternalExecutionPlan> subExecuitonPlans,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public ParallelExecStep(List<OInternalExecutionPlan> subExecuitonPlans, OCommandContext ctx) {
+    super(ctx);
     this.subExecutionPlans = subExecuitonPlans;
   }
 
@@ -163,8 +160,6 @@ public class ParallelExecStep extends AbstractExecutionStep {
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
     return new ParallelExecStep(
-        subExecutionPlans.stream().map(x -> x.copy(ctx)).collect(Collectors.toList()),
-        ctx,
-        profilingEnabled);
+        subExecutionPlans.stream().map(x -> x.copy(ctx)).collect(Collectors.toList()), ctx);
   }
 }

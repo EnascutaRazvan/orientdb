@@ -28,11 +28,9 @@ public class CheckClassTypeStep extends AbstractExecutionStep {
    * @param parentClass a class that is supposed to be the same or a parent class of the target
    *     class
    * @param ctx execuiton context
-   * @param profilingEnabled true to collect execution stats
    */
-  public CheckClassTypeStep(
-      String targetClass, String parentClass, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CheckClassTypeStep(String targetClass, String parentClass, OCommandContext ctx) {
+    super(ctx);
     this.targetClass = targetClass;
     this.parentClass = parentClass;
   }
@@ -79,8 +77,8 @@ public class CheckClassTypeStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ CHECK CLASS HIERARCHY");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     result.append("\n");
     result.append("  " + this.parentClass);
@@ -89,7 +87,7 @@ public class CheckClassTypeStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new CheckClassTypeStep(targetClass, parentClass, ctx, profilingEnabled);
+    return new CheckClassTypeStep(targetClass, parentClass, ctx);
   }
 
   @Override

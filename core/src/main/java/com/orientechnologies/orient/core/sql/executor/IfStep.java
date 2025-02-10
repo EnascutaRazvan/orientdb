@@ -16,8 +16,8 @@ public class IfStep extends AbstractExecutionStep {
   public List<OStatement> positiveStatements;
   public List<OStatement> negativeStatements;
 
-  public IfStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public IfStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -48,7 +48,7 @@ public class IfStep extends AbstractExecutionStep {
     subCtx1.setParent(ctx);
     OScriptExecutionPlan positivePlan = new OScriptExecutionPlan();
     for (OStatement stm : positiveStatements) {
-      positivePlan.chain(stm, profilingEnabled, subCtx1);
+      positivePlan.chain(stm, subCtx1);
     }
     return positivePlan;
   }
@@ -60,7 +60,7 @@ public class IfStep extends AbstractExecutionStep {
         subCtx2.setParent(ctx);
         OScriptExecutionPlan negativePlan = new OScriptExecutionPlan();
         for (OStatement stm : negativeStatements) {
-          negativePlan.chain(stm, profilingEnabled, subCtx2);
+          negativePlan.chain(stm, subCtx2);
         }
         return negativePlan;
       }

@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
 /** Created by luigidellaquila on 20/02/17. */
 public class CastToVertexStep extends AbstractExecutionStep {
 
-  public CastToVertexStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CastToVertexStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -38,8 +38,8 @@ public class CastToVertexStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ CAST TO VERTEX";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

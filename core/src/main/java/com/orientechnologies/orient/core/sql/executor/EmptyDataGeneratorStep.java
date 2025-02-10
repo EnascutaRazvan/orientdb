@@ -9,8 +9,8 @@ public class EmptyDataGeneratorStep extends AbstractExecutionStep {
 
   private int size;
 
-  public EmptyDataGeneratorStep(int size, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public EmptyDataGeneratorStep(int size, OCommandContext ctx) {
+    super(ctx);
     this.size = size;
   }
 
@@ -30,8 +30,8 @@ public class EmptyDataGeneratorStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     String result = spaces + "+ GENERATE " + size + " EMPTY " + (size == 1 ? "RECORD" : "RECORDS");
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

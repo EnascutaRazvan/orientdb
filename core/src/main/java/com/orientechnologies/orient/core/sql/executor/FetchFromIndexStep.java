@@ -63,9 +63,8 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
 
   private long count = 0;
 
-  public FetchFromIndexStep(
-      IndexSearchDescriptor desc, boolean orderAsc, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public FetchFromIndexStep(IndexSearchDescriptor desc, boolean orderAsc, OCommandContext ctx) {
+    super(ctx);
     this.desc = desc;
     this.orderAsc = orderAsc;
 
@@ -701,8 +700,8 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     String result =
         OExecutionStepInternal.getIndent(ctx) + "+ FETCH FROM INDEX " + desc.getIndex().getName();
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     if (desc.getKeyCondition() != null) {
       String additional =
@@ -782,7 +781,7 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new FetchFromIndexStep(desc, this.orderAsc, ctx, this.profilingEnabled);
+    return new FetchFromIndexStep(desc, this.orderAsc, ctx);
   }
 
   @Override

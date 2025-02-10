@@ -25,9 +25,8 @@ public class AggregateProjectionCalculationStep extends ProjectionCalculationSte
       OGroupBy groupBy,
       long limit,
       OCommandContext ctx,
-      long timeoutMillis,
-      boolean profilingEnabled) {
-    super(projection, ctx, profilingEnabled);
+      long timeoutMillis) {
+    super(projection, ctx);
     this.groupBy = groupBy;
     this.timeoutMillis = timeoutMillis;
     this.limit = limit;
@@ -115,8 +114,8 @@ public class AggregateProjectionCalculationStep extends ProjectionCalculationSte
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     String result = spaces + "+ CALCULATE AGGREGATE PROJECTIONS";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     result +=
         "\n"
@@ -131,11 +130,6 @@ public class AggregateProjectionCalculationStep extends ProjectionCalculationSte
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
     return new AggregateProjectionCalculationStep(
-        projection.copy(),
-        groupBy == null ? null : groupBy.copy(),
-        limit,
-        ctx,
-        timeoutMillis,
-        profilingEnabled);
+        projection.copy(), groupBy == null ? null : groupBy.copy(), limit, ctx, timeoutMillis);
   }
 }

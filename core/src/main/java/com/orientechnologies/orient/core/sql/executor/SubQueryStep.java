@@ -18,11 +18,8 @@ public class SubQueryStep extends AbstractExecutionStep {
    * @param subCtx the context of the subquery execution plan
    */
   public SubQueryStep(
-      OInternalExecutionPlan subExecutionPlan,
-      OCommandContext ctx,
-      OCommandContext subCtx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OInternalExecutionPlan subExecutionPlan, OCommandContext ctx, OCommandContext subCtx) {
+    super(ctx);
     this.subExecuitonPlan = subExecutionPlan;
     this.childCtx = subCtx;
 
@@ -60,6 +57,6 @@ public class SubQueryStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new SubQueryStep(subExecuitonPlan.copy(ctx), ctx, ctx, profilingEnabled);
+    return new SubQueryStep(subExecuitonPlan.copy(ctx), ctx, ctx);
   }
 }

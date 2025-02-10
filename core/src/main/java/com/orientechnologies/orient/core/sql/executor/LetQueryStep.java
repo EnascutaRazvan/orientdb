@@ -17,9 +17,8 @@ public class LetQueryStep extends AbstractExecutionStep {
   private final OIdentifier varName;
   private final OStatement query;
 
-  public LetQueryStep(
-      OIdentifier varName, OStatement query, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public LetQueryStep(OIdentifier varName, OStatement query, OCommandContext ctx) {
+    super(ctx);
     this.varName = varName;
     this.query = query;
   }
@@ -31,9 +30,9 @@ public class LetQueryStep extends AbstractExecutionStep {
     if (query.toString().contains("?")) {
       // with positional parameters, you cannot know if a parameter has the same ordinal as the
       // one cached
-      subExecutionPlan = query.createExecutionPlanNoCache(subCtx, profilingEnabled);
+      subExecutionPlan = query.createExecutionPlanNoCache(subCtx);
     } else {
-      subExecutionPlan = query.createExecutionPlan(subCtx, profilingEnabled);
+      subExecutionPlan = query.createExecutionPlan(subCtx);
     }
     result.setMetadata(
         varName.getStringValue(), toList(new OLocalResultSet(subExecutionPlan, ctx)));

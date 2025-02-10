@@ -22,9 +22,8 @@ public class BreadthFirstTraverseStep extends AbstractTraverseStep {
       List<OTraverseProjectionItem> projections,
       OWhereClause whileClause,
       OInteger maxDepth,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(projections, whileClause, maxDepth, ctx, profilingEnabled);
+      OCommandContext ctx) {
+    super(projections, whileClause, maxDepth, ctx);
   }
 
   @Override

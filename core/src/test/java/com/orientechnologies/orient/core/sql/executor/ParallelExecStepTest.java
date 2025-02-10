@@ -17,22 +17,20 @@ public class ParallelExecStepTest {
     List<OInternalExecutionPlan> subPlans = new ArrayList<>();
     for (int i = 0; i < 4; i++) {
       FetchFromRidsStep step0 =
-          new FetchFromRidsStep(Collections.singleton(new ORecordId(12, i)), ctx, false);
+          new FetchFromRidsStep(Collections.singleton(new ORecordId(12, i)), ctx);
       FetchFromRidsStep step1 =
-          new FetchFromRidsStep(Collections.singleton(new ORecordId(12, i)), ctx, false);
+          new FetchFromRidsStep(Collections.singleton(new ORecordId(12, i)), ctx);
       OInternalExecutionPlan plan = new OSelectExecutionPlan();
       plan.getSteps().add(step0);
       plan.getSteps().add(step1);
       subPlans.add(plan);
     }
 
-    ParallelExecStep step = new ParallelExecStep(subPlans, ctx, false);
+    ParallelExecStep step = new ParallelExecStep(subPlans, ctx);
 
     OSelectExecutionPlan plan = new OSelectExecutionPlan();
-    plan.getSteps()
-        .add(new FetchFromRidsStep(Collections.singleton(new ORecordId(12, 100)), ctx, false));
+    plan.getSteps().add(new FetchFromRidsStep(Collections.singleton(new ORecordId(12, 100)), ctx));
     plan.getSteps().add(step);
-    plan.getSteps()
-        .add(new FetchFromRidsStep(Collections.singleton(new ORecordId(12, 100)), ctx, false));
+    plan.getSteps().add(new FetchFromRidsStep(Collections.singleton(new ORecordId(12, 100)), ctx));
   }
 }

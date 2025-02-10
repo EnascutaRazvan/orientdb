@@ -15,8 +15,8 @@ public class DistinctExecutionStep extends AbstractExecutionStep {
 
   private long maxElementsAllowed;
 
-  public DistinctExecutionStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public DistinctExecutionStep(OCommandContext ctx) {
+    super(ctx);
     ODatabaseSession db = ctx == null ? null : ctx.getDatabase();
 
     maxElementsAllowed =
@@ -90,8 +90,8 @@ public class DistinctExecutionStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ DISTINCT";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

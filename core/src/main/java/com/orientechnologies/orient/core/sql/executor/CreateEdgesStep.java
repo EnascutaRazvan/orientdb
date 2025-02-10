@@ -42,9 +42,8 @@ public class CreateEdgesStep extends AbstractExecutionStep {
       Number wait,
       Number retry,
       OBatch batch,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OCommandContext ctx) {
+    super(ctx);
     this.targetClass = targetClass;
     this.targetCluster = targetClusterName;
     this.uniqueIndexName = uniqueIndex;
@@ -205,8 +204,8 @@ public class CreateEdgesStep extends AbstractExecutionStep {
     String result = spaces + "+ FOR EACH x in " + fromAlias + "\n";
     result += spaces + "    FOR EACH y in " + toAlias + "\n";
     result += spaces + "       CREATE EDGE " + targetClass + " FROM x TO y";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     if (targetCluster != null) {
       result += "\n" + spaces + "       (target cluster " + targetCluster + ")";
@@ -230,7 +229,6 @@ public class CreateEdgesStep extends AbstractExecutionStep {
         wait,
         retry,
         batch == null ? null : batch.copy(),
-        ctx,
-        profilingEnabled);
+        ctx);
   }
 }

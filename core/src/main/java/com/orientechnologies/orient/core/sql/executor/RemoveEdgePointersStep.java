@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
  */
 public class RemoveEdgePointersStep extends AbstractExecutionStep {
 
-  public RemoveEdgePointersStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public RemoveEdgePointersStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -56,8 +56,8 @@ public class RemoveEdgePointersStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ CHECK AND EXCLUDE (possible) EXISTING EDGES ");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     return result.toString();
   }

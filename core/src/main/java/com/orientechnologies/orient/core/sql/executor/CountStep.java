@@ -14,10 +14,9 @@ public class CountStep extends AbstractExecutionStep {
 
   /**
    * @param ctx the query context
-   * @param profilingEnabled true to enable the profiling of the execution (for SQL PROFILE)
    */
-  public CountStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CountStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -40,8 +39,8 @@ public class CountStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ COUNT");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     return result.toString();
   }
@@ -53,6 +52,6 @@ public class CountStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new CountStep(ctx, profilingEnabled);
+    return new CountStep(ctx);
   }
 }

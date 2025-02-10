@@ -10,9 +10,8 @@ import java.util.List;
 public class UpdateSetStep extends AbstractExecutionStep {
   private final List<OUpdateItem> items;
 
-  public UpdateSetStep(
-      List<OUpdateItem> updateItems, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public UpdateSetStep(List<OUpdateItem> updateItems, OCommandContext ctx) {
+    super(ctx);
     this.items = updateItems;
   }
 

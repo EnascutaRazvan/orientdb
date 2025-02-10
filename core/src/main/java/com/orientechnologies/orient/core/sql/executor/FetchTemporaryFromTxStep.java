@@ -28,8 +28,8 @@ public class FetchTemporaryFromTxStep extends AbstractExecutionStep {
 
   private Object order;
 
-  public FetchTemporaryFromTxStep(OCommandContext ctx, String className, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public FetchTemporaryFromTxStep(OCommandContext ctx, String className) {
+    super(ctx);
     this.className = className;
   }
 
@@ -136,8 +136,8 @@ public class FetchTemporaryFromTxStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ FETCH NEW RECORDS FROM CURRENT TRANSACTION SCOPE (if any)");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     return result.toString();
   }
@@ -166,8 +166,7 @@ public class FetchTemporaryFromTxStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    FetchTemporaryFromTxStep result =
-        new FetchTemporaryFromTxStep(ctx, this.className, profilingEnabled);
+    FetchTemporaryFromTxStep result = new FetchTemporaryFromTxStep(ctx, this.className);
     return result;
   }
 }

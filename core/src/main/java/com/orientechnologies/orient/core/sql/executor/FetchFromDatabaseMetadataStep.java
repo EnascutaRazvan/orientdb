@@ -12,8 +12,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class FetchFromDatabaseMetadataStep extends AbstractExecutionStep {
 
-  public FetchFromDatabaseMetadataStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public FetchFromDatabaseMetadataStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -59,8 +59,8 @@ public class FetchFromDatabaseMetadataStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     String result = spaces + "+ FETCH DATABASE METADATA";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

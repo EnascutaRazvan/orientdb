@@ -12,11 +12,8 @@ public class DistributedExecutionStep extends AbstractExecutionStep {
   private final String nodeName;
 
   public DistributedExecutionStep(
-      OSelectExecutionPlan subExecutionPlan,
-      String nodeName,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OSelectExecutionPlan subExecutionPlan, String nodeName, OCommandContext ctx) {
+    super(ctx);
     this.subExecuitonPlan = subExecutionPlan;
     this.nodeName = nodeName;
   }

@@ -38,9 +38,9 @@ public class ODeleteVertexStatement extends OStatement {
     ctx.setInputParameters(params);
     ODeleteExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
@@ -62,17 +62,17 @@ public class ODeleteVertexStatement extends OStatement {
     ctx.setInputParameters(params);
     ODeleteExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
   }
 
-  public ODeleteExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public ODeleteExecutionPlan createExecutionPlan(OCommandContext ctx) {
     ODeleteVertexExecutionPlanner planner = new ODeleteVertexExecutionPlanner(this);
-    ODeleteExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling);
+    ODeleteExecutionPlan result = planner.createExecutionPlan(ctx);
     result.setStatement(this.originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;

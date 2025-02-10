@@ -9,8 +9,8 @@ import java.util.List;
 /** Created by luigidellaquila on 12/10/16. */
 public class ReturnMatchPathElementsStep extends AbstractUnrollStep {
 
-  public ReturnMatchPathElementsStep(OCommandContext context, boolean profilingEnabled) {
-    super(context, profilingEnabled);
+  public ReturnMatchPathElementsStep(OCommandContext context) {
+    super(context);
   }
 
   @Override

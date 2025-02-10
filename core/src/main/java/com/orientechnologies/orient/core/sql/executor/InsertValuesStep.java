@@ -19,9 +19,8 @@ public class InsertValuesStep extends AbstractExecutionStep {
   public InsertValuesStep(
       List<OIdentifier> identifierList,
       List<List<OExpression>> valueExpressions,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OCommandContext ctx) {
+    super(ctx);
     this.identifiers = identifierList;
     this.values = valueExpressions;
   }

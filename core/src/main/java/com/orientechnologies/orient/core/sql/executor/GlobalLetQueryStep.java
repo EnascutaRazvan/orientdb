@@ -18,12 +18,8 @@ public class GlobalLetQueryStep extends AbstractExecutionStep {
   private final OInternalExecutionPlan subExecutionPlan;
 
   public GlobalLetQueryStep(
-      OIdentifier varName,
-      OStatement query,
-      OCommandContext ctx,
-      boolean profilingEnabled,
-      List<String> scriptVars) {
-    super(ctx, profilingEnabled);
+      OIdentifier varName, OStatement query, OCommandContext ctx, List<String> scriptVars) {
+    super(ctx);
     this.varName = varName;
 
     OBasicCommandContext subCtx = new OBasicCommandContext(ctx.getDatabase());
@@ -34,9 +30,9 @@ public class GlobalLetQueryStep extends AbstractExecutionStep {
     if (query.toString().contains("?")) {
       // with positional parameters, you cannot know if a parameter has the same ordinal as the one
       // cached
-      subExecutionPlan = query.createExecutionPlanNoCache(subCtx, profilingEnabled);
+      subExecutionPlan = query.createExecutionPlanNoCache(subCtx);
     } else {
-      subExecutionPlan = query.createExecutionPlan(subCtx, profilingEnabled);
+      subExecutionPlan = query.createExecutionPlan(subCtx);
     }
   }
 

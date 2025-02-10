@@ -4,7 +4,6 @@ import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.command.OStepStats;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
-import java.text.DecimalFormat;
 import java.util.Optional;
 
 /** @author Luigi Dell'Aquila (l.dellaquila-(at)-orientdb.com) */
@@ -12,11 +11,9 @@ public abstract class AbstractExecutionStep implements OExecutionStepInternal {
 
   protected final OCommandContext ctx;
   protected Optional<OExecutionStepInternal> prev = Optional.empty();
-  protected boolean profilingEnabled = false;
 
-  public AbstractExecutionStep(OCommandContext ctx, boolean profilingEnabled) {
+  public AbstractExecutionStep(OCommandContext ctx) {
     this.ctx = ctx;
-    this.profilingEnabled = profilingEnabled;
   }
 
   @Override
@@ -48,16 +45,8 @@ public abstract class AbstractExecutionStep implements OExecutionStepInternal {
     prev.ifPresent(p -> p.close());
   }
 
-  public boolean isProfilingEnabled() {
-    return profilingEnabled;
-  }
-
-  public void setProfilingEnabled(boolean profilingEnabled) {
-    this.profilingEnabled = profilingEnabled;
-  }
-
   public OExecutionStream start(OCommandContext ctx) throws OTimeoutException {
-    if (profilingEnabled) {
+    if (ctx.isProfiling()) {
       ctx.startProfiling(this);
       try {
         return internalStart(ctx).profile(this);
@@ -79,9 +68,5 @@ public abstract class AbstractExecutionStep implements OExecutionStepInternal {
     } else {
       return OExecutionStepInternal.super.getCost();
     }
-  }
-
-  protected String getCostFormatted() {
-    return new DecimalFormat().format(getCost() / 1000) + "μs";
   }
 }

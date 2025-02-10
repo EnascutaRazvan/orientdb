@@ -23,7 +23,7 @@ public class CountFromClassStepTest extends TestUtilsFixture {
     OIdentifier classIdentifier = new OIdentifier(className);
 
     OBasicCommandContext context = new OBasicCommandContext(db);
-    CountFromClassStep step = new CountFromClassStep(classIdentifier, ALIAS, context, false);
+    CountFromClassStep step = new CountFromClassStep(classIdentifier, ALIAS, context);
 
     OExecutionStream result = step.start(context);
     Assert.assertEquals(20, (long) result.next(context).getProperty(ALIAS));

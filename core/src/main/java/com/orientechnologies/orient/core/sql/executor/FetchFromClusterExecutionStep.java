@@ -29,17 +29,13 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
   private int clusterId;
   private Object order;
 
-  public FetchFromClusterExecutionStep(
-      int clusterId, OCommandContext ctx, boolean profilingEnabled) {
-    this(clusterId, null, ctx, profilingEnabled);
+  public FetchFromClusterExecutionStep(int clusterId, OCommandContext ctx) {
+    this(clusterId, null, ctx);
   }
 
   public FetchFromClusterExecutionStep(
-      int clusterId,
-      QueryPlanningInfo queryPlanning,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      int clusterId, QueryPlanningInfo queryPlanning, OCommandContext ctx) {
+    super(ctx);
     this.clusterId = clusterId;
     this.queryPlanning = queryPlanning;
   }
@@ -155,8 +151,8 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
             + clusterId
             + " "
             + orderString;
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }
@@ -196,10 +192,7 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
   public OExecutionStep copy(OCommandContext ctx) {
     FetchFromClusterExecutionStep result =
         new FetchFromClusterExecutionStep(
-            this.clusterId,
-            this.queryPlanning == null ? null : this.queryPlanning.copy(),
-            ctx,
-            profilingEnabled);
+            this.clusterId, this.queryPlanning == null ? null : this.queryPlanning.copy(), ctx);
     return result;
   }
 }

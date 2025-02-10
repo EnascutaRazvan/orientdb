@@ -146,9 +146,9 @@ public class OInsertStatement extends OStatement {
     ctx.setInputParameters(params);
     OInsertExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
@@ -164,17 +164,17 @@ public class OInsertStatement extends OStatement {
     ctx.setInputParameters(params);
     OInsertExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OInsertExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
   }
 
-  public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OInsertExecutionPlanner planner = new OInsertExecutionPlanner(this);
-    OInsertExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling);
+    OInsertExecutionPlan result = planner.createExecutionPlan(ctx);
     result.setStatement(originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;

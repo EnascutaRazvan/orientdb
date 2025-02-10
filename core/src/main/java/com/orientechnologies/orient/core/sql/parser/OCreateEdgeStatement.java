@@ -51,9 +51,9 @@ public class OCreateEdgeStatement extends OStatement {
     ctx.setInputParameters(params);
     OInsertExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = createExecutionPlanNoCache(ctx, false);
+      executionPlan = createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
@@ -69,26 +69,25 @@ public class OCreateEdgeStatement extends OStatement {
     ctx.setInputParameters(params);
     OInsertExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = createExecutionPlanNoCache(ctx, false);
+      executionPlan = createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
   }
 
-  public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OCreateEdgeExecutionPlanner planner = new OCreateEdgeExecutionPlanner(this);
-    OInsertExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling, true);
+    OInsertExecutionPlan result = planner.createExecutionPlan(ctx, false);
     result.setStatement(this.originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;
   }
 
-  public OInsertExecutionPlan createExecutionPlanNoCache(
-      OCommandContext ctx, boolean enableProfiling) {
+  public OInsertExecutionPlan createExecutionPlanNoCache(OCommandContext ctx) {
     OCreateEdgeExecutionPlanner planner = new OCreateEdgeExecutionPlanner(this);
-    OInsertExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling, false);
+    OInsertExecutionPlan result = planner.createExecutionPlan(ctx, false);
     result.setStatement(this.originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;

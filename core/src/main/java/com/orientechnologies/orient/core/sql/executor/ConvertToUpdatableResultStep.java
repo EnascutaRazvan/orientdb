@@ -17,8 +17,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class ConvertToUpdatableResultStep extends AbstractExecutionStep {
 
-  public ConvertToUpdatableResultStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public ConvertToUpdatableResultStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -55,8 +55,8 @@ public class ConvertToUpdatableResultStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ CONVERT TO UPDATABLE ITEM";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

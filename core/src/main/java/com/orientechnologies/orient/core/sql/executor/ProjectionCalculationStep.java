@@ -9,9 +9,8 @@ import com.orientechnologies.orient.core.sql.parser.OProjection;
 public class ProjectionCalculationStep extends AbstractExecutionStep {
   protected final OProjection projection;
 
-  public ProjectionCalculationStep(
-      OProjection projection, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public ProjectionCalculationStep(OProjection projection, OCommandContext ctx) {
+    super(ctx);
     this.projection = projection;
   }
 
@@ -42,8 +41,8 @@ public class ProjectionCalculationStep extends AbstractExecutionStep {
     String spaces = OExecutionStepInternal.getIndent(ctx);
 
     String result = spaces + "+ CALCULATE PROJECTIONS";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     result += ("\n" + spaces + "  " + projection.toString() + "");
     return result;
@@ -56,6 +55,6 @@ public class ProjectionCalculationStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new ProjectionCalculationStep(projection.copy(), ctx, profilingEnabled);
+    return new ProjectionCalculationStep(projection.copy(), ctx);
   }
 }

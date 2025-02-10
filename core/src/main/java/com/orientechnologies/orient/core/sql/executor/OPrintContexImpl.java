@@ -1,6 +1,8 @@
 package com.orientechnologies.orient.core.sql.executor;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
+import com.orientechnologies.orient.core.command.OStepStats;
+import java.text.DecimalFormat;
 
 public class OPrintContexImpl implements OPrintContext {
 
@@ -38,5 +40,34 @@ public class OPrintContexImpl implements OPrintContext {
   @Override
   public void decDepth() {
     depth--;
+  }
+
+  public long getCost(OExecutionStep step) {
+    if (ctx != null) {
+      OStepStats stats = this.ctx.getStats(step);
+      if (stats != null) {
+        return stats.getCost();
+      } else {
+        return -1l;
+      }
+    } else {
+      return -1l;
+    }
+  }
+
+  public String getCostFormatted(OExecutionStep step) {
+    if (ctx != null) {
+      return new DecimalFormat().format(getCost(step) / 1000) + "μs";
+    } else {
+      return "";
+    }
+  }
+
+  @Override
+  public boolean isProfilingEnabled() {
+    if (ctx != null) {
+      return ctx.isProfiling();
+    }
+    return false;
   }
 }

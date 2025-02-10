@@ -14,8 +14,8 @@ import java.util.Iterator;
  */
 public class ExpandStep extends AbstractExecutionStep {
 
-  public ExpandStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public ExpandStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -74,8 +74,8 @@ public class ExpandStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     String result = spaces + "+ EXPAND";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

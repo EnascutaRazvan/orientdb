@@ -22,14 +22,13 @@ public class UpdateContentStep extends AbstractExecutionStep {
   private OJson json;
   private OInputParameter inputParameter;
 
-  public UpdateContentStep(OJson json, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public UpdateContentStep(OJson json, OCommandContext ctx) {
+    super(ctx);
     this.json = json;
   }
 
-  public UpdateContentStep(
-      OInputParameter inputParameter, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public UpdateContentStep(OInputParameter inputParameter, OCommandContext ctx) {
+    super(ctx);
     this.inputParameter = inputParameter;
   }
 

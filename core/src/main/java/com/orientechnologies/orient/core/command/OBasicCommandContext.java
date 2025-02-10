@@ -72,6 +72,7 @@ public class OBasicCommandContext implements OCommandContext {
   private Map<OExecutionStep, OStepStats> stepStats = new IdentityHashMap<>();
   private LinkedList<OStepStats> currentStepStats = new LinkedList<>();
   private boolean indexStats = true;
+  private boolean profiling = false;
 
   public OBasicCommandContext() {
     this.database = ODatabaseRecordThreadLocal.instance().getIfDefined();
@@ -528,5 +529,14 @@ public class OBasicCommandContext implements OCommandContext {
         indexStats = false;
       }
     }
+  }
+
+  public void enableProfiling() {
+    this.profiling = true;
+  }
+
+  @Override
+  public boolean isProfiling() {
+    return profiling;
   }
 }

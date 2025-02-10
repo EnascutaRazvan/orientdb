@@ -48,17 +48,17 @@ public class OMoveVertexStatement extends OStatement {
     ctx.setInputParameters(params);
     OUpdateExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (OUpdateExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OUpdateExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
   }
 
-  public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OMoveVertexExecutionPlanner planner = new OMoveVertexExecutionPlanner(this);
-    return planner.createExecutionPlan(ctx, enableProfiling);
+    return planner.createExecutionPlan(ctx);
   }
 
   public void toString(Map<Object, Object> params, StringBuilder builder) {

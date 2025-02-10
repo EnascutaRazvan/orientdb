@@ -12,8 +12,8 @@ public class CartesianProductStep extends AbstractExecutionStep {
 
   private List<OInternalExecutionPlan> subPlans = new ArrayList<>();
 
-  public CartesianProductStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CartesianProductStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -165,8 +165,8 @@ public class CartesianProductStep extends AbstractExecutionStep {
   private String head(OPrintContext ctx, int nItems) {
     String ind = OExecutionStepInternal.getIndent(ctx);
     String result = ind + "+ CARTESIAN PRODUCT";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

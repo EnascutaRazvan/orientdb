@@ -131,9 +131,9 @@ public class OMatchStatement extends OStatement {
     ctx.setInputParameters(params);
     OInternalExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = createExecutionPlanNoCache(ctx, false);
+      executionPlan = createExecutionPlanNoCache(ctx);
     }
 
     return new OLocalResultSet(executionPlan, ctx);
@@ -149,17 +149,17 @@ public class OMatchStatement extends OStatement {
     ctx.setInputParameters(params);
     OInternalExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = createExecutionPlanNoCache(ctx, false);
+      executionPlan = createExecutionPlanNoCache(ctx);
     }
 
     return new OLocalResultSet(executionPlan, ctx);
   }
 
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OMatchExecutionPlanner planner = new OMatchExecutionPlanner(this);
-    OInternalExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling);
+    OInternalExecutionPlan result = planner.createExecutionPlan(ctx);
     result.setStatement(originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;

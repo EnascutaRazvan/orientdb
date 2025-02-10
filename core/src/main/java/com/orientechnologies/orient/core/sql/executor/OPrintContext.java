@@ -9,4 +9,8 @@ public interface OPrintContext {
   void incDepth();
 
   void decDepth();
+
+  String getCostFormatted(OExecutionStep step);
+
+  boolean isProfilingEnabled();
 }

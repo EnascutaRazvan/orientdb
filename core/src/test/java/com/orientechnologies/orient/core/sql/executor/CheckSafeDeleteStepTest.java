@@ -46,9 +46,9 @@ public class CheckSafeDeleteStepTest extends TestUtilsFixture {
         break;
     }
 
-    CheckSafeDeleteStep step = new CheckSafeDeleteStep(context, false);
+    CheckSafeDeleteStep step = new CheckSafeDeleteStep(context);
     AbstractExecutionStep previous =
-        new AbstractExecutionStep(context, false) {
+        new AbstractExecutionStep(context) {
           boolean done = false;
 
           @Override
@@ -76,9 +76,9 @@ public class CheckSafeDeleteStepTest extends TestUtilsFixture {
   @Test
   public void shouldSafelyDeleteRecord() {
     OCommandContext context = new OBasicCommandContext(db);
-    CheckSafeDeleteStep step = new CheckSafeDeleteStep(context, false);
+    CheckSafeDeleteStep step = new CheckSafeDeleteStep(context);
     AbstractExecutionStep previous =
-        new AbstractExecutionStep(context, false) {
+        new AbstractExecutionStep(context) {
           boolean done = false;
 
           @Override

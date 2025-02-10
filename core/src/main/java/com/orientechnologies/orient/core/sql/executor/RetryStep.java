@@ -22,9 +22,8 @@ public class RetryStep extends AbstractExecutionStep {
       int retries,
       List<OStatement> elseStatements,
       Boolean elseFail,
-      OCommandContext ctx,
-      boolean enableProfiling) {
-    super(ctx, enableProfiling);
+      OCommandContext ctx) {
+    super(ctx);
     this.body = statements;
     this.retries = retries;
     this.elseBody = elseStatements;
@@ -69,7 +68,7 @@ public class RetryStep extends AbstractExecutionStep {
       }
     }
 
-    return new EmptyStep(ctx, false).start(ctx);
+    return new EmptyStep(ctx).start(ctx);
   }
 
   public OScriptExecutionPlan initPlan(List<OStatement> body, OCommandContext ctx) {
@@ -77,7 +76,7 @@ public class RetryStep extends AbstractExecutionStep {
     subCtx1.setParent(ctx);
     OScriptExecutionPlan plan = new OScriptExecutionPlan();
     for (OStatement stm : body) {
-      plan.chain(stm, profilingEnabled, subCtx1);
+      plan.chain(stm, subCtx1);
     }
     return plan;
   }

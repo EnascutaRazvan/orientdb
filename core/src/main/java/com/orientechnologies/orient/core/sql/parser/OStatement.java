@@ -87,22 +87,11 @@ public class OStatement extends SimpleNode {
    * @return an execution plan
    */
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
-    return createExecutionPlan(ctx, false);
+    return createExecutionPlan(ctx);
   }
 
-  /**
-   * creates an execution plan for current statement
-   *
-   * @param ctx the context that will be used to execute the statement
-   * @param profile true to enable profiling, false to disable it
-   * @return an execution plan
-   */
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean profile) {
-    throw new UnsupportedOperationException();
-  }
-
-  public OInternalExecutionPlan createExecutionPlanNoCache(OCommandContext ctx, boolean profile) {
-    return createExecutionPlan(ctx, profile);
+  public OInternalExecutionPlan createExecutionPlanNoCache(OCommandContext ctx) {
+    return createExecutionPlan(ctx);
   }
 
   public OStatement copy() {

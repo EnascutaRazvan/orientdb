@@ -25,30 +25,27 @@ public class OCreateVertexExecutionPlanner extends OInsertExecutionPlanner {
   }
 
   @Override
-  public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
-    OInsertExecutionPlan prev = super.createExecutionPlan(ctx, enableProfiling);
+  public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx) {
+    OInsertExecutionPlan prev = super.createExecutionPlan(ctx);
     List<OExecutionStep> steps = new ArrayList<>(prev.getSteps());
     OInsertExecutionPlan result = new OInsertExecutionPlan();
 
-    handleCheckType(result, ctx, enableProfiling);
+    handleCheckType(result, ctx);
     for (OExecutionStep step : steps) {
       result.chain((OExecutionStepInternal) step);
     }
     return result;
   }
 
-  private void handleCheckType(
-      OInsertExecutionPlan result, OCommandContext ctx, boolean profilingEnabled) {
+  private void handleCheckType(OInsertExecutionPlan result, OCommandContext ctx) {
     if (targetClass != null) {
-      result.chain(
-          new CheckClassTypeStep(targetClass.getStringValue(), "V", ctx, profilingEnabled));
+      result.chain(new CheckClassTypeStep(targetClass.getStringValue(), "V", ctx));
     }
     if (targetClusterName != null) {
-      result.chain(
-          new CheckClusterTypeStep(targetClusterName.getStringValue(), "V", ctx, profilingEnabled));
+      result.chain(new CheckClusterTypeStep(targetClusterName.getStringValue(), "V", ctx));
     }
     if (targetCluster != null) {
-      result.chain(new CheckClusterTypeStep(targetCluster, "V", ctx, profilingEnabled));
+      result.chain(new CheckClusterTypeStep(targetCluster, "V", ctx));
     }
   }
 }

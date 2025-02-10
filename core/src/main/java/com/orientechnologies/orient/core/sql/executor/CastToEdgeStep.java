@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
 /** Created by luigidellaquila on 20/02/17. */
 public class CastToEdgeStep extends AbstractExecutionStep {
 
-  public CastToEdgeStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CastToEdgeStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -38,15 +38,15 @@ public class CastToEdgeStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ CAST TO EDGE";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new CastToEdgeStep(ctx, profilingEnabled);
+    return new CastToEdgeStep(ctx);
   }
 
   @Override

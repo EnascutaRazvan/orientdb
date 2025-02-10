@@ -9,6 +9,7 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.ODatabaseStats;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OUpdateExecutionPlan;
@@ -52,12 +53,13 @@ public class OProfileStatement extends OStatement {
       for (int i = 0; i < args.length; i++) params.put(i, args[i]);
     }
     ctx.setInputParameters(params);
+    ctx.enableProfiling();
 
     OExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx, true);
+      executionPlan = statement.createExecutionPlan(ctx);
     } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx, true);
+      executionPlan = statement.createExecutionPlanNoCache(ctx);
     }
 
     if (executionPlan instanceof OUpdateExecutionPlan) {
@@ -72,10 +74,13 @@ public class OProfileStatement extends OStatement {
     ODatabaseStats dbStats = ((ODatabaseInternal) db).getStats();
     OExplainResultSet result =
         new OExplainResultSet(
-            rs.getExecutionPlan()
-                .orElseThrow(
-                    () -> new OCommandExecutionException("Cannot profile command: " + statement)),
-            dbStats);
+            (OExecutionPlanContextOps)
+                rs.getExecutionPlan()
+                    .orElseThrow(
+                        () ->
+                            new OCommandExecutionException("Cannot profile command: " + statement)),
+            dbStats,
+            ctx);
     rs.close();
     return result;
   }
@@ -92,9 +97,9 @@ public class OProfileStatement extends OStatement {
 
     OExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx, true);
+      executionPlan = statement.createExecutionPlan(ctx);
     } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx, true);
+      executionPlan = statement.createExecutionPlanNoCache(ctx);
     }
 
     OLocalResultSet rs = new OLocalResultSet((OInternalExecutionPlan) executionPlan, ctx);
@@ -105,17 +110,20 @@ public class OProfileStatement extends OStatement {
     ODatabaseStats dbStats = ((ODatabaseInternal) db).getStats();
     OExplainResultSet result =
         new OExplainResultSet(
-            rs.getExecutionPlan()
-                .orElseThrow(
-                    () -> new OCommandExecutionException("Cannot profile command: " + statement)),
-            dbStats);
+            (OExecutionPlanContextOps)
+                rs.getExecutionPlan()
+                    .orElseThrow(
+                        () ->
+                            new OCommandExecutionException("Cannot profile command: " + statement)),
+            dbStats,
+            ctx);
     rs.close();
     return result;
   }
 
   @Override
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean profile) {
-    return statement.createExecutionPlan(ctx, true);
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
+    return statement.createExecutionPlan(ctx);
   }
 
   @Override

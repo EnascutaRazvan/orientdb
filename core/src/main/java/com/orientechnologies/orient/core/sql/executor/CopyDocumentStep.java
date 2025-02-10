@@ -19,8 +19,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class CopyDocumentStep extends AbstractExecutionStep {
 
-  public CopyDocumentStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CopyDocumentStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -55,8 +55,8 @@ public class CopyDocumentStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ COPY DOCUMENT");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     return result.toString();
   }

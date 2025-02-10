@@ -53,9 +53,9 @@ public class OFindReferencesStatement extends OStatement {
     ctx.setInputParameters(params);
     OInternalExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = createExecutionPlanNoCache(ctx, false);
+      executionPlan = createExecutionPlanNoCache(ctx);
     }
 
     return new OLocalResultSet(executionPlan, ctx);
@@ -71,17 +71,17 @@ public class OFindReferencesStatement extends OStatement {
     ctx.setInputParameters(params);
     OInternalExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = createExecutionPlanNoCache(ctx, false);
+      executionPlan = createExecutionPlanNoCache(ctx);
     }
 
     return new OLocalResultSet(executionPlan, ctx);
   }
 
   @Override
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
-    return new OFindReferencesExecutionPlanner(this).createExecutionPlan(ctx, enableProfiling);
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
+    return new OFindReferencesExecutionPlanner(this).createExecutionPlan(ctx);
   }
 
   @Override

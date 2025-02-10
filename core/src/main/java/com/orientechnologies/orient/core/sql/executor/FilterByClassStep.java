@@ -16,8 +16,8 @@ public class FilterByClassStep extends AbstractExecutionStep {
   private OIdentifier identifier;
   private String className;
 
-  public FilterByClassStep(OIdentifier identifier, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public FilterByClassStep(OIdentifier identifier, OCommandContext ctx) {
+    super(ctx);
     this.identifier = identifier;
     this.className = identifier.getStringValue();
   }
@@ -48,8 +48,8 @@ public class FilterByClassStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(OExecutionStepInternal.getIndent(ctx));
     result.append("+ FILTER ITEMS BY CLASS");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     result.append(" \n");
     result.append(OExecutionStepInternal.getIndent(ctx));
@@ -83,6 +83,6 @@ public class FilterByClassStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new FilterByClassStep(this.identifier.copy(), ctx, this.profilingEnabled);
+    return new FilterByClassStep(this.identifier.copy(), ctx);
   }
 }

@@ -10,9 +10,8 @@ import com.orientechnologies.orient.core.storage.OStorage.LOCKING_STRATEGY;
 public class LockRecordStep extends AbstractExecutionStep {
   private final OStorage.LOCKING_STRATEGY lockStrategy;
 
-  public LockRecordStep(
-      OStorage.LOCKING_STRATEGY lockStrategy, OCommandContext ctx, boolean enableProfiling) {
-    super(ctx, enableProfiling);
+  public LockRecordStep(OStorage.LOCKING_STRATEGY lockStrategy, OCommandContext ctx) {
+    super(ctx);
     this.lockStrategy = lockStrategy;
   }
 

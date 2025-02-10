@@ -10,13 +10,13 @@ public class SaveElementStep extends AbstractExecutionStep {
 
   private final OIdentifier cluster;
 
-  public SaveElementStep(OCommandContext ctx, OIdentifier cluster, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public SaveElementStep(OCommandContext ctx, OIdentifier cluster) {
+    super(ctx);
     this.cluster = cluster;
   }
 
-  public SaveElementStep(OCommandContext ctx, boolean profilingEnabled) {
-    this(ctx, null, profilingEnabled);
+  public SaveElementStep(OCommandContext ctx) {
+    this(ctx, null);
   }
 
   @Override
@@ -57,6 +57,6 @@ public class SaveElementStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new SaveElementStep(ctx, cluster == null ? null : cluster.copy(), profilingEnabled);
+    return new SaveElementStep(ctx, cluster == null ? null : cluster.copy());
   }
 }

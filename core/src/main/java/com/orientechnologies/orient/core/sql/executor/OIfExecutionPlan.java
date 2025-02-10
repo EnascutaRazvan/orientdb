@@ -12,6 +12,7 @@ import java.util.Set;
 public class OIfExecutionPlan implements OInternalExecutionPlan {
 
   protected IfStep step;
+  private OCommandContext context;
 
   public OIfExecutionPlan() {}
 
@@ -32,7 +33,7 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl());
+    return prettyPrint(new OPrintContexImpl(context, depth, indent));
   }
 
   @Override
@@ -100,5 +101,10 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
     Set<String> indexes = new HashSet<>();
     OExecutionStepInternal.fillIndexes(step, indexes);
     return indexes;
+  }
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
   }
 }

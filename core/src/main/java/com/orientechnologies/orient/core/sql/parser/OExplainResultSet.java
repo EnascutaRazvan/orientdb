@@ -1,7 +1,9 @@
 package com.orientechnologies.orient.core.sql.parser;
 
+import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseStats;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
@@ -11,13 +13,17 @@ import java.util.Optional;
 
 /** Created by luigidellaquila on 08/07/16. */
 public class OExplainResultSet implements OResultSetInternal {
-  private final OExecutionPlan executionPlan;
+  private final Optional<OExecutionPlan> executionPlan;
   private final ODatabaseStats dbStats;
   boolean hasNext = true;
 
-  public OExplainResultSet(OExecutionPlan executionPlan, ODatabaseStats dbStats) {
-    this.executionPlan = executionPlan;
+  public OExplainResultSet(
+      OExecutionPlanContextOps executionPlan, ODatabaseStats dbStats, OCommandContext ctx) {
     this.dbStats = dbStats;
+    if (executionPlan != null) {
+      executionPlan.fillContext(ctx);
+    }
+    this.executionPlan = Optional.ofNullable(executionPlan);
   }
 
   @Override
@@ -44,7 +50,7 @@ public class OExplainResultSet implements OResultSetInternal {
 
   @Override
   public Optional<OExecutionPlan> getExecutionPlan() {
-    return Optional.of(executionPlan);
+    return executionPlan;
   }
 
   @Override

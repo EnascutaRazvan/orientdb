@@ -24,8 +24,8 @@ public class FetchFromStorageMetadataStep extends AbstractExecutionStep {
   private static final OLogger logger =
       OLogManager.instance().logger(FetchFromStorageMetadataStep.class);
 
-  public FetchFromStorageMetadataStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public FetchFromStorageMetadataStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -115,8 +115,8 @@ public class FetchFromStorageMetadataStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     String result = spaces + "+ FETCH STORAGE METADATA";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

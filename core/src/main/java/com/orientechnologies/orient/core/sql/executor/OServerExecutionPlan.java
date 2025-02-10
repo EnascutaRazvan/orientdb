@@ -4,7 +4,7 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.command.OServerCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 
-public interface OServerExecutionPlan extends OExecutionPlan {
+public interface OServerExecutionPlan extends OExecutionPlanContextOps {
 
   void close();
 

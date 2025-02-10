@@ -20,6 +20,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   private OExecutionStream finalResult = null;
   private String statement;
   private String genericStatement;
+  private OCommandContext context;
 
   public OScriptExecutionPlan() {}
 
@@ -59,7 +60,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl());
+    return prettyPrint(new OPrintContexImpl(context, depth, indent));
   }
 
   @Override
@@ -80,9 +81,9 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     return prettyPrint(0, 0);
   }
 
-  public void chain(OStatement nextStm, boolean profilingEnabled, OCommandContext ctx) {
+  public void chain(OStatement nextStm, OCommandContext ctx) {
     OExecutionStepInternal lastStep = steps.size() == 0 ? null : steps.get(steps.size() - 1);
-    ScriptLineStep nextStep = new ScriptLineStep(nextStm, ctx, profilingEnabled);
+    ScriptLineStep nextStep = new ScriptLineStep(nextStm, ctx);
     if (lastStep != null) {
       nextStep.setPrevious(lastStep);
     }
@@ -90,7 +91,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     this.lastStep = nextStep;
   }
 
-  public void chain(ORetryExecutionPlan retryStep, boolean profilingEnabled, OCommandContext ctx) {
+  public void chain(ORetryExecutionPlan retryStep, OCommandContext ctx) {
     OExecutionStepInternal nextStep =
         new OExecutionStepInternal() {
 
@@ -246,5 +247,10 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
       OExecutionStepInternal.fillIndexes(chilStep, indexes);
     }
     return indexes;
+  }
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
   }
 }

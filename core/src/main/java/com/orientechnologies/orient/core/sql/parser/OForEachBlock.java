@@ -57,9 +57,9 @@ public class OForEachBlock extends OStatement {
     ctx.setInputParameters(params);
     OUpdateExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (OUpdateExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OUpdateExecutionPlan) createExecutionPlanNoCache(ctx);
     }
 
     executionPlan.executeInternal(ctx);
@@ -77,25 +77,24 @@ public class OForEachBlock extends OStatement {
 
     OUpdateExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx, false);
+      executionPlan = createExecutionPlan(ctx);
     } else {
-      executionPlan = (OUpdateExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (OUpdateExecutionPlan) createExecutionPlanNoCache(ctx);
     }
 
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
   }
 
-  public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OForEachExecutionPlan plan = new OForEachExecutionPlan();
     int nextProg = ++FOREACH_VARIABLE_PROGR;
     if (FOREACH_VARIABLE_PROGR < 0) {
       FOREACH_VARIABLE_PROGR = 0;
     }
     OIdentifier varName = new OIdentifier("$__ORIENTDB_FOREACH_VAR_" + nextProg);
-    plan.chain(new GlobalLetExpressionStep(varName, loopValues, ctx, enableProfiling));
-    plan.chain(
-        new ForEachStep(loopVariable, new OExpression(varName), statements, ctx, enableProfiling));
+    plan.chain(new GlobalLetExpressionStep(varName, loopValues, ctx));
+    plan.chain(new ForEachStep(loopVariable, new OExpression(varName), statements, ctx));
     return plan;
   }
 

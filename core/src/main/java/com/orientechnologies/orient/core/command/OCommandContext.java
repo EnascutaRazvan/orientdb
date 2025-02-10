@@ -96,6 +96,8 @@ public interface OCommandContext {
 
   boolean isScriptVariableDeclared(String varName);
 
+  boolean isProfiling();
+
   void startProfiling(OExecutionStep step);
 
   void endProfiling(OExecutionStep step);

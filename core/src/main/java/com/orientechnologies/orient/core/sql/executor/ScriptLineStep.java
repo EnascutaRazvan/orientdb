@@ -15,8 +15,8 @@ public class ScriptLineStep extends AbstractExecutionStep {
   protected final OStatement statement;
   private OInternalExecutionPlan plan;
 
-  public ScriptLineStep(OStatement statement, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public ScriptLineStep(OStatement statement, OCommandContext ctx) {
+    super(ctx);
     this.statement = statement;
   }
 
@@ -74,7 +74,7 @@ public class ScriptLineStep extends AbstractExecutionStep {
     }
     if (plan instanceof OSingleOpExecutionPlan) {
       if (((OSingleOpExecutionPlan) plan).statement instanceof OReturnStatement) {
-        return new ReturnStep(((OSingleOpExecutionPlan) plan).statement, ctx, profilingEnabled);
+        return new ReturnStep(((OSingleOpExecutionPlan) plan).statement, ctx);
       }
     }
     if (plan instanceof OIfExecutionPlan) {

@@ -36,11 +36,8 @@ public class FindReferencesStep extends AbstractExecutionStep {
   private final List<OCluster> clusters;
 
   public FindReferencesStep(
-      List<OIdentifier> classes,
-      List<OCluster> clusters,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      List<OIdentifier> classes, List<OCluster> clusters, OCommandContext ctx) {
+    super(ctx);
     this.classes = classes;
     this.clusters = clusters;
   }

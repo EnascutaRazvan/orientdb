@@ -16,8 +16,8 @@ import java.util.Collection;
  */
 public class UpdateEdgePointersStep extends AbstractExecutionStep {
 
-  public UpdateEdgePointersStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public UpdateEdgePointersStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override

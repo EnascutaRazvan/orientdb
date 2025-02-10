@@ -13,9 +13,8 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
 
   private boolean executed = false;
 
-  public GlobalLetExpressionStep(
-      OIdentifier varName, OExpression expression, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public GlobalLetExpressionStep(OIdentifier varName, OExpression expression, OCommandContext ctx) {
+    super(ctx);
     this.varname = varName;
     this.expression = expression;
   }
@@ -44,7 +43,7 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new GlobalLetExpressionStep(varname.copy(), expression.copy(), ctx, profilingEnabled);
+    return new GlobalLetExpressionStep(varname.copy(), expression.copy(), ctx);
   }
 
   @Override

@@ -21,17 +21,13 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
   protected boolean orderByRidDesc = false;
   protected List<OExecutionStep> subSteps = new ArrayList<>();
 
-  protected FetchFromClassExecutionStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  protected FetchFromClassExecutionStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   public FetchFromClassExecutionStep(
-      String className,
-      Set<String> clusters,
-      OCommandContext ctx,
-      Boolean ridOrder,
-      boolean profilingEnabled) {
-    this(className, clusters, null, ctx, ridOrder, profilingEnabled);
+      String className, Set<String> clusters, OCommandContext ctx, Boolean ridOrder) {
+    this(className, clusters, null, ctx, ridOrder);
   }
 
   /**
@@ -47,9 +43,8 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
       Set<String> clusters,
       QueryPlanningInfo planningInfo,
       OCommandContext ctx,
-      Boolean ridOrder,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      Boolean ridOrder) {
+    super(ctx);
 
     this.className = className;
 
@@ -78,7 +73,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
       int clusterId = clusterIds[i];
       if (clusterId > 0) {
         FetchFromClusterExecutionStep step =
-            new FetchFromClusterExecutionStep(clusterId, planningInfo, ctx, profilingEnabled);
+            new FetchFromClusterExecutionStep(clusterId, planningInfo, ctx);
         if (orderByRidAsc) {
           step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
         } else if (orderByRidDesc) {
@@ -87,8 +82,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
         getSubSteps().add(step);
       } else {
         // current tx
-        FetchTemporaryFromTxStep step =
-            new FetchTemporaryFromTxStep(ctx, className, profilingEnabled);
+        FetchTemporaryFromTxStep step = new FetchTemporaryFromTxStep(ctx, className);
         if (orderByRidAsc) {
           step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
         } else if (orderByRidDesc) {
@@ -166,8 +160,8 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
     String ind = OExecutionStepInternal.getIndent(ctx);
     builder.append(ind);
     builder.append("+ FETCH FROM CLASS " + className);
-    if (profilingEnabled) {
-      builder.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      builder.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     builder.append("\n");
     for (int i = 0; i < getSubSteps().size(); i++) {
@@ -215,7 +209,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    FetchFromClassExecutionStep result = new FetchFromClassExecutionStep(ctx, profilingEnabled);
+    FetchFromClassExecutionStep result = new FetchFromClassExecutionStep(ctx);
     result.className = this.className;
     result.orderByRidAsc = this.orderByRidAsc;
     result.orderByRidDesc = this.orderByRidDesc;

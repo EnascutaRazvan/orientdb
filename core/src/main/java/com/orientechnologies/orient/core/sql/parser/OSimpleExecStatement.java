@@ -43,7 +43,7 @@ public abstract class OSimpleExecStatement extends OStatement {
       }
     }
     ctx.setInputParameters(params);
-    OSingleOpExecutionPlan executionPlan = (OSingleOpExecutionPlan) createExecutionPlan(ctx, false);
+    OSingleOpExecutionPlan executionPlan = (OSingleOpExecutionPlan) createExecutionPlan(ctx);
     return new OExecutionResultSet(executionPlan.executeInternal(ctx), ctx, executionPlan);
   }
 
@@ -54,11 +54,11 @@ public abstract class OSimpleExecStatement extends OStatement {
       ctx.setParentWithoutOverridingChild(parentContext);
     }
     ctx.setInputParameters(params);
-    OSingleOpExecutionPlan executionPlan = (OSingleOpExecutionPlan) createExecutionPlan(ctx, false);
+    OSingleOpExecutionPlan executionPlan = (OSingleOpExecutionPlan) createExecutionPlan(ctx);
     return new OExecutionResultSet(executionPlan.executeInternal(ctx), ctx, executionPlan);
   }
 
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     return new OSingleOpExecutionPlan(this);
   }
 

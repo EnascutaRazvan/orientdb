@@ -16,8 +16,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class ConvertToResultInternalStep extends AbstractExecutionStep {
 
-  public ConvertToResultInternalStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public ConvertToResultInternalStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -43,8 +43,8 @@ public class ConvertToResultInternalStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ CONVERT TO REGULAR RESULT ITEM";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

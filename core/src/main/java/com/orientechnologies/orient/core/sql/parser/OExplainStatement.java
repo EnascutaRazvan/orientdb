@@ -6,7 +6,7 @@ import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.ODatabaseStats;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import java.util.HashMap;
@@ -49,14 +49,14 @@ public class OExplainStatement extends OStatement {
     }
     ctx.setInputParameters(params);
 
-    OExecutionPlan executionPlan;
+    OExecutionPlanContextOps executionPlan;
     if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx, false);
+      executionPlan = statement.createExecutionPlan(ctx);
     } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx, false);
+      executionPlan = statement.createExecutionPlanNoCache(ctx);
     }
 
-    OExplainResultSet result = new OExplainResultSet(executionPlan, new ODatabaseStats());
+    OExplainResultSet result = new OExplainResultSet(executionPlan, new ODatabaseStats(), ctx);
     return result;
   }
 
@@ -69,20 +69,20 @@ public class OExplainStatement extends OStatement {
     }
     ctx.setInputParameters(args);
 
-    OExecutionPlan executionPlan;
+    OExecutionPlanContextOps executionPlan;
     if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx, false);
+      executionPlan = statement.createExecutionPlan(ctx);
     } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx, false);
+      executionPlan = statement.createExecutionPlanNoCache(ctx);
     }
 
-    OExplainResultSet result = new OExplainResultSet(executionPlan, new ODatabaseStats());
+    OExplainResultSet result = new OExplainResultSet(executionPlan, new ODatabaseStats(), ctx);
     return result;
   }
 
   @Override
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
-    return statement.createExecutionPlan(ctx, enableProfiling);
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
+    return statement.createExecutionPlan(ctx);
   }
 
   @Override

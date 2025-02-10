@@ -22,9 +22,9 @@ public class ConvertToUpdatableResultStepTest extends TestUtilsFixture {
   @Test
   public void shouldConvertUpdatableResult() {
     OCommandContext context = new OBasicCommandContext(db);
-    ConvertToUpdatableResultStep step = new ConvertToUpdatableResultStep(context, false);
+    ConvertToUpdatableResultStep step = new ConvertToUpdatableResultStep(context);
     AbstractExecutionStep previous =
-        new AbstractExecutionStep(context, false) {
+        new AbstractExecutionStep(context) {
           boolean done = false;
 
           @Override

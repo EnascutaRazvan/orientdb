@@ -12,8 +12,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class UnwrapPreviousValueStep extends AbstractExecutionStep {
 
-  public UnwrapPreviousValueStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public UnwrapPreviousValueStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -38,8 +38,8 @@ public class UnwrapPreviousValueStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ UNWRAP PREVIOUS VALUE";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     return result;
   }

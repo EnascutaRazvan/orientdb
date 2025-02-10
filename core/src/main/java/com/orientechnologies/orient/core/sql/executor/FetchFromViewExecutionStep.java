@@ -18,9 +18,8 @@ public class FetchFromViewExecutionStep extends FetchFromClassExecutionStep {
       Set<String> clusters,
       QueryPlanningInfo planningInfo,
       OCommandContext ctx,
-      Boolean ridOrder,
-      boolean profilingEnabled) {
-    super(className, clusters, planningInfo, ctx, ridOrder, profilingEnabled);
+      Boolean ridOrder) {
+    super(className, clusters, planningInfo, ctx, ridOrder);
 
     ODatabaseDocumentInternal database = (ODatabaseDocumentInternal) ctx.getDatabase();
     OView view = loadClassFromSchema(className, ctx);
@@ -57,8 +56,8 @@ public class FetchFromViewExecutionStep extends FetchFromClassExecutionStep {
     String ind = OExecutionStepInternal.getIndent(ctx);
     builder.append(ind);
     builder.append("+ FETCH FROM VIEW " + className);
-    if (profilingEnabled) {
-      builder.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      builder.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     builder.append("\n");
     for (int i = 0; i < getSubSteps().size(); i++) {

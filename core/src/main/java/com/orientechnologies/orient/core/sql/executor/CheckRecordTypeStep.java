@@ -15,8 +15,8 @@ import java.util.Optional;
 public class CheckRecordTypeStep extends AbstractExecutionStep {
   private final String clazz;
 
-  public CheckRecordTypeStep(OCommandContext ctx, String className, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CheckRecordTypeStep(OCommandContext ctx, String className) {
+    super(ctx);
     this.clazz = className;
   }
 
@@ -45,8 +45,8 @@ public class CheckRecordTypeStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ CHECK RECORD TYPE";
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     result += (OExecutionStepInternal.getIndent(ctx) + "  " + clazz);
     return result;

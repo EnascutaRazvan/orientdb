@@ -19,7 +19,7 @@ public class CheckClusterTypeStepTest extends TestUtilsFixture {
     OBasicCommandContext context = new OBasicCommandContext();
     context.setDatabase(db);
     CheckClusterTypeStep step =
-        new CheckClusterTypeStep(CLASS_CLUSTER_NAME, clazz.getName(), context, false);
+        new CheckClusterTypeStep(CLASS_CLUSTER_NAME, clazz.getName(), context);
 
     OExecutionStream result = step.start(context);
     Assert.assertEquals(0, result.stream(context).count());
@@ -30,7 +30,7 @@ public class CheckClusterTypeStepTest extends TestUtilsFixture {
     db.addCluster(CLUSTER_NAME);
     OBasicCommandContext context = new OBasicCommandContext(db);
     CheckClusterTypeStep step =
-        new CheckClusterTypeStep(CLUSTER_NAME, createClassInstance().getName(), context, false);
+        new CheckClusterTypeStep(CLUSTER_NAME, createClassInstance().getName(), context);
 
     step.start(context);
   }

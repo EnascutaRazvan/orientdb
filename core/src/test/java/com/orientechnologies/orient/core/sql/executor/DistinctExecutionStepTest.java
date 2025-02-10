@@ -15,10 +15,10 @@ public class DistinctExecutionStepTest {
   @Test
   public void test() {
     OCommandContext ctx = new OBasicCommandContext();
-    DistinctExecutionStep step = new DistinctExecutionStep(ctx, false);
+    DistinctExecutionStep step = new DistinctExecutionStep(ctx);
 
     AbstractExecutionStep prev =
-        new AbstractExecutionStep(ctx, false) {
+        new AbstractExecutionStep(ctx) {
           boolean done = false;
 
           @Override

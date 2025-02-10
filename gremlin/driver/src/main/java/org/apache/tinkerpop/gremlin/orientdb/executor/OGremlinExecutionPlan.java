@@ -1,6 +1,7 @@
 package org.apache.tinkerpop.gremlin.orientdb.executor;
 
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.command.OCommandContext;
+import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
@@ -11,9 +12,10 @@ import java.util.Set;
 import org.apache.tinkerpop.gremlin.process.traversal.util.TraversalExplanation;
 
 /** Created by Enrico Risa on 25/05/2017. */
-public class OGremlinExecutionPlan implements OExecutionPlan {
+public class OGremlinExecutionPlan implements OExecutionPlanContextOps {
 
   TraversalExplanation explanation;
+  private OCommandContext context;
 
   public OGremlinExecutionPlan(TraversalExplanation explanation) {
     this.explanation = explanation;
@@ -49,5 +51,10 @@ public class OGremlinExecutionPlan implements OExecutionPlan {
   @Override
   public Set<String> getIndexes() {
     return Collections.emptySet();
+  }
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
   }
 }

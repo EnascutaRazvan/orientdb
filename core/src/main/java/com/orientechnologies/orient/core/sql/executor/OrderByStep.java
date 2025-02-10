@@ -16,18 +16,13 @@ public class OrderByStep extends AbstractExecutionStep {
   private final long timeoutMillis;
   private Integer maxResults;
 
-  public OrderByStep(
-      OOrderBy orderBy, OCommandContext ctx, long timeoutMillis, boolean profilingEnabled) {
-    this(orderBy, null, ctx, timeoutMillis, profilingEnabled);
+  public OrderByStep(OOrderBy orderBy, OCommandContext ctx, long timeoutMillis) {
+    this(orderBy, null, ctx, timeoutMillis);
   }
 
   public OrderByStep(
-      OOrderBy orderBy,
-      Integer maxResults,
-      OCommandContext ctx,
-      long timeoutMillis,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OOrderBy orderBy, Integer maxResults, OCommandContext ctx, long timeoutMillis) {
+    super(ctx);
     this.orderBy = orderBy;
     this.maxResults = maxResults;
     if (this.maxResults != null && this.maxResults < 0) {
@@ -96,8 +91,8 @@ public class OrderByStep extends AbstractExecutionStep {
   @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ " + orderBy;
-    if (profilingEnabled) {
-      result += " (" + getCostFormatted() + ")";
+    if (ctx.isProfilingEnabled()) {
+      result += " (" + ctx.getCostFormatted(this) + ")";
     }
     result += (maxResults != null ? "\n  (buffer size: " + maxResults + ")" : "");
     return result;

@@ -15,12 +15,8 @@ public class FilterStep extends AbstractExecutionStep {
   private final boolean locked;
 
   public FilterStep(
-      OWhereClause whereClause,
-      OCommandContext ctx,
-      long timeoutMillis,
-      boolean profilingEnabled,
-      boolean locked) {
-    super(ctx, profilingEnabled);
+      OWhereClause whereClause, OCommandContext ctx, long timeoutMillis, boolean locked) {
+    super(ctx);
     this.whereClause = whereClause;
     this.timeoutMillis = timeoutMillis;
     this.locked = locked;
@@ -54,8 +50,8 @@ public class FilterStep extends AbstractExecutionStep {
   public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
     result.append(OExecutionStepInternal.getIndent(ctx) + "+ FILTER ITEMS WHERE ");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     result.append("\n");
     result.append(OExecutionStepInternal.getIndent(ctx));
@@ -92,6 +88,6 @@ public class FilterStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStep copy(OCommandContext ctx) {
-    return new FilterStep(this.whereClause.copy(), ctx, timeoutMillis, profilingEnabled, locked);
+    return new FilterStep(this.whereClause.copy(), ctx, timeoutMillis, locked);
   }
 }

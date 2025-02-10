@@ -50,9 +50,9 @@ public class ODeleteEdgeStatement extends OStatement {
     ctx.setInputParameters(params);
     ODeleteExecutionPlan executionPlan;
     if (usePlanCache) {
-      executionPlan = (ODeleteExecutionPlan) createExecutionPlan(ctx, false);
+      executionPlan = (ODeleteExecutionPlan) createExecutionPlan(ctx);
     } else {
-      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx, false);
+      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx);
     }
     executionPlan.executeInternal(ctx);
     return new OLocalResultSet(executionPlan, ctx);
@@ -70,18 +70,17 @@ public class ODeleteEdgeStatement extends OStatement {
     return execute(db, params, parentCtx, usePlanCache);
   }
 
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     ODeleteEdgeExecutionPlanner planner = new ODeleteEdgeExecutionPlanner(this);
-    OInternalExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling, true);
+    OInternalExecutionPlan result = planner.createExecutionPlan(ctx, true);
     result.setStatement(this.originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;
   }
 
-  public OInternalExecutionPlan createExecutionPlanNoCache(
-      OCommandContext ctx, boolean enableProfiling) {
+  public OInternalExecutionPlan createExecutionPlanNoCache(OCommandContext ctx) {
     ODeleteEdgeExecutionPlanner planner = new ODeleteEdgeExecutionPlanner(this);
-    OInternalExecutionPlan result = planner.createExecutionPlan(ctx, enableProfiling, false);
+    OInternalExecutionPlan result = planner.createExecutionPlan(ctx, false);
     result.setStatement(this.originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;

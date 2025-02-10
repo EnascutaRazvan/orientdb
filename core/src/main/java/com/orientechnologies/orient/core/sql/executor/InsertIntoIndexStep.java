@@ -22,11 +22,8 @@ public class InsertIntoIndexStep extends AbstractExecutionStep {
   private final OInsertBody body;
 
   public InsertIntoIndexStep(
-      OIndexIdentifier targetIndex,
-      OInsertBody insertBody,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+      OIndexIdentifier targetIndex, OInsertBody insertBody, OCommandContext ctx) {
+    super(ctx);
     this.targetIndex = targetIndex;
     this.body = insertBody;
   }

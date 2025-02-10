@@ -68,46 +68,41 @@ public class OTraverseExecutionPlanner {
     this.limit = statement.getLimit();
   }
 
-  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean enableProfiling) {
+  public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OSelectExecutionPlan result = new OSelectExecutionPlan();
 
-    handleFetchFromTarger(result, ctx, enableProfiling);
+    handleFetchFromTarger(result, ctx);
 
-    handleTraversal(result, ctx, enableProfiling);
+    handleTraversal(result, ctx);
 
     if (skip != null) {
-      result.chain(new SkipExecutionStep(skip, ctx, enableProfiling));
+      result.chain(new SkipExecutionStep(skip, ctx));
     }
     if (limit != null) {
-      result.chain(new LimitExecutionStep(limit, ctx, enableProfiling));
+      result.chain(new LimitExecutionStep(limit, ctx));
     }
 
     return result;
   }
 
-  private void handleTraversal(
-      OSelectExecutionPlan result, OCommandContext ctx, boolean profilingEnabled) {
+  private void handleTraversal(OSelectExecutionPlan result, OCommandContext ctx) {
     switch (strategy) {
       case BREADTH_FIRST:
         result.chain(
-            new BreadthFirstTraverseStep(
-                this.projections, this.whileClause, maxDepth, ctx, profilingEnabled));
+            new BreadthFirstTraverseStep(this.projections, this.whileClause, maxDepth, ctx));
         break;
       case DEPTH_FIRST:
-        result.chain(
-            new DepthFirstTraverseStep(
-                this.projections, this.whileClause, maxDepth, ctx, profilingEnabled));
+        result.chain(new DepthFirstTraverseStep(this.projections, this.whileClause, maxDepth, ctx));
         break;
     }
     // TODO
   }
 
-  private void handleFetchFromTarger(
-      OSelectExecutionPlan result, OCommandContext ctx, boolean profilingEnabled) {
+  private void handleFetchFromTarger(OSelectExecutionPlan result, OCommandContext ctx) {
 
     OFromItem target = this.target == null ? null : this.target.getItem();
     if (target == null) {
-      handleNoTarget(result, ctx, profilingEnabled);
+      handleNoTarget(result, ctx);
     } else if (target.getIdentifier() != null) {
       String className = target.getIdentifier().getStringValue();
       if (className.startsWith("$")
@@ -115,55 +110,50 @@ public class OTraverseExecutionPlanner {
               .getMetadata()
               .getImmutableSchemaSnapshot()
               .existsClass(className)) {
-        handleVariableAsTarget(result, this.target, ctx, profilingEnabled);
+        handleVariableAsTarget(result, this.target, ctx);
       } else {
-        handleClassAsTarget(result, this.target, ctx, profilingEnabled);
+        handleClassAsTarget(result, this.target, ctx);
       }
     } else if (target.getCluster() != null) {
-      handleClustersAsTarget(
-          result, Collections.singletonList(target.getCluster()), ctx, profilingEnabled);
+      handleClustersAsTarget(result, Collections.singletonList(target.getCluster()), ctx);
     } else if (target.getClusterList() != null) {
-      handleClustersAsTarget(
-          result, target.getClusterList().toListOfClusters(), ctx, profilingEnabled);
+      handleClustersAsTarget(result, target.getClusterList().toListOfClusters(), ctx);
     } else if (target.getStatement() != null) {
-      handleSubqueryAsTarget(result, target.getStatement(), ctx, profilingEnabled);
+      handleSubqueryAsTarget(result, target.getStatement(), ctx);
     } else if (target.getFunctionCall() != null) {
       //        handleFunctionCallAsTarget(result, target.getFunctionCall(), ctx);//TODO
       throw new OCommandExecutionException("function call as target is not supported yet");
     } else if (target.getInputParam() != null) {
-      handleInputParamAsTarget(result, target.getInputParam(), ctx, profilingEnabled);
+      handleInputParamAsTarget(result, target.getInputParam(), ctx);
     } else if (target.getIndex() != null) {
-      handleIndexAsTarget(result, target.getIndex(), ctx, profilingEnabled);
+      handleIndexAsTarget(result, target.getIndex(), ctx);
     } else if (target.getMetadata() != null) {
-      handleMetadataAsTarget(result, target.getMetadata(), ctx, profilingEnabled);
+      handleMetadataAsTarget(result, target.getMetadata(), ctx);
     } else if (target.getRids() != null && target.getRids().size() > 0) {
-      handleRidsAsTarget(result, target.getRids(), ctx, profilingEnabled);
+      handleRidsAsTarget(result, target.getRids(), ctx);
     } else {
       throw new UnsupportedOperationException();
     }
   }
 
   private void handleInputParamAsTarget(
-      OSelectExecutionPlan result,
-      OInputParameter inputParam,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan result, OInputParameter inputParam, OCommandContext ctx) {
     Object paramValue = inputParam.getValue(ctx.getInputParameters());
     if (paramValue == null) {
-      result.chain(new EmptyStep(ctx, profilingEnabled)); // nothing to return
+      result.chain(new EmptyStep(ctx)); // nothing to return
     } else if (paramValue instanceof OClass) {
       OFromClause from = new OFromClause(-1);
       OFromItem item = new OFromItem(-1);
       from.setItem(item);
       item.setIdentifier(new OIdentifier(((OClass) paramValue).getName()));
-      handleClassAsTarget(result, from, ctx, profilingEnabled);
+      handleClassAsTarget(result, from, ctx);
     } else if (paramValue instanceof String) {
       // strings are treated as classes
       OFromClause from = new OFromClause(-1);
       OFromItem item = new OFromItem(-1);
       from.setItem(item);
       item.setIdentifier(new OIdentifier((String) paramValue));
-      handleClassAsTarget(result, from, ctx, profilingEnabled);
+      handleClassAsTarget(result, from, ctx);
     } else if (paramValue instanceof OIdentifiable) {
       ORID orid = ((OIdentifiable) paramValue).getIdentity();
 
@@ -176,7 +166,7 @@ public class OTraverseExecutionPlanner {
       rid.setCluster(cluster);
       rid.setPosition(position);
 
-      handleRidsAsTarget(result, Collections.singletonList(rid), ctx, profilingEnabled);
+      handleRidsAsTarget(result, Collections.singletonList(rid), ctx);
     } else if (paramValue instanceof Iterable) {
       // try list of RIDs
       List<ORid> rids = new ArrayList<>();
@@ -196,22 +186,18 @@ public class OTraverseExecutionPlanner {
 
         rids.add(rid);
       }
-      handleRidsAsTarget(result, rids, ctx, profilingEnabled);
+      handleRidsAsTarget(result, rids, ctx);
     } else {
       throw new OCommandExecutionException("Invalid target: " + paramValue);
     }
   }
 
-  private void handleNoTarget(
-      OSelectExecutionPlan result, OCommandContext ctx, boolean profilingEnabled) {
-    result.chain(new EmptyDataGeneratorStep(1, ctx, profilingEnabled));
+  private void handleNoTarget(OSelectExecutionPlan result, OCommandContext ctx) {
+    result.chain(new EmptyDataGeneratorStep(1, ctx));
   }
 
   private void handleIndexAsTarget(
-      OSelectExecutionPlan result,
-      OIndexIdentifier indexIdentifier,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan result, OIndexIdentifier indexIdentifier, OCommandContext ctx) {
     String indexName = indexIdentifier.getIndexName();
     final ODatabaseDocumentInternal database = (ODatabaseDocumentInternal) ctx.getDatabase();
     OIndex index = database.getMetadata().getIndexManagerInternal().getIndex(database, indexName);
@@ -226,9 +212,8 @@ public class OTraverseExecutionPlanner {
               "Index " + indexName + " does not allow iteration without a condition");
         }
 
-        result.chain(
-            new FetchFromIndexStep(new IndexSearchDescriptor(index), true, ctx, profilingEnabled));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null, profilingEnabled));
+        result.chain(new FetchFromIndexStep(new IndexSearchDescriptor(index), true, ctx));
+        result.chain(new GetValueFromIndexEntryStep(ctx, null));
         break;
       case VALUES:
       case VALUESASC:
@@ -236,29 +221,22 @@ public class OTraverseExecutionPlanner {
           throw new OCommandExecutionException(
               "Index " + indexName + " does not allow iteration on values");
         }
-        result.chain(
-            new FetchFromIndexValuesStep(
-                new IndexSearchDescriptor(index), true, ctx, profilingEnabled));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null, profilingEnabled));
+        result.chain(new FetchFromIndexValuesStep(new IndexSearchDescriptor(index), true, ctx));
+        result.chain(new GetValueFromIndexEntryStep(ctx, null));
         break;
       case VALUESDESC:
         if (!index.supportsOrderedIterations()) {
           throw new OCommandExecutionException(
               "Index " + indexName + " does not allow iteration on values");
         }
-        result.chain(
-            new FetchFromIndexValuesStep(
-                new IndexSearchDescriptor(index), false, ctx, profilingEnabled));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null, profilingEnabled));
+        result.chain(new FetchFromIndexValuesStep(new IndexSearchDescriptor(index), false, ctx));
+        result.chain(new GetValueFromIndexEntryStep(ctx, null));
         break;
     }
   }
 
   private void handleMetadataAsTarget(
-      OSelectExecutionPlan plan,
-      OMetadataIdentifier metadata,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan plan, OMetadataIdentifier metadata, OCommandContext ctx) {
     ODatabaseInternal db = (ODatabaseInternal) ctx.getDatabase();
     String schemaRecordIdAsString = null;
     if (metadata.getName().equalsIgnoreCase("schema")) {
@@ -269,37 +247,29 @@ public class OTraverseExecutionPlanner {
       throw new UnsupportedOperationException("Invalid metadata: " + metadata.getName());
     }
     ORecordId schemaRid = new ORecordId(schemaRecordIdAsString);
-    plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid), ctx, profilingEnabled));
+    plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid), ctx));
   }
 
-  private void handleRidsAsTarget(
-      OSelectExecutionPlan plan, List<ORid> rids, OCommandContext ctx, boolean profilingEnabled) {
+  private void handleRidsAsTarget(OSelectExecutionPlan plan, List<ORid> rids, OCommandContext ctx) {
     List<ORecordId> actualRids = new ArrayList<>();
     for (ORid rid : rids) {
       actualRids.add(rid.toRecordId((OResult) null, ctx));
     }
-    plan.chain(new FetchFromRidsStep(actualRids, ctx, profilingEnabled));
+    plan.chain(new FetchFromRidsStep(actualRids, ctx));
   }
 
   private void handleClassAsTarget(
-      OSelectExecutionPlan plan,
-      OFromClause queryTarget,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan plan, OFromClause queryTarget, OCommandContext ctx) {
     OIdentifier identifier = queryTarget.getItem().getIdentifier();
 
     Boolean orderByRidAsc = null; // null: no order. true: asc, false:desc
     FetchFromClassExecutionStep fetcher =
-        new FetchFromClassExecutionStep(
-            identifier.getStringValue(), null, ctx, orderByRidAsc, profilingEnabled);
+        new FetchFromClassExecutionStep(identifier.getStringValue(), null, ctx, orderByRidAsc);
     plan.chain(fetcher);
   }
 
   private void handleClustersAsTarget(
-      OSelectExecutionPlan plan,
-      List<OCluster> clusters,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan plan, List<OCluster> clusters, OCommandContext ctx) {
     ODatabaseSession db = ctx.getDatabase();
     Boolean orderByRidAsc = null; // null: no order. true: asc, false:desc
     if (clusters.size() == 1) {
@@ -311,8 +281,7 @@ public class OTraverseExecutionPlanner {
       if (clusterId == null) {
         throw new OCommandExecutionException("Cluster " + cluster + " does not exist");
       }
-      FetchFromClusterExecutionStep step =
-          new FetchFromClusterExecutionStep(clusterId, ctx, profilingEnabled);
+      FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterId, ctx);
       if (Boolean.TRUE.equals(orderByRidAsc)) {
         step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
       } else if (Boolean.FALSE.equals(orderByRidAsc)) {
@@ -333,28 +302,21 @@ public class OTraverseExecutionPlanner {
         clusterIds[i] = clusterId;
       }
       FetchFromClustersExecutionStep step =
-          new FetchFromClustersExecutionStep(clusterIds, ctx, orderByRidAsc, profilingEnabled);
+          new FetchFromClustersExecutionStep(clusterIds, ctx, orderByRidAsc);
       plan.chain(step);
     }
   }
 
   private void handleSubqueryAsTarget(
-      OSelectExecutionPlan plan,
-      OStatement subQuery,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
+      OSelectExecutionPlan plan, OStatement subQuery, OCommandContext ctx) {
     OBasicCommandContext subCtx = new OBasicCommandContext(ctx.getDatabase());
     subCtx.setParent(ctx);
-    OInternalExecutionPlan subExecutionPlan =
-        subQuery.createExecutionPlan(subCtx, profilingEnabled);
-    plan.chain(new SubQueryStep(subExecutionPlan, ctx, subCtx, profilingEnabled));
+    OInternalExecutionPlan subExecutionPlan = subQuery.createExecutionPlan(subCtx);
+    plan.chain(new SubQueryStep(subExecutionPlan, ctx, subCtx));
   }
 
   private void handleVariableAsTarget(
-      OSelectExecutionPlan plan,
-      OFromClause target,
-      OCommandContext ctx,
-      boolean profilingEnabled) {
-    plan.chain(new FetchFromVariableStep(target.getItem(), ctx, profilingEnabled));
+      OSelectExecutionPlan plan, OFromClause target, OCommandContext ctx) {
+    plan.chain(new FetchFromVariableStep(target.getItem(), ctx));
   }
 }

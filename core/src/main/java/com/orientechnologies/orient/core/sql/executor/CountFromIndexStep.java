@@ -22,11 +22,9 @@ public class CountFromIndexStep extends AbstractExecutionStep {
    * @param targetIndex the index name as it is parsed by the SQL parsed
    * @param alias the name of the property returned in the result-set
    * @param ctx the query context
-   * @param profilingEnabled true to enable the profiling of the execution (for SQL PROFILE)
    */
-  public CountFromIndexStep(
-      OIndexIdentifier targetIndex, String alias, OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CountFromIndexStep(OIndexIdentifier targetIndex, String alias, OCommandContext ctx) {
+    super(ctx);
     this.target = targetIndex;
     this.alias = alias;
   }

@@ -2,7 +2,7 @@ package com.orientechnologies.orient.core.sql.executor.resultset;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
-import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
 import java.util.Map;
@@ -17,20 +17,14 @@ public class OExecutionResultSet implements OResultSetInternal {
   private boolean closed = false;
 
   public OExecutionResultSet(
-      OExecutionStream stream, OCommandContext context, OExecutionPlan plan) {
+      OExecutionStream stream, OCommandContext context, OExecutionPlanContextOps plan) {
     super();
     this.stream = stream;
     this.context = context;
-    this.plan =
-        Optional.ofNullable(plan)
-            .map(
-                (p) -> {
-                  if (p instanceof OInternalExecutionPlan) {
-                    return new OContextExecutionPlan((OInternalExecutionPlan) p, context);
-                  } else {
-                    return p;
-                  }
-                });
+    if (plan != null) {
+      plan.fillContext(context);
+    }
+    this.plan = Optional.ofNullable(plan);
   }
 
   @Override

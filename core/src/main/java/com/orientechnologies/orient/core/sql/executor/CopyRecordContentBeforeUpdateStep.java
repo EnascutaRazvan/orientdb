@@ -19,8 +19,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  * @author Luigi Dell'Aquila (l.dellaquila-(at)-orientdb.com)
  */
 public class CopyRecordContentBeforeUpdateStep extends AbstractExecutionStep {
-  public CopyRecordContentBeforeUpdateStep(OCommandContext ctx, boolean profilingEnabled) {
-    super(ctx, profilingEnabled);
+  public CopyRecordContentBeforeUpdateStep(OCommandContext ctx) {
+    super(ctx);
   }
 
   @Override
@@ -58,8 +58,8 @@ public class CopyRecordContentBeforeUpdateStep extends AbstractExecutionStep {
     StringBuilder result = new StringBuilder();
     result.append(spaces);
     result.append("+ COPY RECORD CONTENT BEFORE UPDATE");
-    if (profilingEnabled) {
-      result.append(" (" + getCostFormatted() + ")");
+    if (ctx.isProfilingEnabled()) {
+      result.append(" (" + ctx.getCostFormatted(this) + ")");
     }
     return result.toString();
   }

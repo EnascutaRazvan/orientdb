@@ -10,16 +10,12 @@ public class MatchFirstStep extends AbstractExecutionStep {
   private final PatternNode node;
   private OInternalExecutionPlan executionPlan;
 
-  public MatchFirstStep(OCommandContext context, PatternNode node, boolean profilingEnabled) {
-    this(context, node, null, profilingEnabled);
+  public MatchFirstStep(OCommandContext context, PatternNode node) {
+    this(context, node, null);
   }
 
-  public MatchFirstStep(
-      OCommandContext context,
-      PatternNode node,
-      OInternalExecutionPlan subPlan,
-      boolean profilingEnabled) {
-    super(context, profilingEnabled);
+  public MatchFirstStep(OCommandContext context, PatternNode node, OInternalExecutionPlan subPlan) {
+    super(context);
     this.node = node;
     this.executionPlan = subPlan;
   }

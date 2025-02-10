@@ -17,6 +17,8 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
   private boolean executed = false;
   private OExecutionStream result;
 
+  private OCommandContext context;
+
   public OSingleOpExecutionPlan(OSimpleExecStatement stm) {
     this.statement = stm;
   }
@@ -68,7 +70,7 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl());
+    return prettyPrint(new OPrintContexImpl(context, depth, indent));
   }
 
   @Override
@@ -101,5 +103,10 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
   @Override
   public Set<String> getIndexes() {
     return Collections.emptySet();
+  }
+
+  @Override
+  public void fillContext(OCommandContext context) {
+    this.context = context;
   }
 }

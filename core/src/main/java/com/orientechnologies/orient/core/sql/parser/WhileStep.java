@@ -17,12 +17,8 @@ public class WhileStep extends AbstractExecutionStep {
   private final OBooleanExpression condition;
   private final List<OStatement> statements;
 
-  public WhileStep(
-      OBooleanExpression condition,
-      List<OStatement> statements,
-      OCommandContext ctx,
-      boolean enableProfiling) {
-    super(ctx, enableProfiling);
+  public WhileStep(OBooleanExpression condition, List<OStatement> statements, OCommandContext ctx) {
+    super(ctx);
     this.condition = condition;
     this.statements = statements;
   }
@@ -41,7 +37,7 @@ public class WhileStep extends AbstractExecutionStep {
         return result.start(ctx);
       }
     }
-    return new EmptyStep(ctx, false).start(ctx);
+    return new EmptyStep(ctx).start(ctx);
   }
 
   public OScriptExecutionPlan initPlan(OCommandContext ctx) {
@@ -52,7 +48,7 @@ public class WhileStep extends AbstractExecutionStep {
       if (stm.originalStatement == null) {
         stm.originalStatement = stm.toString();
       }
-      plan.chain(stm, profilingEnabled, subCtx1);
+      plan.chain(stm, subCtx1);
     }
     return plan;
   }
