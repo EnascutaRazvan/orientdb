@@ -51,4 +51,6 @@ public interface OInternalExecutionPlan extends OExecutionPlanContextOps {
   default void setGenericStatement(String stm) {}
 
   public String prettyPrint(OPrintContext ctx);
+
+  public OResult toResult(OToResultContext ctx);
 }

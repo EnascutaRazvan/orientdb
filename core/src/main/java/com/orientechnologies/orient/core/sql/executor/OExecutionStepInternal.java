@@ -146,23 +146,10 @@ public interface OExecutionStepInternal extends OExecutionStep {
   }
 
   default OResult toResult() {
-    OResultInternal result = new OResultInternal();
-    result.setProperty("name", getName());
-    result.setProperty("type", getType());
-    result.setProperty("targetNode", getType());
-    result.setProperty(OInternalExecutionPlan.JAVA_TYPE, getClass().getName());
-    result.setProperty("cost", getCost());
-    result.setProperty(
-        "subSteps",
-        getSubSteps() == null
-            ? null
-            : getSubSteps().stream().map(x -> x.toResult()).collect(Collectors.toList()));
-    result.setProperty("description", getDescription());
-    serializeToResult(result);
-    return result;
+    return toResult(new OToResultContextImpl());
   }
 
-  default void serializeToResult(OResultInternal result) {}
+  default void serializeToResult(OResultInternal result, OToResultContext ctx) {}
 
   static void fillIndexes(OExecutionStep step, Set<String> indexes) {
     for (OExecutionStep chilStep : step.getSubSteps()) {
@@ -172,5 +159,24 @@ public interface OExecutionStepInternal extends OExecutionStep {
     if (index != null) {
       indexes.add(index);
     }
+  }
+
+  default OResult toResult(OToResultContext ctx) {
+    OResultInternal result = new OResultInternal();
+    result.setProperty("name", getName());
+    result.setProperty("type", getType());
+    result.setProperty("targetNode", getType());
+    result.setProperty(OInternalExecutionPlan.JAVA_TYPE, getClass().getName());
+    result.setProperty("cost", ctx.getCost(this));
+    result.setProperty(
+        "subSteps",
+        getSubSteps() == null
+            ? null
+            : getSubSteps().stream()
+                .map(x -> ((OExecutionStepInternal) x).toResult(ctx))
+                .collect(Collectors.toList()));
+    result.setProperty("description", getDescription());
+    serializeToResult(result, ctx);
+    return result;
   }
 }

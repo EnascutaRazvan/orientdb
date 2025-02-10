@@ -17,9 +17,6 @@ public class MatchStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {}
-
-  @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     OExecutionStream resultSet = getPrev().get().start(ctx);
     return resultSet.flatMap(this::createNextResultSet);

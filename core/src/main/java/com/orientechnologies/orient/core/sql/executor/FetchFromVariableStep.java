@@ -21,8 +21,6 @@ public class FetchFromVariableStep extends AbstractExecutionStep {
     reset();
   }
 
-  public void reset() {}
-
   @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     getPrev().ifPresent(x -> x.start(ctx).close(ctx));

@@ -72,13 +72,7 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
-    OResultInternal result = new OResultInternal();
-    result.setProperty("type", "DDLExecutionPlan");
-    result.setProperty(JAVA_TYPE, getClass().getName());
-    result.setProperty("stmText", statement.toString());
-    result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
-    return result;
+    return toResult(new OToResultContextImpl(this.context));
   }
 
   @Override
@@ -89,5 +83,16 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
   @Override
   public void fillContext(OCommandContext context) {
     this.context = context;
+  }
+
+  @Override
+  public OResult toResult(OToResultContext ctx) {
+    OResultInternal result = new OResultInternal();
+    result.setProperty("type", "DDLExecutionPlan");
+    result.setProperty(JAVA_TYPE, getClass().getName());
+    result.setProperty("stmText", statement.toString());
+    result.setProperty("cost", getCost());
+    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    return result;
   }
 }

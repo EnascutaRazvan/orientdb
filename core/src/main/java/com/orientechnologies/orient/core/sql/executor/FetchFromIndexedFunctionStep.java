@@ -46,9 +46,6 @@ public class FetchFromIndexedFunctionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {}
-
-  @Override
   public OResult serialize() {
     OResultInternal result = OExecutionStepInternal.basicSerialize(this);
     result.setProperty("functionCondition", this.functionCondition.serialize());

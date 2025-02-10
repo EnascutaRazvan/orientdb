@@ -42,9 +42,6 @@ public class AccumulatingTimeoutStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {}
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     return OExecutionStepInternal.getIndent(ctx)
         + "+ TIMEOUT ("

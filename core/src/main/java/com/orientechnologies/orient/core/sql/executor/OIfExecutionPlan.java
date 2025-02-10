@@ -64,12 +64,17 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
+    return toResult(new OToResultContextImpl(this.context));
+  }
+
+  @Override
+  public OResult toResult(OToResultContext ctx) {
     OResultInternal result = new OResultInternal();
     result.setProperty("type", "IfExecutionPlan");
     result.setProperty("javaType", getClass().getName());
     result.setProperty("cost", getCost());
     result.setProperty("prettyPrint", prettyPrint(0, 2));
-    result.setProperty("steps", Collections.singletonList(step.toResult()));
+    result.setProperty("steps", Collections.singletonList(step.toResult(ctx)));
     return result;
   }
 

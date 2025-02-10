@@ -720,7 +720,7 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void serializeToResult(OResultInternal result) {
+  public void serializeToResult(OResultInternal result, OToResultContext ctx) {
     result.setProperty("index", desc.getIndex().getName());
     if (desc.getKeyCondition() != null) {
       result.setProperty("key", desc.getKeyCondition().toString());
@@ -770,7 +770,6 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
 
   @Override
   public void reset() {
-    desc = null;
     count = 0;
   }
 

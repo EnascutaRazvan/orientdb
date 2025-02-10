@@ -39,9 +39,6 @@ public class TimeoutStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {}
-
-  @Override
   public boolean canBeCached() {
     return true;
   }

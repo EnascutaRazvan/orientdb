@@ -125,6 +125,11 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
+    return toResult(new OToResultContextImpl(this.context));
+  }
+
+  @Override
+  public OResult toResult(OToResultContext ctx) {
     OResultInternal result = new OResultInternal();
     result.setProperty("type", "ScriptExecutionPlan");
     result.setProperty("javaType", getClass().getName());
@@ -132,7 +137,9 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("prettyPrint", prettyPrint(0, 2));
     result.setProperty(
         "steps",
-        steps == null ? null : steps.stream().map(x -> x.toResult()).collect(Collectors.toList()));
+        steps == null
+            ? null
+            : steps.stream().map(x -> x.toResult(ctx)).collect(Collectors.toList()));
     return result;
   }
 

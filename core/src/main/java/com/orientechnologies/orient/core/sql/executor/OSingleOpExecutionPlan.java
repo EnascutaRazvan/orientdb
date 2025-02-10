@@ -90,6 +90,11 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
+    return toResult(new OToResultContextImpl(this.context));
+  }
+
+  @Override
+  public OResult toResult(OToResultContext ctx) {
     OResultInternal result = new OResultInternal();
     result.setProperty("type", "QueryExecutionPlan");
     result.setProperty("javaType", getClass().getName());

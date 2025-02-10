@@ -87,6 +87,11 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
+    return toResult(new OToResultContextImpl(this.context));
+  }
+
+  @Override
+  public OResult toResult(OToResultContext ctx) {
     OResultInternal result = new OResultInternal();
     result.setProperty("type", "QueryExecutionPlan");
     result.setProperty(JAVA_TYPE, getClass().getName());
@@ -94,7 +99,9 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("prettyPrint", prettyPrint(0, 2));
     result.setProperty(
         "steps",
-        steps == null ? null : steps.stream().map(x -> x.toResult()).collect(Collectors.toList()));
+        steps == null
+            ? null
+            : steps.stream().map(x -> x.toResult(ctx)).collect(Collectors.toList()));
     return result;
   }
 

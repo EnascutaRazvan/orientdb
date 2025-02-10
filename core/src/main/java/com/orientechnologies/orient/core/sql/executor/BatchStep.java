@@ -34,9 +34,6 @@ public class BatchStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {}
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     StringBuilder result = new StringBuilder();

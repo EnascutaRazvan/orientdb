@@ -2,7 +2,6 @@ package com.orientechnologies.orient.core.sql.executor;
 
 import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.command.OStepStats;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.Optional;
 
@@ -59,14 +58,4 @@ public abstract class AbstractExecutionStep implements OExecutionStepInternal {
   }
 
   protected abstract OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException;
-
-  @Override
-  public long getCost() {
-    OStepStats stats = this.ctx.getStats(this);
-    if (stats != null) {
-      return stats.getCost();
-    } else {
-      return OExecutionStepInternal.super.getCost();
-    }
-  }
 }
