@@ -129,8 +129,12 @@ public class OQueryResponse implements OBinaryResponse {
     if (!present) {
       return Optional.empty();
     }
-    OInfoExecutionPlan result = new OInfoExecutionPlan();
     OResult read = OMessageHelper.readResult(network);
+    return Optional.of(toInfoPlan(read));
+  }
+
+  protected OInfoExecutionPlan toInfoPlan(OResult read) {
+    OInfoExecutionPlan result = new OInfoExecutionPlan();
     result.setCost(((Number) read.getProperty("cost")).intValue());
     result.setType(read.getProperty("type"));
     result.setJavaType(read.getProperty("javaType"));
@@ -140,7 +144,7 @@ public class OQueryResponse implements OBinaryResponse {
     if (subSteps != null) {
       subSteps.forEach(x -> result.getSteps().add(toInfoStep(x)));
     }
-    return Optional.of(result);
+    return result;
   }
 
   public String getQueryId() {
@@ -174,6 +178,10 @@ public class OQueryResponse implements OBinaryResponse {
     List<OResult> ssteps = x.getProperty("subSteps");
     if (ssteps != null) {
       ssteps.stream().forEach(sstep -> result.getSubSteps().add(toInfoStep(sstep)));
+    }
+    List<OResult> splans = x.getProperty("supExecutionPlans");
+    if (splans != null) {
+      splans.stream().forEach(splan -> result.getSubExecutionPlans().add(toInfoPlan(splan)));
     }
     result.setDescription(x.getProperty("description"));
     return result;

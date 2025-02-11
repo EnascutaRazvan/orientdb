@@ -73,6 +73,12 @@ public class GlobalLetQueryStep extends AbstractExecutionStep {
     return Collections.singletonList(this.subExecutionPlan);
   }
 
+  @Override
+  public void serializeToResult(OResultInternal result, OToResultContext ctx) {
+    result.setProperty(
+        "subExecutionPlans", Collections.singletonList(this.subExecutionPlan.toResult(ctx)));
+  }
+
   private String box(String spaces, String s) {
     String[] rows = s.split("\n");
     StringBuilder result = new StringBuilder();

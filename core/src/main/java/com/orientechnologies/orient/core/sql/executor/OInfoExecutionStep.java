@@ -13,6 +13,7 @@ public class OInfoExecutionStep implements OExecutionStep {
   private String description;
   private long cost;
   private List<OExecutionStep> subSteps = new ArrayList<>();
+  private List<OExecutionPlan> subPlans = new ArrayList<>();
   private OResult sourceResult;
 
   @Override
@@ -38,6 +39,11 @@ public class OInfoExecutionStep implements OExecutionStep {
   @Override
   public List<OExecutionStep> getSubSteps() {
     return subSteps;
+  }
+
+  @Override
+  public List<OExecutionPlan> getSubExecutionPlans() {
+    return subPlans;
   }
 
   @Override
