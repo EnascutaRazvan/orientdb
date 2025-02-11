@@ -1103,9 +1103,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     Optional<OExecutionPlan> p = result.getExecutionPlan();
     Assert.assertTrue(p.isPresent());
     OExecutionPlan p2 = p.get();
-    Assert.assertTrue(p2 instanceof OSelectExecutionPlan);
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) p2;
-    Assert.assertEquals(FetchFromIndexStep.class, plan.getSteps().get(0).getClass());
+    Assert.assertFalse(p2.getIndexes().isEmpty());
     result.close();
   }
 
@@ -1137,9 +1135,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     Optional<OExecutionPlan> p = result.getExecutionPlan();
     Assert.assertTrue(p.isPresent());
     OExecutionPlan p2 = p.get();
-    Assert.assertTrue(p2 instanceof OSelectExecutionPlan);
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) p2;
-    Assert.assertEquals(FetchFromIndexStep.class, plan.getSteps().get(0).getClass());
+    Assert.assertFalse(p2.getIndexes().isEmpty());
     result.close();
     OGlobalConfiguration.INDEX_ALLOW_MANUAL_INDEXES.setValue(oldAllowManual);
   }
@@ -1179,12 +1175,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     Optional<OExecutionPlan> p = result.getExecutionPlan();
     Assert.assertTrue(p.isPresent());
     OExecutionPlan p2 = p.get();
-    Assert.assertTrue(p2 instanceof OSelectExecutionPlan);
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) p2;
-    Assert.assertEquals(FetchFromIndexStep.class, plan.getSteps().get(0).getClass());
-
-    Assert.assertEquals(
-        ((FetchFromIndexStep) plan.getSteps().get(0)).getIndexName(), classNameExt + ".name");
+    Assert.assertTrue(p2.getIndexes().contains(classNameExt + ".name"));
     result.close();
   }
 
@@ -1597,8 +1588,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OSelectExecutionPlan plan = (OSelectExecutionPlan) result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     result.close();
   }
 
@@ -1627,8 +1617,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     printExecutionPlan(result);
     Assert.assertFalse(result.hasNext());
     OSelectExecutionPlan plan = (OSelectExecutionPlan) result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     result.close();
   }
 
@@ -1660,8 +1649,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OSelectExecutionPlan plan = (OSelectExecutionPlan) result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     result.close();
   }
 
@@ -2479,8 +2467,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OExecutionPlan plan = result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     Assert.assertEquals(
         0, plan.getSteps().stream().filter(step -> step instanceof OrderByStep).count());
     result.close();
@@ -2525,8 +2512,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OExecutionPlan plan = result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     Assert.assertEquals(
         0, plan.getSteps().stream().filter(step -> step instanceof OrderByStep).count());
     result.close();
@@ -2572,8 +2558,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OExecutionPlan plan = result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     Assert.assertEquals(
         0, plan.getSteps().stream().filter(step -> step instanceof OrderByStep).count());
     result.close();
@@ -2619,8 +2604,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OExecutionPlan plan = result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     Assert.assertEquals(
         0, plan.getSteps().stream().filter(step -> step instanceof OrderByStep).count());
     result.close();
@@ -2665,8 +2649,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OExecutionPlan plan = result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     Assert.assertEquals(
         0, plan.getSteps().stream().filter(step -> step instanceof OrderByStep).count());
     result.close();
@@ -2711,8 +2694,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     }
     Assert.assertFalse(result.hasNext());
     OExecutionPlan plan = result.getExecutionPlan().get();
-    Assert.assertEquals(
-        1, plan.getSteps().stream().filter(step -> step instanceof FetchFromIndexStep).count());
+    Assert.assertEquals(1, plan.getIndexes().size());
     Assert.assertEquals(
         0, plan.getSteps().stream().filter(step -> step instanceof OrderByStep).count());
     result.close();
@@ -3604,9 +3586,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertTrue(result.hasNext());
       result.next();
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
 
     try (OResultSet result =
@@ -3614,9 +3594,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertTrue(result.hasNext());
       result.next();
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
 
     try (OResultSet result =
@@ -3626,24 +3604,18 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertTrue(result.hasNext());
       result.next();
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
 
     try (OResultSet result =
         db.query("select from " + className + " where tags containsany ['xx','baz']")) {
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
 
     try (OResultSet result = db.query("select from " + className + " where tags containsany []")) {
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
@@ -3661,9 +3633,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     db.command("insert into " + className + "  set noIndex = []");
 
     try (OResultSet result = db.query("select from " + className + " where noIndex = []")) {
-      Assert.assertFalse(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().isEmpty());
       Assert.assertEquals(1, result.stream().count());
     }
   }
@@ -3688,9 +3658,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
             "select from "
                 + className
                 + " where name='aa' and(noIndex = [] or noIndex is null or noIndex = '') ")) {
-      Assert.assertFalse(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().isEmpty());
       Assert.assertEquals(2, result.stream().count());
     }
   }
@@ -3711,9 +3679,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
 
     try (OResultSet result =
         db.query("select from " + className + " where noIndex = [] or noIndex is null ")) {
-      Assert.assertFalse(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().isEmpty());
       Assert.assertEquals(2, result.stream().count());
     }
   }
@@ -3734,9 +3700,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
 
     try (OResultSet result =
         db.query("select from " + className + " where noIndex = [] or noIndex is null ")) {
-      Assert.assertFalse(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().isEmpty());
       Assert.assertEquals(2, result.stream().count());
     }
   }
@@ -3800,9 +3764,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertTrue(result.hasNext());
       result.next();
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
 
     try (OResultSet result = db.query("select from " + className + " where tag in ['foo','bar']")) {
@@ -3811,16 +3773,12 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertTrue(result.hasNext());
       result.next();
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
 
     try (OResultSet result = db.query("select from " + className + " where tag in []")) {
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
 
     List<String> params = new ArrayList<>();
@@ -3832,9 +3790,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertTrue(result.hasNext());
       result.next();
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
@@ -3879,9 +3835,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       OResult item = result.next();
       Assert.assertEquals("right", item.getProperty("name"));
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
@@ -3935,9 +3889,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       OResult item = result.next();
       Assert.assertEquals("right", item.getProperty("name"));
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
@@ -4005,9 +3957,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Map<String, Object> map = item.getProperty("themap");
       Assert.assertEquals("key10", map.keySet().iterator().next());
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
@@ -4045,9 +3995,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Map<String, Object> map = item.getProperty("themap");
       Assert.assertEquals("key10", map.keySet().iterator().next());
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
@@ -4076,9 +4024,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Map<String, Object> map = item.getProperty("themap");
       Assert.assertEquals("key10", map.keySet().iterator().next());
       Assert.assertFalse(result.hasNext());
-      Assert.assertTrue(
-          result.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(result.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
@@ -4516,9 +4462,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
         db.query(
             "SELECT FROM " + classNamePrefix + "A WHERE b.c.name = 'foo' AND b.c.d.name = 'foo'")) {
       Assert.assertTrue(rs.hasNext());
-      Assert.assertTrue(
-          rs.getExecutionPlan().get().getSteps().stream()
-              .anyMatch(x -> x instanceof FetchFromIndexStep));
+      Assert.assertTrue(rs.getExecutionPlan().get().getIndexes().size() > 0);
     }
   }
 
