@@ -1213,10 +1213,8 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     Optional<OExecutionPlan> p = result.getExecutionPlan();
     Assert.assertTrue(p.isPresent());
     OExecutionPlan p2 = p.get();
-    Assert.assertTrue(p2 instanceof OSelectExecutionPlan);
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) p2;
-    Assert.assertEquals(ParallelExecStep.class.getSimpleName(), plan.getSteps().get(0).getName());
-    ParallelExecStep parallel = (ParallelExecStep) plan.getSteps().get(0);
+    Assert.assertEquals(ParallelExecStep.class.getSimpleName(), p2.getSteps().get(0).getName());
+    OExecutionStep parallel = p2.getSteps().get(0);
     Assert.assertEquals(2, parallel.getSubExecutionPlans().size());
     result.close();
   }
@@ -1587,7 +1585,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertNotNull(next);
     }
     Assert.assertFalse(result.hasNext());
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertEquals(1, plan.getIndexes().size());
     result.close();
   }
@@ -1616,7 +1614,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
                 + " 'surname5' ");
     printExecutionPlan(result);
     Assert.assertFalse(result.hasNext());
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertEquals(1, plan.getIndexes().size());
     result.close();
   }
@@ -1648,7 +1646,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertNotNull(next);
     }
     Assert.assertFalse(result.hasNext());
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertEquals(1, plan.getIndexes().size());
     result.close();
   }
@@ -1680,7 +1678,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
       Assert.assertNotNull(next);
     }
     Assert.assertFalse(result.hasNext());
-    OSelectExecutionPlan plan = (OSelectExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertEquals(
         FetchFromClassExecutionStep.class.getSimpleName(),
         plan.getSteps().get(0).getName()); // index not used
@@ -2184,7 +2182,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
 
     OResultSet result = db.query("select from " + parent + " where name = 'name1'");
     printExecutionPlan(result);
-    OInternalExecutionPlan plan = (OInternalExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertTrue(
         plan.getSteps().get(0).getName().equals(ParallelExecStep.class.getSimpleName()));
     for (int i = 0; i < 2; i++) {
@@ -2226,7 +2224,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     OResultSet result =
         db.query("select from " + parent + " where name = 'name1' and surname = 'surname1'");
     printExecutionPlan(result);
-    OInternalExecutionPlan plan = (OInternalExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertTrue(
         plan.getSteps().get(0).getName().equals(ParallelExecStep.class.getSimpleName()));
     for (int i = 0; i < 2; i++) {
@@ -2267,7 +2265,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     OResultSet result =
         db.query("select from " + parent + " where name = 'name1' and surname = 'surname1'");
     printExecutionPlan(result);
-    OInternalExecutionPlan plan = (OInternalExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertTrue(
         plan.getSteps()
             .get(0)
@@ -2316,7 +2314,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     OResultSet result =
         db.query("select from " + parent + " where name = 'name1' and surname = 'surname1'");
     printExecutionPlan(result);
-    OInternalExecutionPlan plan = (OInternalExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertTrue(
         plan.getSteps()
             .get(0)
@@ -2375,7 +2373,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     OResultSet result =
         db.query("select from " + parent + " where name = 'name1' and surname = 'surname1'");
     printExecutionPlan(result);
-    OInternalExecutionPlan plan = (OInternalExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertTrue(
         plan.getSteps().get(0).getName().equals(ParallelExecStep.class.getSimpleName()));
     for (int i = 0; i < 3; i++) {
@@ -2427,7 +2425,7 @@ public class OSelectStatementExecutionTest extends BaseMemoryDatabase {
     OResultSet result =
         db.query("select from " + parent + " where name = 'name1' and surname = 'surname1'");
     printExecutionPlan(result);
-    OInternalExecutionPlan plan = (OInternalExecutionPlan) result.getExecutionPlan().get();
+    OExecutionPlan plan = result.getExecutionPlan().get();
     Assert.assertTrue(
         plan.getSteps().get(0).getName().equals(FetchFromClassExecutionStep.class.getSimpleName()));
     for (int i = 0; i < 3; i++) {

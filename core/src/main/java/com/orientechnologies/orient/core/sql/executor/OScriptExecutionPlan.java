@@ -135,6 +135,8 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("javaType", getClass().getName());
     result.setProperty("cost", getCost());
     result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("stmText", getStatement());
+    result.setProperty("genericStm", getGenericStatement());
     result.setProperty(
         "steps",
         steps == null

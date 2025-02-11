@@ -15,6 +15,8 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
   private String javaType;
   private Integer cost;
   private String stmText;
+  private String genericStatement;
+  private OResult result;
   private OCommandContext context;
 
   @Override
@@ -33,7 +35,7 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
 
   @Override
   public OResult toResult() {
-    return null;
+    return result;
   }
 
   public void setSteps(List<OExecutionStep> steps) {
@@ -97,5 +99,29 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
   @Override
   public void fillContext(OCommandContext context) {
     this.context = context;
+  }
+
+  public String getGenericStatement() {
+    return genericStatement;
+  }
+
+  public void setGenericStatement(String genericStatement) {
+    this.genericStatement = genericStatement;
+  }
+
+  public static OInfoExecutionPlan fromResult(OResult read) {
+    OInfoExecutionPlan result = new OInfoExecutionPlan();
+    result.result = read;
+    result.setCost(((Number) read.getProperty("cost")).intValue());
+    result.setType(read.getProperty("type"));
+    result.setJavaType(read.getProperty("javaType"));
+    result.setPrettyPrint(read.getProperty("prettyPrint"));
+    result.setStmText(read.getProperty("stmText"));
+    result.setGenericStatement(read.getProperty("genericStm"));
+    List<OResult> subSteps = read.getProperty("steps");
+    if (subSteps != null) {
+      subSteps.forEach(x -> result.getSteps().add(OInfoExecutionStep.fromResult(x)));
+    }
+    return result;
   }
 }

@@ -91,6 +91,7 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("type", "DDLExecutionPlan");
     result.setProperty(JAVA_TYPE, getClass().getName());
     result.setProperty("stmText", statement.toString());
+    result.setProperty("genericStm", getGenericStatement());
     result.setProperty("cost", getCost());
     result.setProperty("prettyPrint", prettyPrint(0, 2));
     return result;

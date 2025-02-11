@@ -97,6 +97,8 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
     result.setProperty(JAVA_TYPE, getClass().getName());
     result.setProperty("cost", getCost());
     result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("stmText", getStatement());
+    result.setProperty("genericStm", getGenericStatement());
     result.setProperty(
         "steps",
         steps == null

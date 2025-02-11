@@ -72,6 +72,7 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
     result.setProperty("type", "QueryExecutionPlan");
     result.setProperty("javaType", getClass().getName());
     result.setProperty("stmText", statement.toString());
+    result.setProperty("genericStm", getGenericStatement());
     result.setProperty("cost", getCost());
     result.setProperty("prettyPrint", prettyPrint(0, 2));
     result.setProperty("steps", null);

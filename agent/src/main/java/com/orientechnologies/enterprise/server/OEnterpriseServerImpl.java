@@ -437,6 +437,12 @@ public class OEnterpriseServerImpl
                     if (stm != null) {
                       q = stm;
                     }
+                  }
+                  if (p instanceof OInfoExecutionPlan) {
+                    String stm = ((OInfoExecutionPlan) p).getGenericStatement();
+                    if (stm != null) {
+                      q = stm;
+                    }
                   } else {
                     q = p.toString();
                   }

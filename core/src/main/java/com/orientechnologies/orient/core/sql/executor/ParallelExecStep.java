@@ -150,7 +150,7 @@ public class ParallelExecStep extends AbstractExecutionStep {
   @Override
   public void serializeToResult(OResultInternal result, OToResultContext ctx) {
     result.setProperty(
-        "supExecutionPlans", subExecutionPlans.stream().map((x) -> x.toResult(ctx)).toList());
+        "subExecutionPlans", subExecutionPlans.stream().map((x) -> x.toResult(ctx)).toList());
   }
 
   @Override
