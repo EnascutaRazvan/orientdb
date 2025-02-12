@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseStats;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
+import com.orientechnologies.orient.core.sql.executor.OInfoExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
@@ -23,7 +24,8 @@ public class OExplainResultSet implements OResultSetInternal {
     if (executionPlan != null) {
       executionPlan.fillContext(ctx);
     }
-    this.executionPlan = Optional.ofNullable(executionPlan);
+    this.executionPlan =
+        Optional.ofNullable(executionPlan).map((p) -> OInfoExecutionPlan.fromResult(p.toResult()));
   }
 
   @Override

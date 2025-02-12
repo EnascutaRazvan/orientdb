@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OInfoExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
@@ -26,6 +27,7 @@ public class OLocalResultSet implements OResultSetInternal {
   public OLocalResultSet(OInternalExecutionPlan executionPlan, OCommandContext ctx) {
     this.executionPlan = executionPlan;
     this.ctx = ctx;
+    this.executionPlan.fillContext(ctx);
     start();
   }
 
@@ -105,7 +107,7 @@ public class OLocalResultSet implements OResultSetInternal {
 
   @Override
   public Optional<OExecutionPlan> getExecutionPlan() {
-    return Optional.of(executionPlan);
+    return Optional.of(OInfoExecutionPlan.fromResult(executionPlan.toResult()));
   }
 
   @Override
