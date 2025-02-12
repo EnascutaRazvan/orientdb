@@ -2,13 +2,9 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=true,NODE_PREFIX=O,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package com.orientechnologies.orient.core.sql.parser;
 
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.sql.executor.ODeleteExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.ODeleteExecutionPlanner;
-import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import java.util.HashMap;
 import java.util.Map;
 
 public class ODeleteStatement extends OStatement {
@@ -25,6 +21,11 @@ public class ODeleteStatement extends OStatement {
 
   public ODeleteStatement(OrientSql p, int id) {
     super(p, id);
+  }
+
+  @Override
+  public boolean isPreExecute() {
+    return true;
   }
 
   public void toString(Map<Object, Object> params, StringBuilder builder) {
@@ -100,48 +101,6 @@ public class ODeleteStatement extends OStatement {
     result = 31 * result + (limit != null ? limit.hashCode() : 0);
     result = 31 * result + (unsafe ? 1 : 0);
     return result;
-  }
-
-  @Override
-  public OResultSet execute(
-      ODatabaseSession db, Map params, OCommandContext parentCtx, boolean usePlanCache) {
-    OBasicCommandContext ctx = new OBasicCommandContext(db);
-    if (parentCtx != null) {
-      ctx.setParentWithoutOverridingChild(parentCtx);
-    }
-    ctx.setInputParameters(params);
-    ODeleteExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx);
-    } else {
-      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx);
-    }
-    executionPlan.executeInternal(ctx);
-    return new OLocalResultSet(executionPlan, ctx);
-  }
-
-  @Override
-  public OResultSet execute(
-      ODatabaseSession db, Object[] args, OCommandContext parentCtx, boolean usePlanCache) {
-    OBasicCommandContext ctx = new OBasicCommandContext(db);
-    if (parentCtx != null) {
-      ctx.setParentWithoutOverridingChild(parentCtx);
-    }
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        params.put(i, args[i]);
-      }
-    }
-    ctx.setInputParameters(params);
-    ODeleteExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx);
-    } else {
-      executionPlan = (ODeleteExecutionPlan) createExecutionPlanNoCache(ctx);
-    }
-    executionPlan.executeInternal(ctx);
-    return new OLocalResultSet(executionPlan, ctx);
   }
 
   public ODeleteExecutionPlan createExecutionPlan(OCommandContext ctx) {

@@ -9,7 +9,6 @@ import com.orientechnologies.orient.core.sql.executor.OPrintContext;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
-import java.util.HashMap;
 import java.util.Map;
 
 /** Created by luigidellaquila on 12/08/16. */
@@ -31,13 +30,7 @@ public abstract class ODDLStatement extends OStatement {
     if (parentCtx != null) {
       ctx.setParentWithoutOverridingChild(parentCtx);
     }
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        params.put(i, args[i]);
-      }
-    }
-    ctx.setInputParameters(params);
+    ctx.setArrayParameters(args);
     ODDLExecutionPlan executionPlan = (ODDLExecutionPlan) createExecutionPlan(ctx);
     return new OExecutionResultSet(executionPlan.executeInternal(ctx), ctx, executionPlan);
   }

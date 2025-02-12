@@ -41,23 +41,6 @@ public class OServerStatement extends SimpleNode {
     return builder.toString();
   }
 
-  public OResultSet execute(OrientDBInternal db, Object[] args) {
-    return execute(db, args, true);
-  }
-
-  public OResultSet execute(
-      OrientDBInternal db, Object[] args, OServerCommandContext parentContext) {
-    return execute(db, args, parentContext, true);
-  }
-
-  public OResultSet execute(OrientDBInternal db, Map args) {
-    return execute(db, args, true);
-  }
-
-  public OResultSet execute(OrientDBInternal db, Map args, OServerCommandContext parentContext) {
-    return execute(db, args, parentContext, true);
-  }
-
   public OResultSet execute(OrientDBInternal db, Object[] args, boolean usePlanCache) {
     return execute(db, args, null, usePlanCache);
   }

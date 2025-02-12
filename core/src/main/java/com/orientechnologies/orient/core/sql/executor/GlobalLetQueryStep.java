@@ -30,9 +30,9 @@ public class GlobalLetQueryStep extends AbstractExecutionStep {
     if (query.toString().contains("?")) {
       // with positional parameters, you cannot know if a parameter has the same ordinal as the one
       // cached
-      subExecutionPlan = query.createExecutionPlanNoCache(subCtx);
-    } else {
       subExecutionPlan = query.createExecutionPlan(subCtx);
+    } else {
+      subExecutionPlan = query.resolvePlan(true, subCtx);
     }
   }
 

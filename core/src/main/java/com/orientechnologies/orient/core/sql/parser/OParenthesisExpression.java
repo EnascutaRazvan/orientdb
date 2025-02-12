@@ -4,7 +4,6 @@ package com.orientechnologies.orient.core.sql.parser;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
-import com.orientechnologies.orient.core.sql.executor.OInsertExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
@@ -45,19 +44,15 @@ public class OParenthesisExpression extends OMathExpression {
       if (statement.originalStatement == null || statement.originalStatement.contains("?")) {
         // cannot cache statements with positional params, especially when it's in a
         // subquery/expression.
-        execPlan = statement.createExecutionPlanNoCache(ctx);
-      } else {
         execPlan = statement.createExecutionPlan(ctx);
-      }
-      if (execPlan instanceof OInsertExecutionPlan) {
-        ((OInsertExecutionPlan) execPlan).executeInternal(ctx);
+      } else {
+        execPlan = statement.resolvePlan(true, ctx);
       }
       OLocalResultSet rs = new OLocalResultSet(execPlan, ctx);
       List<OResult> result = new ArrayList<>();
       while (rs.hasNext()) {
         result.add(rs.next());
       }
-      //      List<OResult> result = rs.stream().collect(Collectors.toList());//TODO streamed...
       rs.close();
       return result;
     }

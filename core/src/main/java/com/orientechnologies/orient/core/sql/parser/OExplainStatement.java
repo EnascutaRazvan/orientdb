@@ -9,7 +9,6 @@ import com.orientechnologies.orient.core.db.ODatabaseStats;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import java.util.HashMap;
 import java.util.Map;
 
 public class OExplainStatement extends OStatement {
@@ -43,18 +42,9 @@ public class OExplainStatement extends OStatement {
     if (parentCtx != null) {
       ctx.setParentWithoutOverridingChild(parentCtx);
     }
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) params.put(i, args[i]);
-    }
-    ctx.setInputParameters(params);
+    ctx.setArrayParameters(args);
 
-    OExecutionPlanContextOps executionPlan;
-    if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx);
-    } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx);
-    }
+    OExecutionPlanContextOps executionPlan = resolvePlan(usePlanCache, ctx);
 
     OExplainResultSet result = new OExplainResultSet(executionPlan, new ODatabaseStats(), ctx);
     return result;
@@ -69,12 +59,7 @@ public class OExplainStatement extends OStatement {
     }
     ctx.setInputParameters(args);
 
-    OExecutionPlanContextOps executionPlan;
-    if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx);
-    } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx);
-    }
+    OExecutionPlanContextOps executionPlan = resolvePlan(usePlanCache, ctx);
 
     OExplainResultSet result = new OExplainResultSet(executionPlan, new ODatabaseStats(), ctx);
     return result;

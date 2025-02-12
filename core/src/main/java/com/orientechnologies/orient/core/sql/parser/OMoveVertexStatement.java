@@ -2,13 +2,9 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=true,NODE_PREFIX=O,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package com.orientechnologies.orient.core.sql.parser;
 
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.sql.executor.OMoveVertexExecutionPlanner;
-import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OUpdateExecutionPlan;
-import java.util.HashMap;
 import java.util.Map;
 
 public class OMoveVertexStatement extends OStatement {
@@ -27,33 +23,8 @@ public class OMoveVertexStatement extends OStatement {
   }
 
   @Override
-  public OResultSet execute(
-      ODatabaseSession db, Object[] args, OCommandContext parentCtx, boolean usePlanCache) {
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        params.put(i, args[i]);
-      }
-    }
-    return execute(db, params, parentCtx, usePlanCache);
-  }
-
-  @Override
-  public OResultSet execute(
-      ODatabaseSession db, Map params, OCommandContext parentCtx, boolean usePlanCache) {
-    OBasicCommandContext ctx = new OBasicCommandContext(db);
-    if (parentCtx != null) {
-      ctx.setParentWithoutOverridingChild(parentCtx);
-    }
-    ctx.setInputParameters(params);
-    OUpdateExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx);
-    } else {
-      executionPlan = (OUpdateExecutionPlan) createExecutionPlanNoCache(ctx);
-    }
-    executionPlan.executeInternal(ctx);
-    return new OLocalResultSet(executionPlan, ctx);
+  public boolean isPreExecute() {
+    return true;
   }
 
   public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {

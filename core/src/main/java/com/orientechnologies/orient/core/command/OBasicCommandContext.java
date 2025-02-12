@@ -53,7 +53,6 @@ public class OBasicCommandContext implements OCommandContext {
   public static final String INVALID_COMPARE_COUNT = "INVALID_COMPARE_COUNT";
 
   protected ODatabaseSession database;
-  protected Object[] args;
 
   protected boolean recordMetrics = false;
   protected OCommandContext parent;
@@ -417,6 +416,16 @@ public class OBasicCommandContext implements OCommandContext {
 
   public void setInputParameters(Map<Object, Object> inputParameters) {
     this.inputParameters = inputParameters;
+  }
+
+  public void setArrayParameters(Object[] args) {
+    Map<Object, Object> params = new HashMap<>();
+    if (args != null) {
+      for (int i = 0; i < args.length; i++) {
+        params.put(i, args[i]);
+      }
+    }
+    this.inputParameters = params;
   }
 
   /**

@@ -52,12 +52,6 @@ public class OCreateEdgeExecutionPlanner {
 
   public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx, boolean useCache) {
     ODatabaseDocumentInternal db = (ODatabaseDocumentInternal) ctx.getDatabase();
-    if (useCache && !ctx.isProfiling() && statement.executinPlanCanBeCached()) {
-      OExecutionPlan plan = OExecutionPlanCache.get(statement.getOriginalStatement(), ctx, db);
-      if (plan != null) {
-        return (OInsertExecutionPlan) plan;
-      }
-    }
 
     long planningStart = System.currentTimeMillis();
 

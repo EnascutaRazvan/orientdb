@@ -9,7 +9,6 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OSingleOpExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -36,13 +35,7 @@ public abstract class OSimpleExecStatement extends OStatement {
     if (parentContext != null) {
       ctx.setParentWithoutOverridingChild(parentContext);
     }
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        params.put(i, args[i]);
-      }
-    }
-    ctx.setInputParameters(params);
+    ctx.setArrayParameters(args);
     OSingleOpExecutionPlan executionPlan = (OSingleOpExecutionPlan) createExecutionPlan(ctx);
     return new OExecutionResultSet(executionPlan.executeInternal(ctx), ctx, executionPlan);
   }

@@ -30,11 +30,11 @@ public class ScriptLineStep extends AbstractExecutionStep {
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     initPlan(ctx);
     if (plan instanceof OInsertExecutionPlan) {
-      ((OInsertExecutionPlan) plan).executeInternal(ctx);
+      return OExecutionStream.resultIterator(OStatement.executeAll(ctx, plan));
     } else if (plan instanceof ODeleteExecutionPlan) {
-      ((ODeleteExecutionPlan) plan).executeInternal(ctx);
+      return OExecutionStream.resultIterator(OStatement.executeAll(ctx, plan));
     } else if (plan instanceof OUpdateExecutionPlan) {
-      ((OUpdateExecutionPlan) plan).executeInternal(ctx);
+      return OExecutionStream.resultIterator(OStatement.executeAll(ctx, plan));
     } else if (plan instanceof ODDLExecutionPlan) {
       ((ODDLExecutionPlan) plan).executeInternal((OBasicCommandContext) ctx);
     } else if (plan instanceof OSingleOpExecutionPlan) {

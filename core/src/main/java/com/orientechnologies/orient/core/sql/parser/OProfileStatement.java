@@ -12,8 +12,6 @@ import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.executor.OUpdateExecutionPlan;
-import java.util.HashMap;
 import java.util.Map;
 
 public class OProfileStatement extends OStatement {
@@ -48,23 +46,10 @@ public class OProfileStatement extends OStatement {
     if (parentCtx != null) {
       ctx.setParentWithoutOverridingChild(parentCtx);
     }
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) params.put(i, args[i]);
-    }
-    ctx.setInputParameters(params);
+    ctx.setArrayParameters(args);
     ctx.enableProfiling();
 
-    OExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx);
-    } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx);
-    }
-
-    if (executionPlan instanceof OUpdateExecutionPlan) {
-      ((OUpdateExecutionPlan) executionPlan).executeInternal(ctx);
-    }
+    OExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
 
     OLocalResultSet rs = new OLocalResultSet((OInternalExecutionPlan) executionPlan, ctx);
 
@@ -95,12 +80,7 @@ public class OProfileStatement extends OStatement {
     }
     ctx.setInputParameters(args);
 
-    OExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = statement.createExecutionPlan(ctx);
-    } else {
-      executionPlan = statement.createExecutionPlanNoCache(ctx);
-    }
+    OExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
 
     OLocalResultSet rs = new OLocalResultSet((OInternalExecutionPlan) executionPlan, ctx);
 

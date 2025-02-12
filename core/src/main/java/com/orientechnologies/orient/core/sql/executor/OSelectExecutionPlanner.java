@@ -121,12 +121,6 @@ public class OSelectExecutionPlanner {
 
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx, boolean useCache) {
     ODatabaseDocumentInternal db = (ODatabaseDocumentInternal) ctx.getDatabase();
-    if (useCache && !ctx.isProfiling() && statement.executinPlanCanBeCached()) {
-      OExecutionPlan plan = OExecutionPlanCache.get(statement.getOriginalStatement(), ctx, db);
-      if (plan != null) {
-        return (OInternalExecutionPlan) plan;
-      }
-    }
 
     long planningStart = System.currentTimeMillis();
 

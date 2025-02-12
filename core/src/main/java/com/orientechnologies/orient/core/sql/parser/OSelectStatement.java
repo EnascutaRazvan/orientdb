@@ -6,17 +6,13 @@
 */
 package com.orientechnologies.orient.core.sql.parser;
 
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
-import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OSelectExecutionPlanner;
 import com.orientechnologies.orient.core.storage.OStorage;
-import java.util.HashMap;
 import java.util.Map;
 
 public class OSelectStatement extends OStatement {
@@ -332,61 +328,9 @@ public class OSelectStatement extends OStatement {
     return true;
   }
 
-  @Override
-  public OResultSet execute(
-      ODatabaseSession db, Object[] args, OCommandContext parentCtx, boolean usePlanCache) {
-    OBasicCommandContext ctx = new OBasicCommandContext(db);
-    if (parentCtx != null) {
-      ctx.setParentWithoutOverridingChild(parentCtx);
-    }
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        params.put(i, args[i]);
-      }
-    }
-    ctx.setInputParameters(params);
-    OInternalExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx);
-    } else {
-      executionPlan = createExecutionPlanNoCache(ctx);
-    }
-
-    OLocalResultSet result = new OLocalResultSet(executionPlan, ctx);
-    return result;
-  }
-
-  @Override
-  public OResultSet execute(
-      ODatabaseSession db, Map params, OCommandContext parentCtx, boolean usePlanCache) {
-    OBasicCommandContext ctx = new OBasicCommandContext(db);
-    if (parentCtx != null) {
-      ctx.setParentWithoutOverridingChild(parentCtx);
-    }
-    ctx.setInputParameters(params);
-    OInternalExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx);
-    } else {
-      executionPlan = createExecutionPlanNoCache(ctx);
-    }
-
-    OLocalResultSet result = new OLocalResultSet(executionPlan, ctx);
-    return result;
-  }
-
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OSelectExecutionPlanner planner = new OSelectExecutionPlanner(this);
     OInternalExecutionPlan result = planner.createExecutionPlan(ctx, true);
-    result.setStatement(this.originalStatement);
-    result.setGenericStatement(this.toGenericStatement());
-    return result;
-  }
-
-  public OInternalExecutionPlan createExecutionPlanNoCache(OCommandContext ctx) {
-    OSelectExecutionPlanner planner = new OSelectExecutionPlanner(this);
-    OInternalExecutionPlan result = planner.createExecutionPlan(ctx, false);
     result.setStatement(this.originalStatement);
     result.setGenericStatement(this.toGenericStatement());
     return result;

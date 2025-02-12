@@ -3,14 +3,19 @@
 package com.orientechnologies.orient.core.sql.parser;
 
 import com.orientechnologies.common.exception.OException;
+import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
+import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
+import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
+import com.orientechnologies.orient.core.sql.executor.OResultSetReady;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.Map;
 
 public class OStatement extends SimpleNode {
@@ -46,38 +51,73 @@ public class OStatement extends SimpleNode {
     return builder.toString();
   }
 
-  public OResultSet execute(ODatabaseSession db, Object[] args) {
-    return execute(db, args, true);
-  }
-
-  public OResultSet execute(ODatabaseSession db, Object[] args, OCommandContext parentContext) {
-    return execute(db, args, parentContext, true);
-  }
-
-  public OResultSet execute(ODatabaseSession db, Map args) {
-    return execute(db, args, true);
-  }
-
-  public OResultSet execute(ODatabaseSession db, Map args, OCommandContext parentContext) {
-    return execute(db, args, parentContext, true);
-  }
-
   public OResultSet execute(ODatabaseSession db, Object[] args, boolean usePlanCache) {
     return execute(db, args, null, usePlanCache);
-  }
-
-  public OResultSet execute(
-      ODatabaseSession db, Object[] args, OCommandContext parentContext, boolean usePlanCache) {
-    throw new UnsupportedOperationException();
   }
 
   public OResultSet execute(ODatabaseSession db, Map args, boolean usePlanCache) {
     return execute(db, args, null, usePlanCache);
   }
 
+  public boolean isPreExecute() {
+    return false;
+  }
+
   public OResultSet execute(
-      ODatabaseSession db, Map args, OCommandContext parentContext, boolean usePlanCache) {
-    throw new UnsupportedOperationException();
+      ODatabaseSession db, Object[] args, OCommandContext parentCtx, boolean usePlanCache) {
+    OBasicCommandContext ctx = new OBasicCommandContext(db);
+    if (parentCtx != null) {
+      ctx.setParentWithoutOverridingChild(parentCtx);
+    }
+    ctx.setArrayParameters(args);
+    OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
+
+    if (isPreExecute()) {
+      return executeAll(ctx, executionPlan);
+    } else {
+      return new OLocalResultSet(executionPlan, ctx);
+    }
+  }
+
+  public static OResultSetReady executeAll(
+      OCommandContext ctx, OInternalExecutionPlan executionPlan) {
+    OExecutionStream nextBlock = executionPlan.start(ctx);
+    OResultSetReady result = new OResultSetReady();
+    result.setPlan(executionPlan);
+    while (nextBlock.hasNext(ctx)) {
+      result.add(nextBlock.next(ctx));
+    }
+    nextBlock.close(ctx);
+    return result;
+  }
+
+  public OInternalExecutionPlan resolvePlan(boolean useCache, OCommandContext ctx) {
+    if (useCache && !ctx.isProfiling() && executinPlanCanBeCached()) {
+      OExecutionPlan plan =
+          OExecutionPlanCache.get(
+              getOriginalStatement(), ctx, (ODatabaseDocumentInternal) ctx.getDatabase());
+      if (plan != null) {
+        return (OInternalExecutionPlan) plan;
+      }
+    }
+    return createExecutionPlan(ctx);
+  }
+
+  public OResultSet execute(
+      ODatabaseSession db, Map params, OCommandContext parentCtx, boolean usePlanCache) {
+    OBasicCommandContext ctx = new OBasicCommandContext(db);
+    if (parentCtx != null) {
+      ctx.setParentWithoutOverridingChild(parentCtx);
+    }
+    ctx.setInputParameters(params);
+
+    OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
+
+    if (isPreExecute()) {
+      return executeAll(ctx, executionPlan);
+    } else {
+      return new OLocalResultSet(executionPlan, ctx);
+    }
   }
 
   /**

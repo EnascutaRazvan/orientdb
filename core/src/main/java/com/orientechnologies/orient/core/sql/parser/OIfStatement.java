@@ -13,7 +13,6 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OSelectExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OUpdateExecutionPlan;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -68,20 +67,8 @@ public class OIfStatement extends OStatement {
     if (parentCtx != null) {
       ctx.setParentWithoutOverridingChild(parentCtx);
     }
-    Map<Object, Object> params = new HashMap<>();
-    if (args != null) {
-      for (int i = 0; i < args.length; i++) {
-        params.put(i, args[i]);
-      }
-    }
-    ctx.setInputParameters(params);
-
-    OIfExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx);
-    } else {
-      executionPlan = (OIfExecutionPlan) createExecutionPlanNoCache(ctx);
-    }
+    ctx.setArrayParameters(args);
+    OIfExecutionPlan executionPlan = (OIfExecutionPlan) resolvePlan(usePlanCache, ctx);
 
     OExecutionStepInternal last = executionPlan.executeUntilReturn(ctx);
     if (last == null) {
@@ -94,8 +81,7 @@ public class OIfStatement extends OStatement {
     } else {
       OUpdateExecutionPlan finalPlan = new OUpdateExecutionPlan();
       finalPlan.chain(last);
-      finalPlan.executeInternal(ctx);
-      return new OLocalResultSet(finalPlan, ctx);
+      return executeAll(ctx, finalPlan);
     }
   }
 
@@ -108,12 +94,7 @@ public class OIfStatement extends OStatement {
     }
     ctx.setInputParameters(params);
 
-    OIfExecutionPlan executionPlan;
-    if (usePlanCache) {
-      executionPlan = createExecutionPlan(ctx);
-    } else {
-      executionPlan = (OIfExecutionPlan) createExecutionPlanNoCache(ctx);
-    }
+    OIfExecutionPlan executionPlan = (OIfExecutionPlan) resolvePlan(usePlanCache, ctx);
 
     OExecutionStepInternal last = executionPlan.executeUntilReturn(ctx);
     if (last == null) {
@@ -126,8 +107,7 @@ public class OIfStatement extends OStatement {
     } else {
       OUpdateExecutionPlan finalPlan = new OUpdateExecutionPlan();
       finalPlan.chain(last);
-      finalPlan.executeInternal(ctx);
-      return new OLocalResultSet(finalPlan, ctx);
+      return executeAll(ctx, finalPlan);
     }
   }
 
