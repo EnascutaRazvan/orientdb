@@ -1,8 +1,6 @@
 package com.orientechnologies.orient.core.sql.executor;
 
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.ODDLStatement;
 import java.util.Collections;
@@ -37,11 +35,6 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
   @Override
   public boolean canBeCached() {
     return false;
-  }
-
-  public OExecutionStream executeInternal(OBasicCommandContext ctx)
-      throws OCommandExecutionException {
-    return statement.executeDDL(ctx);
   }
 
   @Override

@@ -1,7 +1,6 @@
 package com.orientechnologies.orient.core.sql.executor;
 
 import com.orientechnologies.common.concur.OTimeoutException;
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.OReturnStatement;
@@ -29,11 +28,6 @@ public class ScriptLineStep extends AbstractExecutionStep {
   @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     initPlan(ctx);
-    if (plan instanceof ODDLExecutionPlan) {
-      ((ODDLExecutionPlan) plan).executeInternal((OBasicCommandContext) ctx);
-    } else if (plan instanceof OSingleOpExecutionPlan) {
-      ((OSingleOpExecutionPlan) plan).executeInternal((OBasicCommandContext) ctx);
-    }
     return plan.start(ctx);
   }
 

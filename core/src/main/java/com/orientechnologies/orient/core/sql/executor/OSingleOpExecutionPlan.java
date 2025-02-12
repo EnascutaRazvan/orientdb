@@ -1,8 +1,6 @@
 package com.orientechnologies.orient.core.sql.executor;
 
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.OSimpleExecStatement;
 import java.util.Collections;
@@ -13,10 +11,6 @@ import java.util.Set;
 public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
 
   protected final OSimpleExecStatement statement;
-
-  private boolean executed = false;
-  private OExecutionStream result;
-
   private OCommandContext context;
 
   public OSingleOpExecutionPlan(OSimpleExecStatement stm) {
@@ -28,19 +22,10 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OExecutionStream start(OCommandContext ctx) {
-    if (executed && result == null) {
-      return OExecutionStream.empty();
-    }
-    if (!executed) {
-      executed = true;
-      result = statement.executeSimple(ctx);
-    }
-    return result;
+    return statement.executeSimple(ctx);
   }
 
-  public void reset(OCommandContext ctx) {
-    executed = false;
-  }
+  public void reset(OCommandContext ctx) {}
 
   @Override
   public long getCost() {
@@ -50,17 +35,6 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
   @Override
   public boolean canBeCached() {
     return false;
-  }
-
-  public OExecutionStream executeInternal(OBasicCommandContext ctx)
-      throws OCommandExecutionException {
-    if (executed) {
-      throw new OCommandExecutionException(
-          "Trying to execute a result-set twice. Please use reset()");
-    }
-    executed = true;
-    result = statement.executeSimple(ctx);
-    return result;
   }
 
   @Override
