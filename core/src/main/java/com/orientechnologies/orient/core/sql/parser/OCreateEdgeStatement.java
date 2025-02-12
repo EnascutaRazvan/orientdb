@@ -31,10 +31,6 @@ public class OCreateEdgeStatement extends OStatement {
     super(p, id);
   }
 
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OCreateEdgeExecutionPlanner planner = new OCreateEdgeExecutionPlanner(this);
     OInsertExecutionPlan result = planner.createExecutionPlan(ctx, false);

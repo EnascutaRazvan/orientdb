@@ -4,7 +4,9 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
 import com.orientechnologies.orient.core.sql.executor.OResult;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -80,6 +82,15 @@ public interface OExecutionStream {
 
   public default OExecutionStream onClose(OnClose onClose) {
     return new OnCloseExecutionStream(this, onClose);
+  }
+
+  public static OExecutionStream collectAll(OExecutionStream from, OCommandContext ctx) {
+    List<OResult> result = new ArrayList<>();
+    while (from.hasNext(ctx)) {
+      result.add(from.next(ctx));
+    }
+    from.close(ctx);
+    return OExecutionStream.resultIterator(result.iterator());
   }
 
   public default Stream<OResult> stream(OCommandContext ctx) {

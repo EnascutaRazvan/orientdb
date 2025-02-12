@@ -37,11 +37,6 @@ public class OForEachBlock extends OStatement {
     this.statements.add(statement);
   }
 
-  @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OForEachExecutionPlan plan = new OForEachExecutionPlan();
     int nextProg = ++FOREACH_VARIABLE_PROGR;

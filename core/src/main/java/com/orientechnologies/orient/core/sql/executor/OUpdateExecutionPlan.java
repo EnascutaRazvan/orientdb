@@ -1,6 +1,7 @@
 package com.orientechnologies.orient.core.sql.executor;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 
 /** @author Luigi Dell'Aquila (l.dellaquila-(at)-orientdb.com) */
 public class OUpdateExecutionPlan extends OSelectExecutionPlan {
@@ -10,8 +11,8 @@ public class OUpdateExecutionPlan extends OSelectExecutionPlan {
   }
 
   @Override
-  public void reset(OCommandContext ctx) {
-    super.reset(ctx);
+  public OExecutionStream start(OCommandContext ctx) {
+    return OExecutionStream.collectAll(super.start(ctx), ctx);
   }
 
   @Override

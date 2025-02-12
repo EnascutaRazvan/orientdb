@@ -23,11 +23,6 @@ public class ODeleteStatement extends OStatement {
     super(p, id);
   }
 
-  @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public void toString(Map<Object, Object> params, StringBuilder builder) {
     builder.append("DELETE FROM ");
     fromClause.toString(params, builder);

@@ -24,11 +24,6 @@ public class ODeleteVertexStatement extends OStatement {
     super(p, id);
   }
 
-  @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public ODeleteExecutionPlan createExecutionPlan(OCommandContext ctx) {
     ODeleteVertexExecutionPlanner planner = new ODeleteVertexExecutionPlanner(this);
     ODeleteExecutionPlan result = planner.createExecutionPlan(ctx);

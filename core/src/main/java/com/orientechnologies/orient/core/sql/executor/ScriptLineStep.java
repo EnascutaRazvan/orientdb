@@ -29,13 +29,7 @@ public class ScriptLineStep extends AbstractExecutionStep {
   @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     initPlan(ctx);
-    if (plan instanceof OInsertExecutionPlan) {
-      return OExecutionStream.resultIterator(OStatement.executeAll(ctx, plan));
-    } else if (plan instanceof ODeleteExecutionPlan) {
-      return OExecutionStream.resultIterator(OStatement.executeAll(ctx, plan));
-    } else if (plan instanceof OUpdateExecutionPlan) {
-      return OExecutionStream.resultIterator(OStatement.executeAll(ctx, plan));
-    } else if (plan instanceof ODDLExecutionPlan) {
+    if (plan instanceof ODDLExecutionPlan) {
       ((ODDLExecutionPlan) plan).executeInternal((OBasicCommandContext) ctx);
     } else if (plan instanceof OSingleOpExecutionPlan) {
       ((OSingleOpExecutionPlan) plan).executeInternal((OBasicCommandContext) ctx);

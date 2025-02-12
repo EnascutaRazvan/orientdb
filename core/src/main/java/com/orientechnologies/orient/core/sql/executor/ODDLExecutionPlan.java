@@ -24,7 +24,7 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OExecutionStream start(OCommandContext ctx) {
-    return OExecutionStream.empty();
+    return statement.executeDDL(ctx);
   }
 
   public void reset(OCommandContext ctx) {}

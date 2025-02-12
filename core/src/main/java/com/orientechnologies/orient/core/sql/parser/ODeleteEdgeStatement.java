@@ -35,11 +35,6 @@ public class ODeleteEdgeStatement extends OStatement {
     super(p, id);
   }
 
-  @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     ODeleteEdgeExecutionPlanner planner = new ODeleteEdgeExecutionPlanner(this);
     OInternalExecutionPlan result = planner.createExecutionPlan(ctx, true);

@@ -22,11 +22,6 @@ public class OMoveVertexStatement extends OStatement {
     super(p, id);
   }
 
-  @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OMoveVertexExecutionPlanner planner = new OMoveVertexExecutionPlanner(this);
     return planner.createExecutionPlan(ctx);

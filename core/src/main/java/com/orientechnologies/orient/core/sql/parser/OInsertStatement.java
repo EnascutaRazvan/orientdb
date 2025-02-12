@@ -126,11 +126,6 @@ public class OInsertStatement extends OStatement {
     return result;
   }
 
-  @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OInsertExecutionPlanner planner = new OInsertExecutionPlanner(this);
     OInsertExecutionPlan result = planner.createExecutionPlan(ctx);

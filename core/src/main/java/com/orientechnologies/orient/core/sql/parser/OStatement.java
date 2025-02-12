@@ -14,7 +14,7 @@ import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.executor.OResultSetReady;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.Map;
 
@@ -59,10 +59,6 @@ public class OStatement extends SimpleNode {
     return execute(db, args, null, usePlanCache);
   }
 
-  public boolean isPreExecute() {
-    return false;
-  }
-
   public OResultSet execute(
       ODatabaseSession db, Object[] args, OCommandContext parentCtx, boolean usePlanCache) {
     OBasicCommandContext ctx = new OBasicCommandContext(db);
@@ -71,24 +67,11 @@ public class OStatement extends SimpleNode {
     }
     ctx.setArrayParameters(args);
     OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
-
-    if (isPreExecute()) {
-      return executeAll(ctx, executionPlan);
-    } else {
-      return new OLocalResultSet(executionPlan, ctx);
-    }
+    return new OLocalResultSet(executionPlan, ctx);
   }
 
-  public static OResultSetReady executeAll(
-      OCommandContext ctx, OInternalExecutionPlan executionPlan) {
-    OExecutionStream nextBlock = executionPlan.start(ctx);
-    OResultSetReady result = new OResultSetReady();
-    result.setPlan(executionPlan);
-    while (nextBlock.hasNext(ctx)) {
-      result.add(nextBlock.next(ctx));
-    }
-    nextBlock.close(ctx);
-    return result;
+  public static OResultSet executeAll(OCommandContext ctx, OInternalExecutionPlan plan) {
+    return new OExecutionResultSet(OExecutionStream.collectAll(plan.start(ctx), ctx), ctx, plan);
   }
 
   public OInternalExecutionPlan resolvePlan(boolean useCache, OCommandContext ctx) {
@@ -113,11 +96,7 @@ public class OStatement extends SimpleNode {
 
     OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
 
-    if (isPreExecute()) {
-      return executeAll(ctx, executionPlan);
-    } else {
-      return new OLocalResultSet(executionPlan, ctx);
-    }
+    return new OLocalResultSet(executionPlan, ctx);
   }
 
   /**

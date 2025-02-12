@@ -24,11 +24,6 @@ public class OCreateVertexStatement extends OStatement {
   }
 
   @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
-  @Override
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OCreateVertexExecutionPlanner planner = new OCreateVertexExecutionPlanner(this);
     OInternalExecutionPlan result = planner.createExecutionPlan(ctx);

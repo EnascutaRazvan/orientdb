@@ -97,7 +97,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
           @Override
           public OExecutionStream start(OCommandContext ctx) throws OTimeoutException {
-            return OExecutionStream.resultIterator(OStatement.executeAll(ctx, retryStep));
+            return OExecutionStream.collectAll(retryStep.start(ctx), ctx);
           }
 
           public void setPrevious(OExecutionStepInternal step) {}

@@ -185,11 +185,6 @@ public class OUpdateStatement extends OStatement {
     return result;
   }
 
-  @Override
-  public boolean isPreExecute() {
-    return true;
-  }
-
   public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OUpdateExecutionPlanner planner = new OUpdateExecutionPlanner(this);
     OUpdateExecutionPlan result = planner.createExecutionPlan(ctx);
