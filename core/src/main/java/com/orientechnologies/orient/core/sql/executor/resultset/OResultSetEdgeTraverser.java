@@ -42,4 +42,9 @@ public final class OResultSetEdgeTraverser implements OExecutionStream {
       }
     }
   }
+
+  @Override
+  public boolean isTermination() {
+    return false;
+  }
 }

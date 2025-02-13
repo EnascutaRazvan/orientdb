@@ -42,4 +42,9 @@ public final class OFlatMapExecutionStream implements OExecutionStream {
     }
     base.close(ctx);
   }
+
+  @Override
+  public boolean isTermination() {
+    return currentResultSet.isTermination();
+  }
 }

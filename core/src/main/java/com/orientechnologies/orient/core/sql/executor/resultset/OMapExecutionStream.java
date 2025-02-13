@@ -29,4 +29,9 @@ public class OMapExecutionStream implements OExecutionStream {
   public void close(OCommandContext ctx) {
     this.upstream.close(ctx);
   }
+
+  @Override
+  public boolean isTermination() {
+    return upstream.isTermination();
+  }
 }

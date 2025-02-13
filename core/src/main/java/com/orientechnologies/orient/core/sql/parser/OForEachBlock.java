@@ -105,20 +105,5 @@ public class OForEachBlock extends OStatement {
     }
     builder.append("}");
   }
-
-  public boolean containsReturn() {
-    for (OStatement stm : this.statements) {
-      if (stm instanceof OReturnStatement) {
-        return true;
-      }
-      if (stm instanceof OForEachBlock && ((OForEachBlock) stm).containsReturn()) {
-        return true;
-      }
-      if (stm instanceof OIfStatement && ((OIfStatement) stm).containsReturn()) {
-        return true;
-      }
-    }
-    return false;
-  }
 }
 /* JavaCC - OriginalChecksum=071053b057a38c57f3c90d28399615d0 (do not edit this line) */

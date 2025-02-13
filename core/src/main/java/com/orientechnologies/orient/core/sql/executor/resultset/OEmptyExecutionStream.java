@@ -19,4 +19,9 @@ public class OEmptyExecutionStream implements OExecutionStream {
 
   @Override
   public void close(OCommandContext ctx) {}
+
+  @Override
+  public boolean isTermination() {
+    return false;
+  }
 }

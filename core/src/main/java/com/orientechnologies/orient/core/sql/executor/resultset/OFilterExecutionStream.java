@@ -55,4 +55,9 @@ public class OFilterExecutionStream implements OExecutionStream {
       }
     }
   }
+
+  @Override
+  public boolean isTermination() {
+    return prevResult.isTermination();
+  }
 }

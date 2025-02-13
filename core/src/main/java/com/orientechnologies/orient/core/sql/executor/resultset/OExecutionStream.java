@@ -19,6 +19,13 @@ public interface OExecutionStream {
 
   void close(OCommandContext ctx);
 
+  /**
+   * Flag used to terminate scripts early in the execution, used by the return statement via
+   * the terminate execution stream;
+   * @return
+   */
+  boolean isTermination();
+
   public static OExecutionStream produce(OProduceResult producer) {
     return new OProduceExecutionStream(producer);
   }
@@ -50,6 +57,10 @@ public interface OExecutionStream {
 
   public default OExecutionStream limit(long limit) {
     return new OLimitedExecutionStream(this, limit);
+  }
+
+  public default OExecutionStream terminate() {
+    return new OTerminationExecutionStream(this);
   }
 
   public static OExecutionStream iterator(Iterator<Object> iterator) {
@@ -93,7 +104,11 @@ public interface OExecutionStream {
       result.add(from.next(ctx));
     }
     from.close(ctx);
-    return OExecutionStream.resultIterator(result.iterator());
+    OExecutionStream fullStream = OExecutionStream.resultIterator(result.iterator());
+    if (from.isTermination()) {
+      fullStream = fullStream.terminate();
+    }
+    return fullStream;
   }
 
   public static void consume(OExecutionStream toConsume, OCommandContext ctx) {

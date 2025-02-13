@@ -2,35 +2,37 @@ package com.orientechnologies.orient.core.sql.executor.resultset;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.OResult;
+import java.util.Objects;
 
-public class OnCloseExecutionStream implements OExecutionStream {
+/** Does nothing, just set the termination flag.
+ *
+ */
+public class OTerminationExecutionStream implements OExecutionStream {
 
-  private OExecutionStream source;
-  private OnClose onClose;
+  private OExecutionStream from;
 
-  public OnCloseExecutionStream(OExecutionStream source, OnClose onClose) {
-    this.source = source;
-    this.onClose = onClose;
+  public OTerminationExecutionStream(OExecutionStream from) {
+    Objects.requireNonNull(from);
+    this.from = from;
   }
 
   @Override
   public boolean hasNext(OCommandContext ctx) {
-    return source.hasNext(ctx);
+    return from.hasNext(ctx);
   }
 
   @Override
   public OResult next(OCommandContext ctx) {
-    return source.next(ctx);
+    return from.next(ctx);
   }
 
   @Override
   public void close(OCommandContext ctx) {
-    onClose.close(ctx);
-    source.close(ctx);
+    from.close(ctx);
   }
 
   @Override
   public boolean isTermination() {
-    return source.isTermination();
+    return true;
   }
 }

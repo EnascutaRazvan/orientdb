@@ -64,4 +64,9 @@ public final class OLoaderExecutionStream implements OExecutionStream {
     }
     return;
   }
+
+  @Override
+  public boolean isTermination() {
+    return false;
+  }
 }

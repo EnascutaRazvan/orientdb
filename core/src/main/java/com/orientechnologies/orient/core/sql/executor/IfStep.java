@@ -5,8 +5,6 @@ import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.OBooleanExpression;
-import com.orientechnologies.orient.core.sql.parser.OIfStatement;
-import com.orientechnologies.orient.core.sql.parser.OReturnStatement;
 import com.orientechnologies.orient.core.sql.parser.OStatement;
 import java.util.List;
 
@@ -74,37 +72,5 @@ public class IfStep extends AbstractExecutionStep {
 
   public void setCondition(OBooleanExpression condition) {
     this.condition = condition;
-  }
-
-  public boolean containsReturn() {
-    if (positiveStatements != null) {
-      for (OStatement stm : positiveStatements) {
-        if (containsReturn(stm)) {
-          return true;
-        }
-      }
-    }
-    if (negativeStatements != null) {
-      for (OStatement stm : negativeStatements) {
-        if (containsReturn(stm)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  private boolean containsReturn(OStatement stm) {
-    if (stm instanceof OReturnStatement) {
-      return true;
-    }
-    if (stm instanceof OIfStatement) {
-      for (OStatement o : ((OIfStatement) stm).getStatements()) {
-        if (containsReturn(o)) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 }

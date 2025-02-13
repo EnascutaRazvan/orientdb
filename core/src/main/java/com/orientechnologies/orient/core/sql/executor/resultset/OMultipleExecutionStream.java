@@ -40,4 +40,14 @@ public final class OMultipleExecutionStream implements OExecutionStream {
     }
     streamsSource.close(ctx);
   }
+
+  @Override
+  public boolean isTermination() {
+    // TODO: fetch first
+    if (currentStream != null) {
+      return currentStream.isTermination();
+    } else {
+      return false;
+    }
+  }
 }

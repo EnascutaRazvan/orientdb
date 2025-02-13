@@ -7,7 +7,6 @@ import com.orientechnologies.orient.core.db.OExecutionThreadLocal;
 import com.orientechnologies.orient.core.exception.OCommandInterruptedException;
 import com.orientechnologies.orient.core.sql.executor.AbstractExecutionStep;
 import com.orientechnologies.orient.core.sql.executor.EmptyStep;
-import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OScriptExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
@@ -32,9 +31,9 @@ public class WhileStep extends AbstractExecutionStep {
         throw new OCommandInterruptedException("The command has been interrupted");
 
       OScriptExecutionPlan plan = initPlan(ctx);
-      OExecutionStepInternal result = plan.executeFull(ctx);
-      if (result != null) {
-        return result.start(ctx);
+      OExecutionStream result = plan.executeFull(ctx);
+      if (result.isTermination()) {
+        return result;
       }
     }
     return new EmptyStep(ctx).start(ctx);
@@ -51,23 +50,5 @@ public class WhileStep extends AbstractExecutionStep {
       plan.chain(stm, subCtx1);
     }
     return plan;
-  }
-
-  public boolean containsReturn() {
-    for (OStatement stm : this.statements) {
-      if (stm instanceof OReturnStatement) {
-        return true;
-      }
-      if (stm instanceof OForEachBlock && ((OForEachBlock) stm).containsReturn()) {
-        return true;
-      }
-      if (stm instanceof OIfStatement && ((OIfStatement) stm).containsReturn()) {
-        return true;
-      }
-      if (stm instanceof OWhileBlock && ((OWhileBlock) stm).containsReturn()) {
-        return true;
-      }
-    }
-    return false;
   }
 }

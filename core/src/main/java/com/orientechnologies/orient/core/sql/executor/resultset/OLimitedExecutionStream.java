@@ -37,4 +37,9 @@ public class OLimitedExecutionStream implements OExecutionStream {
   public void close(OCommandContext ctx) {
     upstream.close(ctx);
   }
+
+  @Override
+  public boolean isTermination() {
+    return upstream.isTermination();
+  }
 }

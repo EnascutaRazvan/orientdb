@@ -6,10 +6,7 @@ import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.OExpression;
-import com.orientechnologies.orient.core.sql.parser.OForEachBlock;
 import com.orientechnologies.orient.core.sql.parser.OIdentifier;
-import com.orientechnologies.orient.core.sql.parser.OIfStatement;
-import com.orientechnologies.orient.core.sql.parser.OReturnStatement;
 import com.orientechnologies.orient.core.sql.parser.OStatement;
 import java.util.Iterator;
 import java.util.List;
@@ -39,9 +36,9 @@ public class ForEachStep extends AbstractExecutionStep {
     while (iterator.hasNext()) {
       ctx.setVariable(loopVariable.getStringValue(), iterator.next());
       OScriptExecutionPlan plan = initPlan(ctx);
-      OExecutionStepInternal result = plan.executeFull(ctx);
-      if (result != null) {
-        return result.start(ctx);
+      OExecutionStream result = plan.executeFull(ctx);
+      if (result.isTermination()) {
+        return result;
       }
     }
 
@@ -61,20 +58,5 @@ public class ForEachStep extends AbstractExecutionStep {
       plan.chain(stm, subCtx1);
     }
     return plan;
-  }
-
-  public boolean containsReturn() {
-    for (OStatement stm : this.body) {
-      if (stm instanceof OReturnStatement) {
-        return true;
-      }
-      if (stm instanceof OForEachBlock && ((OForEachBlock) stm).containsReturn()) {
-        return true;
-      }
-      if (stm instanceof OIfStatement && ((OIfStatement) stm).containsReturn()) {
-        return true;
-      }
-    }
-    return false;
   }
 }

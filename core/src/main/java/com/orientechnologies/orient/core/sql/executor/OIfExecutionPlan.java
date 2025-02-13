@@ -90,19 +90,6 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
     return false;
   }
 
-  public OExecutionStepInternal executeUntilReturn(OCommandContext ctx) {
-    OScriptExecutionPlan plan = step.producePlan(ctx);
-    if (plan != null) {
-      return plan.executeUntilReturn(ctx);
-    } else {
-      return null;
-    }
-  }
-
-  public boolean containsReturn() {
-    return step.containsReturn();
-  }
-
   @Override
   public Set<String> getIndexes() {
     Set<String> indexes = new HashSet<>();

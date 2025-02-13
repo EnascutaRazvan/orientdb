@@ -40,9 +40,9 @@ public class RetryStep extends AbstractExecutionStep {
           throw new OCommandInterruptedException("The command has been interrupted");
         }
         OScriptExecutionPlan plan = initPlan(body, ctx);
-        OExecutionStepInternal result = plan.executeFull(ctx);
-        if (result != null) {
-          return result.start(ctx);
+        OExecutionStream result = plan.executeFull(ctx);
+        if (result.isTermination()) {
+          return result;
         }
         break;
       } catch (ONeedRetryException ex) {
@@ -54,9 +54,9 @@ public class RetryStep extends AbstractExecutionStep {
         if (i == retries - 1) {
           if (elseBody != null && elseBody.size() > 0) {
             OScriptExecutionPlan plan = initPlan(elseBody, ctx);
-            OExecutionStepInternal result = plan.executeFull(ctx);
-            if (result != null) {
-              return result.start(ctx);
+            OExecutionStream result = plan.executeFull(ctx);
+            if (result.isTermination()) {
+              return result;
             }
           }
           if (elseFail) {

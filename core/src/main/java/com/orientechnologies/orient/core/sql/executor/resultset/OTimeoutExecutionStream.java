@@ -61,4 +61,9 @@ public final class OTimeoutExecutionStream implements OExecutionStream {
     this.timedOut = true;
     this.timedout.timeout();
   }
+
+  @Override
+  public boolean isTermination() {
+    return internal.isTermination();
+  }
 }

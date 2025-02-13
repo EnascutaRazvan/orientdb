@@ -44,24 +44,6 @@ public class OWhileBlock extends OStatement {
     return result;
   }
 
-  public boolean containsReturn() {
-    for (OStatement stm : this.statements) {
-      if (stm instanceof OReturnStatement) {
-        return true;
-      }
-      if (stm instanceof OForEachBlock && ((OForEachBlock) stm).containsReturn()) {
-        return true;
-      }
-      if (stm instanceof OIfStatement && ((OIfStatement) stm).containsReturn()) {
-        return true;
-      }
-      if (stm instanceof OWhileBlock && ((OWhileBlock) stm).containsReturn()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

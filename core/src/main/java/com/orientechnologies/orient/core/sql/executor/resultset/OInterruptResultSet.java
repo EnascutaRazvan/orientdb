@@ -33,4 +33,9 @@ public class OInterruptResultSet implements OExecutionStream {
   public void close(OCommandContext ctx) {
     source.close(ctx);
   }
+
+  @Override
+  public boolean isTermination() {
+    return source.isTermination();
+  }
 }

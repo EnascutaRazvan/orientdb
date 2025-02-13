@@ -5,13 +5,11 @@ package com.orientechnologies.orient.core.sql.parser;
 import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
-import com.orientechnologies.orient.core.sql.executor.EmptyStep;
 import com.orientechnologies.orient.core.sql.executor.IfStep;
-import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OIfExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.executor.OSelectExecutionPlan;
-import com.orientechnologies.orient.core.sql.executor.OUpdateExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -70,18 +68,14 @@ public class OIfStatement extends OStatement {
     ctx.setArrayParameters(args);
     OIfExecutionPlan executionPlan = (OIfExecutionPlan) resolvePlan(usePlanCache, ctx);
 
-    OExecutionStepInternal last = executionPlan.executeUntilReturn(ctx);
+    OExecutionStream last = executionPlan.start(ctx);
     if (last == null) {
-      last = new EmptyStep(ctx);
+      last = OExecutionStream.empty();
     }
     if (isIdempotent()) {
-      OSelectExecutionPlan finalPlan = new OSelectExecutionPlan();
-      finalPlan.chain(last);
-      return new OLocalResultSet(finalPlan, ctx);
+      return new OExecutionResultSet(last, ctx, executionPlan);
     } else {
-      OUpdateExecutionPlan finalPlan = new OUpdateExecutionPlan();
-      finalPlan.chain(last);
-      return executeAll(ctx, finalPlan);
+      return new OExecutionResultSet(OExecutionStream.collectAll(last, ctx), ctx, executionPlan);
     }
   }
 
@@ -96,18 +90,14 @@ public class OIfStatement extends OStatement {
 
     OIfExecutionPlan executionPlan = (OIfExecutionPlan) resolvePlan(usePlanCache, ctx);
 
-    OExecutionStepInternal last = executionPlan.executeUntilReturn(ctx);
+    OExecutionStream last = executionPlan.start(ctx);
     if (last == null) {
-      last = new EmptyStep(ctx);
+      last = OExecutionStream.empty();
     }
     if (isIdempotent()) {
-      OSelectExecutionPlan finalPlan = new OSelectExecutionPlan();
-      finalPlan.chain(last);
-      return new OLocalResultSet(finalPlan, ctx);
+      return new OExecutionResultSet(last, ctx, executionPlan);
     } else {
-      OUpdateExecutionPlan finalPlan = new OUpdateExecutionPlan();
-      finalPlan.chain(last);
-      return executeAll(ctx, finalPlan);
+      return new OExecutionResultSet(OExecutionStream.collectAll(last, ctx), ctx, executionPlan);
     }
   }
 
@@ -208,35 +198,6 @@ public class OIfStatement extends OStatement {
 
   public List<OStatement> getStatements() {
     return statements;
-  }
-
-  public boolean containsReturn() {
-    for (OStatement stm : this.statements) {
-      if (stm instanceof OReturnStatement) {
-        return true;
-      }
-      if (stm instanceof OForEachBlock && ((OForEachBlock) stm).containsReturn()) {
-        return true;
-      }
-      if (stm instanceof OIfStatement && ((OIfStatement) stm).containsReturn()) {
-        return true;
-      }
-    }
-
-    if (elseStatements != null) {
-      for (OStatement stm : this.elseStatements) {
-        if (stm instanceof OReturnStatement) {
-          return true;
-        }
-        if (stm instanceof OForEachBlock && ((OForEachBlock) stm).containsReturn()) {
-          return true;
-        }
-        if (stm instanceof OIfStatement && ((OIfStatement) stm).containsReturn()) {
-          return true;
-        }
-      }
-    }
-    return false;
   }
 }
 /* JavaCC - OriginalChecksum=a8cd4fb832a4f3b6e71bb1a12f8d8819 (do not edit this line) */

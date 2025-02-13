@@ -14,10 +14,7 @@ import java.util.stream.Collectors;
 /** @author Luigi Dell'Aquila (l.dellaquila-(at)-orientdb.com) */
 public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
-  private boolean executed = false;
   protected List<OExecutionStepInternal> steps = new ArrayList<>();
-  private OExecutionStepInternal lastStep = null;
-  private OExecutionStream finalResult = null;
   private String statement;
   private String genericStatement;
   private OCommandContext context;
@@ -25,37 +22,15 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   public OScriptExecutionPlan() {}
 
   @Override
-  public void reset(OCommandContext ctx) {
-    // TODO
-    throw new UnsupportedOperationException();
-  }
+  public void reset(OCommandContext ctx) {}
 
   @Override
-  public void close() {
-    lastStep.close();
-  }
+  public void close() {}
 
   @Override
   public OExecutionStream start(OCommandContext ctx) {
-    doExecute(ctx);
-    return finalResult;
-  }
-
-  private void doExecute(OCommandContext ctx) {
-    if (!executed) {
-      executeUntilReturn(ctx);
-      executed = true;
-      List<OResult> collected = new ArrayList<>();
-      OExecutionStream results = lastStep.start(ctx);
-      while (results.hasNext(ctx)) {
-        collected.add(results.next(ctx));
-      }
-      results.close(ctx);
-      if (lastStep instanceof ScriptLineStep) {
-        // collected.setPlan(((ScriptLineStep) lastStep).plan);
-      }
-      finalResult = OExecutionStream.resultIterator(collected.iterator());
-    }
+    OExecutionStream result = executeFull(ctx);
+    return OExecutionStream.collectAll(result, ctx);
   }
 
   @Override
@@ -88,7 +63,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
       nextStep.setPrevious(lastStep);
     }
     steps.add(nextStep);
-    this.lastStep = nextStep;
   }
 
   public void chain(ORetryExecutionPlan retryStep, OCommandContext ctx) {
@@ -109,7 +83,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
           public void close() {}
         };
     steps.add(nextStep);
-    this.lastStep = nextStep;
   }
 
   @Override
@@ -154,51 +127,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     return false;
   }
 
-  public boolean containsReturn(OCommandContext ctx) {
-    for (OExecutionStepInternal step : steps) {
-      if (step instanceof ReturnStep) {
-        return true;
-      }
-      if (step instanceof ScriptLineStep) {
-        return ((ScriptLineStep) step).containsReturn(ctx);
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * executes all the script and returns last statement execution step, so that it can be executed
-   * from outside
-   * @param ctx TODO
-   *
-   * @return
-   */
-  public OExecutionStepInternal executeUntilReturn(OCommandContext ctx) {
-    if (steps.size() > 0) {
-      lastStep = steps.get(steps.size() - 1);
-    }
-    for (int i = 0; i < steps.size() - 1; i++) {
-      OExecutionStepInternal step = steps.get(i);
-      if (step instanceof ScriptLineStep)
-        if (((ScriptLineStep) step).containsReturn(ctx)) {
-          OExecutionStepInternal returnStep = ((ScriptLineStep) step).executeUntilReturn(ctx);
-          if (returnStep != null) {
-            lastStep = returnStep;
-            return lastStep;
-          }
-        }
-      OExecutionStream lastResult = step.start(ctx);
-
-      while (lastResult.hasNext(ctx)) {
-        lastResult.next(ctx);
-      }
-      lastResult.close(ctx);
-    }
-    this.lastStep = steps.get(steps.size() - 1);
-    return lastStep;
-  }
-
   /**
    * executes the whole script and returns last statement ONLY if it's a RETURN, otherwise it
    * returns null;
@@ -206,23 +134,18 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
    *
    * @return
    */
-  public OExecutionStepInternal executeFull(OCommandContext ctx) {
+  public OExecutionStream executeFull(OCommandContext ctx) {
     for (int i = 0; i < steps.size(); i++) {
       OExecutionStepInternal step = steps.get(i);
-      if (step instanceof ScriptLineStep) {
-        if (((ScriptLineStep) step).containsReturn(ctx)) {
-          OExecutionStepInternal returnStep = ((ScriptLineStep) step).executeUntilReturn(ctx);
-          if (returnStep != null) {
-            return returnStep;
-          }
-        }
-      }
       OExecutionStream lastResult = step.start(ctx);
-
-      while (lastResult.hasNext(ctx)) {
-        lastResult.next(ctx);
+      if (lastResult.isTermination()) {
+        return lastResult;
       }
-      lastResult.close(ctx);
+      if (i < steps.size() - 1) {
+        OExecutionStream.consume(lastResult, ctx);
+      } else {
+        return lastResult;
+      }
     }
 
     return null;

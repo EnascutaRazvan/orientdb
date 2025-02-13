@@ -51,4 +51,9 @@ public final class OExpireResultSet implements OExecutionStream {
     this.timedOut = true;
     this.timedout.timeout();
   }
+
+  @Override
+  public boolean isTermination() {
+    return internal.isTermination();
+  }
 }
