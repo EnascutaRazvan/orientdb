@@ -7,6 +7,7 @@ import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,12 +49,12 @@ public class OParenthesisExpression extends OMathExpression {
       } else {
         execPlan = statement.resolvePlan(true, ctx);
       }
-      OLocalResultSet rs = new OLocalResultSet(execPlan, ctx);
+      OExecutionStream rs = execPlan.start(ctx);
       List<OResult> result = new ArrayList<>();
-      while (rs.hasNext()) {
-        result.add(rs.next());
+      while (rs.hasNext(ctx)) {
+        result.add(rs.next(ctx));
       }
-      rs.close();
+      rs.close(ctx);
       return result;
     }
     return super.execute(iCurrentRecord, ctx);
