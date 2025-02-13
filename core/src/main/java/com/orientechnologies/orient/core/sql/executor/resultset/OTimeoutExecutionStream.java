@@ -5,7 +5,7 @@ import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import java.util.concurrent.atomic.AtomicLong;
 
-public final class OTimeoutResultSet implements OExecutionStream {
+public final class OTimeoutExecutionStream implements OExecutionStream {
   private AtomicLong totalTime = new AtomicLong(0);
   private final TimedOut timedout;
   private final OExecutionStream internal;
@@ -16,7 +16,7 @@ public final class OTimeoutResultSet implements OExecutionStream {
     void timeout();
   }
 
-  public OTimeoutResultSet(OExecutionStream internal, long timeoutMillis, TimedOut timedout) {
+  public OTimeoutExecutionStream(OExecutionStream internal, long timeoutMillis, TimedOut timedout) {
     this.internal = internal;
     this.timedout = timedout;
     this.timeoutMillis = timeoutMillis;

@@ -85,12 +85,22 @@ public interface OExecutionStream {
   }
 
   public static OExecutionStream collectAll(OExecutionStream from, OCommandContext ctx) {
+    if (!from.hasNext(ctx)) {
+      return from;
+    }
     List<OResult> result = new ArrayList<>();
     while (from.hasNext(ctx)) {
       result.add(from.next(ctx));
     }
     from.close(ctx);
     return OExecutionStream.resultIterator(result.iterator());
+  }
+
+  public static void consume(OExecutionStream toConsume, OCommandContext ctx) {
+    while (toConsume.hasNext(ctx)) {
+      toConsume.next(ctx);
+    }
+    toConsume.close(ctx);
   }
 
   public default Stream<OResult> stream(OCommandContext ctx) {
