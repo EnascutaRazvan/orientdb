@@ -2,14 +2,9 @@
 /* JavaCCOptions:MULTI=true,NODE_USES_PARSER=false,VISITOR=true,TRACK_TOKENS=true,NODE_PREFIX=O,NODE_EXTENDS=,NODE_FACTORY=,SUPPORT_CLASS_VISIBILITY_PUBLIC=true */
 package com.orientechnologies.orient.core.sql.parser;
 
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.sql.executor.IfStep;
 import com.orientechnologies.orient.core.sql.executor.OIfExecutionPlan;
-import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
-import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,49 +51,6 @@ public class OIfStatement extends OStatement {
       }
     }
     return true;
-  }
-
-  @Override
-  public OResultSet execute(
-      ODatabaseSession db, Object[] args, OCommandContext parentCtx, boolean usePlanCache) {
-    OBasicCommandContext ctx = new OBasicCommandContext(db);
-    if (parentCtx != null) {
-      ctx.setParentWithoutOverridingChild(parentCtx);
-    }
-    ctx.setArrayParameters(args);
-    OIfExecutionPlan executionPlan = (OIfExecutionPlan) resolvePlan(usePlanCache, ctx);
-
-    OExecutionStream last = executionPlan.start(ctx);
-    if (last == null) {
-      last = OExecutionStream.empty();
-    }
-    if (isIdempotent()) {
-      return new OExecutionResultSet(last, ctx, executionPlan);
-    } else {
-      return new OExecutionResultSet(OExecutionStream.collectAll(last, ctx), ctx, executionPlan);
-    }
-  }
-
-  @Override
-  public OResultSet execute(
-      ODatabaseSession db, Map params, OCommandContext parentCtx, boolean usePlanCache) {
-    OBasicCommandContext ctx = new OBasicCommandContext(db);
-    if (parentCtx != null) {
-      ctx.setParentWithoutOverridingChild(parentCtx);
-    }
-    ctx.setInputParameters(params);
-
-    OIfExecutionPlan executionPlan = (OIfExecutionPlan) resolvePlan(usePlanCache, ctx);
-
-    OExecutionStream last = executionPlan.start(ctx);
-    if (last == null) {
-      last = OExecutionStream.empty();
-    }
-    if (isIdempotent()) {
-      return new OExecutionResultSet(last, ctx, executionPlan);
-    } else {
-      return new OExecutionResultSet(OExecutionStream.collectAll(last, ctx), ctx, executionPlan);
-    }
   }
 
   @Override

@@ -18,6 +18,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   private String statement;
   private String genericStatement;
   private OCommandContext context;
+  private boolean idempotent = true;
 
   public OScriptExecutionPlan() {}
 
@@ -29,8 +30,29 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OExecutionStream start(OCommandContext ctx) {
-    OExecutionStream result = executeFull(ctx);
-    return OExecutionStream.collectAll(result, ctx);
+
+    for (int i = 0; i < steps.size(); i++) {
+      OExecutionStepInternal step = steps.get(i);
+      OExecutionStream lastResult = step.start(ctx);
+      if (lastResult.isTermination()) {
+        if (idempotent) {
+          return lastResult;
+        } else {
+          return OExecutionStream.collectAll(lastResult, ctx);
+        }
+      }
+      if (i < steps.size() - 1) {
+        OExecutionStream.consume(lastResult, ctx);
+      } else {
+        if (idempotent) {
+          return lastResult;
+        } else {
+          return OExecutionStream.collectAll(lastResult, ctx);
+        }
+      }
+    }
+    // In practice never here.
+    return null;
   }
 
   @Override
@@ -57,6 +79,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   }
 
   public void chain(OStatement nextStm, OCommandContext ctx) {
+    idempotent &= nextStm.isIdempotent();
     OExecutionStepInternal lastStep = steps.size() == 0 ? null : steps.get(steps.size() - 1);
     ScriptLineStep nextStep = new ScriptLineStep(nextStm, ctx);
     if (lastStep != null) {
@@ -66,6 +89,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   }
 
   public void chain(ORetryExecutionPlan retryStep, OCommandContext ctx) {
+    idempotent = false;
     OExecutionStepInternal nextStep =
         new OExecutionStepInternal() {
 
@@ -125,30 +149,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   @Override
   public boolean canBeCached() {
     return false;
-  }
-
-  /**
-   * executes the whole script and returns last statement ONLY if it's a RETURN, otherwise it
-   * returns null;
-   * @param ctx TODO
-   *
-   * @return
-   */
-  public OExecutionStream executeFull(OCommandContext ctx) {
-    for (int i = 0; i < steps.size(); i++) {
-      OExecutionStepInternal step = steps.get(i);
-      OExecutionStream lastResult = step.start(ctx);
-      if (lastResult.isTermination()) {
-        return lastResult;
-      }
-      if (i < steps.size() - 1) {
-        OExecutionStream.consume(lastResult, ctx);
-      } else {
-        return lastResult;
-      }
-    }
-
-    return null;
   }
 
   @Override

@@ -1,16 +1,16 @@
 package com.orientechnologies.orient.core.sql.parser;
 
+import java.util.List;
+
 import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.OExecutionThreadLocal;
 import com.orientechnologies.orient.core.exception.OCommandInterruptedException;
 import com.orientechnologies.orient.core.sql.executor.AbstractExecutionStep;
-import com.orientechnologies.orient.core.sql.executor.EmptyStep;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OScriptExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
-import java.util.List;
 
 public class WhileStep extends AbstractExecutionStep {
   private final OBooleanExpression condition;
@@ -31,12 +31,12 @@ public class WhileStep extends AbstractExecutionStep {
         throw new OCommandInterruptedException("The command has been interrupted");
 
       OScriptExecutionPlan plan = initPlan(ctx);
-      OExecutionStream result = plan.executeFull(ctx);
+      OExecutionStream result = plan.start(ctx);
       if (result.isTermination()) {
         return result;
       }
     }
-    return new EmptyStep(ctx).start(ctx);
+    return OExecutionStream.empty();
   }
 
   public OScriptExecutionPlan initPlan(OCommandContext ctx) {
