@@ -4,11 +4,11 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.MatchEdgeTraverser;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 
-public final class OResultSetEdgeTraverser implements OExecutionStream {
+public final class OEdgeTraverserExcutionStream implements OExecutionStream {
   private final MatchEdgeTraverser trav;
   private OResult nextResult;
 
-  public OResultSetEdgeTraverser(MatchEdgeTraverser trav) {
+  public OEdgeTraverserExcutionStream(MatchEdgeTraverser trav) {
     this.trav = trav;
   }
 
@@ -44,7 +44,7 @@ public final class OResultSetEdgeTraverser implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
+  public boolean isTermination(OCommandContext ctx) {
     return false;
   }
 }

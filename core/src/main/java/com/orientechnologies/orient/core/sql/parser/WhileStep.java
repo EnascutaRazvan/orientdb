@@ -1,7 +1,5 @@
 package com.orientechnologies.orient.core.sql.parser;
 
-import java.util.List;
-
 import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
@@ -11,6 +9,7 @@ import com.orientechnologies.orient.core.sql.executor.AbstractExecutionStep;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OScriptExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
+import java.util.List;
 
 public class WhileStep extends AbstractExecutionStep {
   private final OBooleanExpression condition;
@@ -32,7 +31,7 @@ public class WhileStep extends AbstractExecutionStep {
 
       OScriptExecutionPlan plan = initPlan(ctx);
       OExecutionStream result = plan.start(ctx);
-      if (result.isTermination()) {
+      if (result.isTermination(ctx)) {
         return result;
       }
     }

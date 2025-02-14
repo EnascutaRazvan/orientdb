@@ -66,7 +66,7 @@ public final class OLoaderExecutionStream implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
+  public boolean isTermination(OCommandContext ctx) {
     return false;
   }
 }

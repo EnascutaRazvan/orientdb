@@ -89,7 +89,7 @@ public class OTruncateClassStatement extends ODDLStatement {
       }
     }
 
-    return OExecutionStream.resultIterator(rs.iterator());
+    return OExecutionStream.resultCollection(rs);
   }
 
   @Override

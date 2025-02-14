@@ -41,8 +41,8 @@ public class OCostMeasureExecutionStream implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    return set.isTermination();
+  public boolean isTermination(OCommandContext ctx) {
+    return set.isTermination(ctx);
   }
 
   @Override

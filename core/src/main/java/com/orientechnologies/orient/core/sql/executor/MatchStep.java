@@ -2,8 +2,8 @@ package com.orientechnologies.orient.core.sql.executor;
 
 import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.orient.core.command.OCommandContext;
+import com.orientechnologies.orient.core.sql.executor.resultset.OEdgeTraverserExcutionStream;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
-import com.orientechnologies.orient.core.sql.executor.resultset.OResultSetEdgeTraverser;
 import com.orientechnologies.orient.core.sql.parser.OFieldMatchPathItem;
 import com.orientechnologies.orient.core.sql.parser.OMultiMatchPathItem;
 
@@ -24,7 +24,7 @@ public class MatchStep extends AbstractExecutionStep {
 
   public OExecutionStream createNextResultSet(OResult lastUpstreamRecord, OCommandContext ctx) {
     MatchEdgeTraverser trav = createTraverser(lastUpstreamRecord);
-    return new OResultSetEdgeTraverser(trav);
+    return new OEdgeTraverserExcutionStream(trav);
   }
 
   protected MatchEdgeTraverser createTraverser(OResult lastUpstreamRecord) {

@@ -27,7 +27,7 @@ public abstract class AbstractUnrollStep extends AbstractExecutionStep {
   }
 
   private OExecutionStream fetchNextResults(OResult res, OCommandContext ctx) {
-    return OExecutionStream.resultIterator(unroll(res, ctx).iterator());
+    return OExecutionStream.resultCollection(unroll(res, ctx));
   }
 
   protected abstract Collection<OResult> unroll(final OResult doc, final OCommandContext iContext);

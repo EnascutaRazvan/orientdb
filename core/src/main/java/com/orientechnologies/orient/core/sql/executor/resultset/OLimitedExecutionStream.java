@@ -39,7 +39,12 @@ public class OLimitedExecutionStream implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    return upstream.isTermination();
+  public boolean isFullInMemory(OCommandContext ctx) {
+    return upstream.isFullInMemory(ctx);
+  }
+
+  @Override
+  public boolean isTermination(OCommandContext ctx) {
+    return upstream.isTermination(ctx);
   }
 }

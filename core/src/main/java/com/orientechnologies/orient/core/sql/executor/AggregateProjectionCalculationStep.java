@@ -35,7 +35,7 @@ public class AggregateProjectionCalculationStep extends ProjectionCalculationSte
   @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     List<OResult> finalResults = executeAggregation(ctx);
-    return OExecutionStream.resultIterator(finalResults.iterator());
+    return OExecutionStream.resultCollection(finalResults);
   }
 
   private List<OResult> executeAggregation(OCommandContext ctx) {

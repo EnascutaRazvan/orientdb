@@ -40,7 +40,7 @@ public class OIteratorExecutionStream implements OExecutionStream {
   public void close(OCommandContext ctx) {}
 
   @Override
-  public boolean isTermination() {
+  public boolean isTermination(OCommandContext ctx) {
     return false;
   }
 }

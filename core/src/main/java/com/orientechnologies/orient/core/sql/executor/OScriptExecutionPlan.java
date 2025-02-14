@@ -34,7 +34,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     for (int i = 0; i < steps.size(); i++) {
       OExecutionStepInternal step = steps.get(i);
       OExecutionStream lastResult = step.start(ctx);
-      if (lastResult.isTermination()) {
+      if (lastResult.isTermination(ctx)) {
         if (idempotent) {
           return lastResult;
         } else {

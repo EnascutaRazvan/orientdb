@@ -97,7 +97,7 @@ public class OAlterClusterStatement extends ODDLStatement {
       result.add(resultItem);
     }
 
-    return OExecutionStream.resultIterator(result.iterator());
+    return OExecutionStream.resultCollection(result);
   }
 
   private List<OCluster.ATTRIBUTES> noDeprecatedValues(final OCluster.ATTRIBUTES[] values) {

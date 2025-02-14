@@ -68,7 +68,7 @@ public abstract class AbstractTraverseStep extends AbstractExecutionStep {
       public void close(OCommandContext ctx) {}
 
       @Override
-      public boolean isTermination() {
+      public boolean isTermination(OCommandContext ctx) {
         return false;
       }
     };

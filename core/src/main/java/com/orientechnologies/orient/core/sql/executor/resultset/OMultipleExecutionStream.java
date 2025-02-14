@@ -42,10 +42,10 @@ public final class OMultipleExecutionStream implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    // TODO: fetch first
+  public boolean isTermination(OCommandContext ctx) {
+    hasNext(ctx);
     if (currentStream != null) {
-      return currentStream.isTermination();
+      return currentStream.isTermination(ctx);
     } else {
       return false;
     }

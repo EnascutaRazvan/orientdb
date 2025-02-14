@@ -87,7 +87,7 @@ public class ODropPropertyStatement extends ODDLStatement {
     result.setProperty("className", className.getStringValue());
     result.setProperty("propertyname", propertyName.getStringValue());
     rs.add(result);
-    return OExecutionStream.resultIterator(rs.iterator());
+    return OExecutionStream.resultCollection(rs);
   }
 
   private List<OIndex> relatedIndexes(final String fieldName, ODatabaseDocumentInternal database) {

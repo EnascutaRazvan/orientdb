@@ -108,7 +108,7 @@ public class ORunQueryExecutionPlanTask extends OAbstractRemoteTask {
   public OExecutionStream getResult(ODistributedResponse resp, ODatabaseDocumentDistributed db) {
     OResult payload = (OResult) resp.getPayload();
     OExecutionStream first =
-        OExecutionStream.resultIterator(((List<OResult>) payload.getProperty("data")).iterator());
+        OExecutionStream.resultCollection(((List<OResult>) payload.getProperty("data")));
     String queryId = payload.getProperty("queryId");
     return OExecutionStream.multipleStreams(
         new OExecutionStreamDistributedFetch(queryId, nodeName, first, db));

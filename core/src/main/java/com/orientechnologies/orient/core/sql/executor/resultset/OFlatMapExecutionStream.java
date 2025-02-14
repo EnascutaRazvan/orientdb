@@ -44,7 +44,7 @@ public final class OFlatMapExecutionStream implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    return currentResultSet.isTermination();
+  public boolean isTermination(OCommandContext ctx) {
+    return currentResultSet.isTermination(ctx);
   }
 }

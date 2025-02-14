@@ -89,7 +89,7 @@ public class OHaSetStatement extends OSimpleExecStatement {
       result.add(item);
     }
 
-    return OExecutionStream.resultIterator(result.iterator());
+    return OExecutionStream.resultCollection(result);
   }
 
   @Override

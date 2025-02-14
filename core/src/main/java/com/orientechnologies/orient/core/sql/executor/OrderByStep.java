@@ -39,7 +39,7 @@ public class OrderByStep extends AbstractExecutionStep {
     } else {
       results = Collections.emptyList();
     }
-    return OExecutionStream.resultIterator(results.iterator());
+    return OExecutionStream.resultCollection(results);
   }
 
   private List<OResult> init(OExecutionStepInternal p, OCommandContext ctx) {

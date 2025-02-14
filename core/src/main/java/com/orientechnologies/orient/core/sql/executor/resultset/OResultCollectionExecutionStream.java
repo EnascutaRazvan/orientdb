@@ -2,14 +2,15 @@ package com.orientechnologies.orient.core.sql.executor.resultset;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.OResult;
+import java.util.Collection;
 import java.util.Iterator;
 
-public class OResultIteratorExecutionStream implements OExecutionStream {
+public class OResultCollectionExecutionStream implements OExecutionStream {
 
   private Iterator<OResult> iterator;
 
-  public OResultIteratorExecutionStream(Iterator<OResult> iterator) {
-    this.iterator = iterator;
+  public OResultCollectionExecutionStream(Collection<OResult> data) {
+    iterator = data.iterator();
   }
 
   @Override
@@ -24,6 +25,11 @@ public class OResultIteratorExecutionStream implements OExecutionStream {
 
   @Override
   public void close(OCommandContext ctx) {}
+
+  @Override
+  public boolean isFullInMemory(OCommandContext ctx) {
+    return true;
+  }
 
   @Override
   public boolean isTermination(OCommandContext ctx) {

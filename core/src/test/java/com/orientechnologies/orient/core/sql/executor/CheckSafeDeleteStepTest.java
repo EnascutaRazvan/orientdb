@@ -62,7 +62,7 @@ public class CheckSafeDeleteStepTest extends TestUtilsFixture {
               }
               done = true;
             }
-            return OExecutionStream.resultIterator(result.iterator());
+            return OExecutionStream.resultCollection(result);
           }
         };
 
@@ -91,7 +91,7 @@ public class CheckSafeDeleteStepTest extends TestUtilsFixture {
               }
               done = true;
             }
-            return OExecutionStream.resultIterator(result.iterator());
+            return OExecutionStream.resultCollection(result);
           }
         };
 

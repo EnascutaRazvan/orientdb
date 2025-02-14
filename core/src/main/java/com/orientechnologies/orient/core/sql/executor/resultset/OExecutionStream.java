@@ -5,6 +5,7 @@ import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
@@ -21,10 +22,15 @@ public interface OExecutionStream {
 
   /**
    * Flag used to terminate scripts early in the execution, used by the return statement via
-   * the terminate execution stream;
-   * @return
+   * the terminate execution stream
+   *
+   * The only implementation that tour true is {@link OTerminationExecutionStream} created with {@link OExecutionStream#terminate()} the
+   * other implementation return false if they provide content themselves, or delegate the method if are wrapper (independently of the modifications) of another stream.
+   *
+   * @param ctx context of the query
+   * @return true if this is last execution stream, false if there are more
    */
-  boolean isTermination();
+  boolean isTermination(OCommandContext ctx);
 
   public static OExecutionStream produce(OProduceResult producer) {
     return new OProduceExecutionStream(producer);
@@ -52,7 +58,7 @@ public interface OExecutionStream {
   }
 
   public default OExecutionStream interruptable() {
-    return new OInterruptResultSet(this);
+    return new OInterruptExecutionStream(this);
   }
 
   public default OExecutionStream limit(long limit) {
@@ -71,6 +77,10 @@ public interface OExecutionStream {
     return new OResultIteratorExecutionStream(iterator);
   }
 
+  public static OExecutionStream resultCollection(Collection<OResult> iterator) {
+    return new OResultCollectionExecutionStream(iterator);
+  }
+
   public default OCostMeasureExecutionStream profile(OExecutionStep step) {
     return new OCostMeasureExecutionStream(this, step);
   }
@@ -87,6 +97,20 @@ public interface OExecutionStream {
     return new OSingletonExecutionStream(result);
   }
 
+  /**
+   * Check if the current stream has all the data in memory, without much computation
+   * need to get the final result.
+   *
+   * Only implementation with all the content inside can return true, wrappers with no computation can just delegate, if
+   * the wrapper do a logic computation should return false.
+   *
+   * @param ctx the current query context
+   * @return true if the data is all in memory
+   */
+  public default boolean isFullInMemory(OCommandContext ctx) {
+    return false;
+  }
+
   public interface OnClose {
     void close(OCommandContext ctx);
   }
@@ -96,7 +120,7 @@ public interface OExecutionStream {
   }
 
   public static OExecutionStream collectAll(OExecutionStream from, OCommandContext ctx) {
-    if (!from.hasNext(ctx)) {
+    if (!from.hasNext(ctx) || from.isFullInMemory(ctx)) {
       return from;
     }
     List<OResult> result = new ArrayList<>();
@@ -104,8 +128,8 @@ public interface OExecutionStream {
       result.add(from.next(ctx));
     }
     from.close(ctx);
-    OExecutionStream fullStream = OExecutionStream.resultIterator(result.iterator());
-    if (from.isTermination()) {
+    OExecutionStream fullStream = OExecutionStream.resultCollection(result);
+    if (from.isTermination(ctx)) {
       fullStream = fullStream.terminate();
     }
     return fullStream;

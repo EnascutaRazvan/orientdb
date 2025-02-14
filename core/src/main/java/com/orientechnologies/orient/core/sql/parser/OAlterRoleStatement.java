@@ -85,7 +85,7 @@ public class OAlterRoleStatement extends OSimpleExecStatement {
       }
       rs.add(result);
     }
-    return OExecutionStream.resultIterator(rs.iterator());
+    return OExecutionStream.resultCollection(rs);
   }
 
   @Override

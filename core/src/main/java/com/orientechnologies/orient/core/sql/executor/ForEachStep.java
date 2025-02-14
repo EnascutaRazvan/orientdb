@@ -37,7 +37,7 @@ public class ForEachStep extends AbstractExecutionStep {
       ctx.setVariable(loopVariable.getStringValue(), iterator.next());
       OScriptExecutionPlan plan = initPlan(ctx);
       OExecutionStream result = plan.start(ctx);
-      if (result.isTermination()) {
+      if (result.isTermination(ctx)) {
         return result;
       }
     }

@@ -199,7 +199,7 @@ public class MatchEdgeTraverser {
         }
       }
       iCommandContext.setVariable("$currentMatch", previousMatch);
-      return OExecutionStream.resultIterator(result.iterator());
+      return OExecutionStream.resultCollection(result);
     }
   }
 

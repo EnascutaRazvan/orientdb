@@ -6,7 +6,6 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.OIdentifier;
-import com.orientechnologies.orient.core.sql.parser.OLocalResultSet;
 import com.orientechnologies.orient.core.sql.parser.OStatement;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +33,17 @@ public class LetQueryStep extends AbstractExecutionStep {
     } else {
       subExecutionPlan = query.resolvePlan(true, subCtx);
     }
-    result.setMetadata(
-        varName.getStringValue(), toList(new OLocalResultSet(subExecutionPlan, ctx)));
+    result.setMetadata(varName.getStringValue(), toList(subExecutionPlan, ctx));
     return result;
   }
 
-  private List<OResult> toList(OLocalResultSet oLocalResultSet) {
+  private List<OResult> toList(OInternalExecutionPlan plan, OCommandContext ctx) {
+    OExecutionStream stream = plan.start(ctx);
     List<OResult> result = new ArrayList<>();
-    while (oLocalResultSet.hasNext()) {
-      result.add(oLocalResultSet.next());
+    while (stream.hasNext(ctx)) {
+      result.add(stream.next(ctx));
     }
-    oLocalResultSet.close();
+    stream.close(ctx);
     return result;
   }
 

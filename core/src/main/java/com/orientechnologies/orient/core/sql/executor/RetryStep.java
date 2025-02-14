@@ -41,7 +41,7 @@ public class RetryStep extends AbstractExecutionStep {
         }
         OScriptExecutionPlan plan = initPlan(body, ctx);
         OExecutionStream result = plan.start(ctx);
-        if (result.isTermination()) {
+        if (result.isTermination(ctx)) {
           return result;
         }
         break;
@@ -55,7 +55,7 @@ public class RetryStep extends AbstractExecutionStep {
           if (elseBody != null && elseBody.size() > 0) {
             OScriptExecutionPlan plan = initPlan(elseBody, ctx);
             OExecutionStream result = plan.start(ctx);
-            if (result.isTermination()) {
+            if (result.isTermination(ctx)) {
               return result;
             }
           }

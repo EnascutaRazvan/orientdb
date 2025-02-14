@@ -42,7 +42,7 @@ public final class OExecutionStreamDistributedFetch implements OExecutionStreamP
     } else {
       OFetchQueryPageTask task = new OFetchQueryPageTask(queryId);
       ODistributedResponse result = db.executeTaskOnNode(task, nodeName);
-      current = OExecutionStream.resultIterator(((List<OResult>) result.getPayload()).iterator());
+      current = OExecutionStream.resultCollection(((List<OResult>) result.getPayload()));
       return current.hasNext(ctx);
     }
   }

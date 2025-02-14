@@ -64,7 +64,7 @@ public class OTruncateRecordStatement extends OSimpleExecStatement {
       }
     }
 
-    return OExecutionStream.resultIterator(rs.iterator());
+    return OExecutionStream.resultCollection(rs);
   }
 
   @Override

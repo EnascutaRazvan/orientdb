@@ -4,7 +4,6 @@ import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.OProjectionItem;
-import java.util.Collections;
 
 public class GuaranteeEmptyCountStep extends AbstractExecutionStep {
 
@@ -26,7 +25,7 @@ public class GuaranteeEmptyCountStep extends AbstractExecutionStep {
     } else {
       OResultInternal result = new OResultInternal();
       result.setProperty(item.getProjectionAliasAsString(), 0L);
-      return OExecutionStream.resultIterator(Collections.singleton((OResult) result).iterator());
+      return OExecutionStream.singleton(result);
     }
   }
 

@@ -53,7 +53,7 @@ public class ODropIndexStatement extends ODDLStatement {
       rs.add(result);
     }
 
-    return OExecutionStream.resultIterator(rs.iterator());
+    return OExecutionStream.resultCollection(rs);
   }
 
   @Override

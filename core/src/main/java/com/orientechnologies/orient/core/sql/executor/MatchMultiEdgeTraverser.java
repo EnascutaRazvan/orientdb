@@ -107,7 +107,7 @@ public class MatchMultiEdgeTraverser extends MatchEdgeTraverser {
     }
 
     iCommandContext.setCurrent(oldCurrent);
-    return OExecutionStream.resultIterator(result.iterator());
+    return OExecutionStream.resultCollection(result);
   }
 
   private boolean matchesCondition(OResultInternal x, OMatchFilter filter, OCommandContext ctx) {

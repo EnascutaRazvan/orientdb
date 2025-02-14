@@ -31,7 +31,7 @@ public class OMapExecutionStream implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    return upstream.isTermination();
+  public boolean isTermination(OCommandContext ctx) {
+    return upstream.isTermination(ctx);
   }
 }

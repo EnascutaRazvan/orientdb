@@ -53,7 +53,12 @@ public final class OExpireResultSet implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    return internal.isTermination();
+  public boolean isFullInMemory(OCommandContext ctx) {
+    return internal.isFullInMemory(ctx);
+  }
+
+  @Override
+  public boolean isTermination(OCommandContext ctx) {
+    return internal.isTermination(ctx);
   }
 }

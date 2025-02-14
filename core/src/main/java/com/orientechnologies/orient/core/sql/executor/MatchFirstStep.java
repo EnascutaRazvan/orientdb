@@ -35,7 +35,7 @@ public class MatchFirstStep extends AbstractExecutionStep {
     List<OResult> matchedNodes =
         (List<OResult>) ctx.getVariable(MatchPrefetchStep.PREFETCHED_MATCH_ALIAS_PREFIX + alias);
     if (matchedNodes != null) {
-      data = OExecutionStream.resultIterator(matchedNodes.iterator());
+      data = OExecutionStream.resultCollection(matchedNodes);
     } else {
       data = executionPlan.start(ctx);
     }

@@ -40,7 +40,7 @@ public class UnwindStep extends AbstractExecutionStep {
   }
 
   private OExecutionStream fetchNextResults(OResult res, OCommandContext ctx) {
-    return OExecutionStream.resultIterator(unwind(res, unwindFields, ctx).iterator());
+    return OExecutionStream.resultCollection(unwind(res, unwindFields, ctx));
   }
 
   private Collection<OResult> unwind(

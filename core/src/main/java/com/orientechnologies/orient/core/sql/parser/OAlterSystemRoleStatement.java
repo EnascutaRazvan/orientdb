@@ -91,7 +91,7 @@ public class OAlterSystemRoleStatement extends OSimpleExecServerStatement {
             }
             rs.add(result);
           }
-          return OExecutionStream.resultIterator(rs.iterator());
+          return OExecutionStream.resultCollection(rs);
         });
   }
 

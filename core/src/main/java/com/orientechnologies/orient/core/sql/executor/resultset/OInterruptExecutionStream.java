@@ -5,11 +5,11 @@ import com.orientechnologies.orient.core.db.OExecutionThreadLocal;
 import com.orientechnologies.orient.core.exception.OCommandInterruptedException;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 
-public class OInterruptResultSet implements OExecutionStream {
+public class OInterruptExecutionStream implements OExecutionStream {
 
   private OExecutionStream source;
 
-  public OInterruptResultSet(OExecutionStream source) {
+  public OInterruptExecutionStream(OExecutionStream source) {
     this.source = source;
   }
 
@@ -35,7 +35,12 @@ public class OInterruptResultSet implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    return source.isTermination();
+  public boolean isFullInMemory(OCommandContext ctx) {
+    return source.isFullInMemory(ctx);
+  }
+
+  @Override
+  public boolean isTermination(OCommandContext ctx) {
+    return source.isTermination(ctx);
   }
 }

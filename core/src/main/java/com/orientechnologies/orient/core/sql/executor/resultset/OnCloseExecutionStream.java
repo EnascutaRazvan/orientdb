@@ -30,7 +30,12 @@ public class OnCloseExecutionStream implements OExecutionStream {
   }
 
   @Override
-  public boolean isTermination() {
-    return source.isTermination();
+  public boolean isFullInMemory(OCommandContext ctx) {
+    return source.isFullInMemory(ctx);
+  }
+
+  @Override
+  public boolean isTermination(OCommandContext ctx) {
+    return source.isTermination(ctx);
   }
 }
