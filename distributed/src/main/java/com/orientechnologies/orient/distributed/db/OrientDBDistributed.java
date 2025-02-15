@@ -315,7 +315,7 @@ public class OrientDBDistributed extends OrientDBEmbedded implements OServerAwar
       return super.open(name, user, password);
     } else {
       if (exists(name, user, password)) {
-        super.open(name, user, password);
+        return super.open(name, user, password);
       }
       throw new OOfflineNodeException(
           "database " + name + " not online on " + plugin.getLocalNodeName());
@@ -330,7 +330,7 @@ public class OrientDBDistributed extends OrientDBEmbedded implements OServerAwar
       return super.open(name, user, password, config);
     } else {
       if (exists(name, user, password)) {
-        super.open(name, user, password, config);
+        return super.open(name, user, password, config);
       }
       throw new OOfflineNodeException(
           "database " + name + " not online on " + plugin.getLocalNodeName());
