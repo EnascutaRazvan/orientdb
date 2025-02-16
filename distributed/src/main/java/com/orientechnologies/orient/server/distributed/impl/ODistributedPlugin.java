@@ -2485,7 +2485,8 @@ public class ODistributedPlugin extends OServerPluginAbstract
         installDatabase(false, databaseName, false, true);
       } catch (ODistributedLockException lock) {
         setDatabaseStatus(getLocalNodeName(), databaseName, DB_STATUS.NOT_AVAILABLE);
-        logger.warn(" Failing to acquire lock install database '%s' will retry later ", lock);
+        logger.warn(
+            " Failing to acquire lock install database '%s' will retry later ", lock, databaseName);
       }
     }
   }
