@@ -106,7 +106,7 @@ import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSetReady;
-import com.orientechnologies.orient.core.sql.parser.OLocalResultSet;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
 import com.orientechnologies.orient.core.sql.parser.OLocalResultSetLifecycleDecorator;
 import com.orientechnologies.orient.core.sql.parser.OStatement;
 import com.orientechnologies.orient.core.storage.OPhysicalPosition;
@@ -830,7 +830,9 @@ public class ODatabaseDocumentEmbedded extends ODatabaseDocumentAbstract
       OBasicCommandContext ctx = new OBasicCommandContext(this);
       ctx.setInputParameters(params);
 
-      OLocalResultSet result = new OLocalResultSet((OInternalExecutionPlan) plan, ctx);
+      OResultSetInternal result =
+          new OExecutionResultSet(
+              ((OInternalExecutionPlan) plan).start(ctx), ctx, (OInternalExecutionPlan) plan);
       OLocalResultSetLifecycleDecorator decorator =
           new OLocalResultSetLifecycleDecorator(result, newQueryId());
       queryStarted(decorator);

@@ -13,10 +13,10 @@ import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.ORetryExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OScriptExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.RetryStep;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
 import com.orientechnologies.orient.core.sql.parser.OBeginStatement;
 import com.orientechnologies.orient.core.sql.parser.OCommitStatement;
 import com.orientechnologies.orient.core.sql.parser.OLetStatement;
-import com.orientechnologies.orient.core.sql.parser.OLocalResultSet;
 import com.orientechnologies.orient.core.sql.parser.OStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -127,7 +127,7 @@ public class OSqlScriptExecutor extends OAbstractScriptExecutor {
         plan.chain(statement, scriptContext);
       }
     }
-    return new OLocalResultSet(plan, scriptContext);
+    return new OExecutionResultSet(plan.start(scriptContext), scriptContext, plan);
   }
 
   @Override

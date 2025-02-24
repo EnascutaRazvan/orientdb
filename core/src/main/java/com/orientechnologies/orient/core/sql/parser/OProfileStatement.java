@@ -8,10 +8,10 @@ import com.orientechnologies.orient.core.db.ODatabaseInternal;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.ODatabaseStats;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
+import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
 import java.util.Map;
 
 public class OProfileStatement extends OStatement {
@@ -49,9 +49,11 @@ public class OProfileStatement extends OStatement {
     ctx.setArrayParameters(args);
     ctx.enableProfiling();
 
-    OExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
+    OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
 
-    OLocalResultSet rs = new OLocalResultSet((OInternalExecutionPlan) executionPlan, ctx);
+    OResultSet rs =
+        new OExecutionResultSet(
+            executionPlan.start(ctx), ctx, (OInternalExecutionPlan) executionPlan);
 
     while (rs.hasNext()) {
       rs.next();
@@ -80,9 +82,11 @@ public class OProfileStatement extends OStatement {
     }
     ctx.setInputParameters(args);
 
-    OExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
+    OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
 
-    OLocalResultSet rs = new OLocalResultSet((OInternalExecutionPlan) executionPlan, ctx);
+    OResultSet rs =
+        new OExecutionResultSet(
+            executionPlan.start(ctx), ctx, (OInternalExecutionPlan) executionPlan);
 
     while (rs.hasNext()) {
       rs.next();

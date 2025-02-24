@@ -67,7 +67,7 @@ public class OStatement extends SimpleNode {
     }
     ctx.setArrayParameters(args);
     OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
-    return new OLocalResultSet(executionPlan, ctx);
+    return new OExecutionResultSet(executionPlan.start(ctx), ctx, executionPlan);
   }
 
   public static OResultSet executeAll(OCommandContext ctx, OInternalExecutionPlan plan) {
@@ -96,7 +96,7 @@ public class OStatement extends SimpleNode {
 
     OInternalExecutionPlan executionPlan = resolvePlan(usePlanCache, ctx);
 
-    return new OLocalResultSet(executionPlan, ctx);
+    return new OExecutionResultSet(executionPlan.start(ctx), ctx, executionPlan);
   }
 
   /**
