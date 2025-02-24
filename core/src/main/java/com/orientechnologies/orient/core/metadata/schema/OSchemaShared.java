@@ -271,6 +271,12 @@ public abstract class OSchemaShared implements OCloseable {
       String statement,
       Map<String, Object> metadata);
 
+  public abstract boolean createClassIfNotExists(
+      ODatabaseDocumentInternal session, String className);
+
+  public abstract boolean createClassIfNotExists(
+      ODatabaseDocumentInternal session, String className, OClass... superclasses);
+
   public abstract OView createView(ODatabaseDocumentInternal database, OViewConfig cfg);
 
   public abstract OView createView(

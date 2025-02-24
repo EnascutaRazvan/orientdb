@@ -216,6 +216,16 @@ public class OSchemaProxy extends OProxedResource<OSchemaShared> implements OSch
   }
 
   @Override
+  public boolean createClassIfNotExists(String className) {
+    return delegate.createClassIfNotExists(database, className);
+  }
+
+  @Override
+  public boolean createClassIfNotExists(String className, OClass... superClasses) {
+    return delegate.createClassIfNotExists(database, className, superClasses);
+  }
+
+  @Override
   public OClass getClassByClusterId(int clusterId) {
     return delegate.getClassByClusterId(clusterId);
   }

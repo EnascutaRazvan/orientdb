@@ -148,6 +148,16 @@ public class OImmutableSchema implements OSchema {
   }
 
   @Override
+  public boolean createClassIfNotExists(String className) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public boolean createClassIfNotExists(String iClassName, OClass... superClasses) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public OClass createAbstractClass(String iClassName) {
     throw new UnsupportedOperationException();
   }

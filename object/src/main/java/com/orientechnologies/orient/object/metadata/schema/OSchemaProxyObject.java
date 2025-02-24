@@ -236,6 +236,16 @@ public class OSchemaProxyObject implements OSchemaObject {
     return underlying.createClass(className, clusters, superClasses);
   }
 
+  @Override
+  public boolean createClassIfNotExists(String className) {
+    return underlying.createClassIfNotExists(className);
+  }
+
+  @Override
+  public boolean createClassIfNotExists(String className, OClass... superClasses) {
+    return underlying.createClassIfNotExists(className, superClasses);
+  }
+
   public OSchema getUnderlying() {
     return underlying;
   }
