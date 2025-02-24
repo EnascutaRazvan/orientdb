@@ -243,7 +243,7 @@ public class OSchemaRemote extends OSchemaShared {
       StringBuilder cmd = new StringBuilder("create class ");
       cmd.append('`');
       cmd.append(className);
-      cmd.append('`');
+      cmd.append("` if not exists ");
 
       List<OClass> superClassesList = new ArrayList<OClass>();
       if (superClasses != null && superClasses.length > 0) {

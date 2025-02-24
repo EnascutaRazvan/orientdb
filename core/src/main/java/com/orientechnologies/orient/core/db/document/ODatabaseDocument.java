@@ -369,11 +369,15 @@ public interface ODatabaseDocument extends ODatabase<ORecord> {
       throws OSchemaException {
     OSchema schema = getMetadata().getSchema();
     schema.reload();
-
-    OClass result = schema.getClass(className);
-    if (result == null) {
-      result = createClass(className, superclasses);
+    OClass[] cls = new OClass[superclasses.length];
+    for (int i = 0; i < superclasses.length; i++) {
+      OClass superCl = schema.getClass(superclasses[i]);
+      if (superCl == null) {
+        throw new OSchemaException("Super class with name '" + superclasses[i] + "' do not exists");
+      }
+      cls[i] = superCl;
     }
-    return result;
+    schema.createClassIfNotExists(className, cls);
+    return schema.getClass(className);
   }
 }

@@ -42,7 +42,8 @@ public class OCreateClassStatement extends ODDLStatement {
   public OExecutionStream executeDDL(OCommandContext ctx) {
 
     OSchema schema = ctx.getDatabase().getMetadata().getSchema();
-    if (schema.existsClass(name.getStringValue())) {
+    String className = name.getStringValue();
+    if (schema.existsClass(className)) {
       if (ifNotExists) {
         return OExecutionStream.empty();
       } else {
@@ -50,28 +51,25 @@ public class OCreateClassStatement extends ODDLStatement {
       }
     }
     checkSuperclasses(schema, ctx);
+    OClass[] superclasses = getSuperClasses(schema);
 
     OResultInternal result = new OResultInternal();
     result.setProperty("operation", "create class");
-    result.setProperty("className", name.getStringValue());
+    result.setProperty("className", className);
 
-    OClass clazz = null;
-    OClass[] superclasses = getSuperClasses(schema);
     if (abstractClass) {
-      clazz = schema.createAbstractClass(name.getStringValue(), superclasses);
+      schema.createAbstractClass(className, superclasses);
       result.setProperty("abstract", abstractClass);
     } else if (totalClusterNo != null) {
-      clazz =
-          schema.createClass(
-              name.getStringValue(), totalClusterNo.getValue().intValue(), superclasses);
+      schema.createClass(className, totalClusterNo.getValue().intValue(), superclasses);
     } else if (clusters != null) {
       int[] clusterIds = new int[clusters.size()];
       for (int i = 0; i < clusters.size(); i++) {
         clusterIds[i] = clusters.get(i).getValue().intValue();
       }
-      clazz = schema.createClass(name.getStringValue(), clusterIds, superclasses);
+      schema.createClass(className, clusterIds, superclasses);
     } else {
-      clazz = schema.createClass(name.getStringValue(), superclasses);
+      schema.createClass(className, superclasses);
     }
 
     return OExecutionStream.singleton(result);
