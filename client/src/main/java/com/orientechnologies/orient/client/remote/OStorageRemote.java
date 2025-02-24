@@ -228,6 +228,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
   protected String name;
 
   protected volatile STATUS status = STATUS.CLOSED;
+  public static final String TYPE = "remote";
 
   public static final String ADDRESS_SEPARATOR = ";";
 
@@ -1383,7 +1384,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
   }
 
   public String getURL() {
-    return OEngineRemote.NAME + ":" + url;
+    return OStorageRemote.TYPE + ":" + url;
   }
 
   public int getClusters() {
@@ -1396,7 +1397,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
   }
 
   public String getType() {
-    return OEngineRemote.NAME;
+    return OStorageRemote.TYPE;
   }
 
   public String getUserName() {

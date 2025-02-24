@@ -16,7 +16,7 @@
 package com.orientechnologies.orient.test.database.auto;
 
 import com.orientechnologies.orient.client.remote.ODatabaseImportRemote;
-import com.orientechnologies.orient.client.remote.OEngineRemote;
+import com.orientechnologies.orient.client.remote.OStorageRemote;
 import com.orientechnologies.orient.core.command.OCommandOutputListener;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.tool.ODatabaseExport;
@@ -161,13 +161,13 @@ public class CRUDObjectInheritanceTestSchemaFull extends ObjectDBBaseTest {
     database
         .getEntityManager()
         .registerEntityClasses("com.orientechnologies.orient.test.domain.business");
-    if (url.startsWith(OEngineRemote.NAME)) {
+    if (url.startsWith(OStorageRemote.TYPE)) {
       database.getMetadata().reload();
     }
     database
         .getEntityManager()
         .registerEntityClasses("com.orientechnologies.orient.test.domain.base");
-    if (url.startsWith(OEngineRemote.NAME)) {
+    if (url.startsWith(OStorageRemote.TYPE)) {
       database.getMetadata().reload();
     }
     startRecordNumber = database.countClass("Company");
@@ -311,7 +311,7 @@ public class CRUDObjectInheritanceTestSchemaFull extends ObjectDBBaseTest {
         .getMetadata()
         .getSchema()
         .generateSchema("com.orientechnologies.orient.test.domain.base");
-    if (url.startsWith(OEngineRemote.NAME)) {
+    if (url.startsWith(OStorageRemote.TYPE)) {
       database.getMetadata().reload();
     }
     OClass musicianClass = database.getMetadata().getSchema().getClass(Musician.class);
@@ -331,7 +331,7 @@ public class CRUDObjectInheritanceTestSchemaFull extends ObjectDBBaseTest {
     database
         .getEntityManager()
         .registerEntityClasses("com.orientechnologies.orient.test.domain.schemageneration");
-    if (url.startsWith(OEngineRemote.NAME)) {
+    if (url.startsWith(OStorageRemote.TYPE)) {
       database.getMetadata().reload();
     }
     OClass testSchemaClass =
@@ -395,7 +395,7 @@ public class CRUDObjectInheritanceTestSchemaFull extends ObjectDBBaseTest {
       database.getMetadata().getSchema().generateSchema(Musician.class);
       database.getMetadata().getSchema().generateSchema(JavaTestSchemaGeneration.class);
       database.getMetadata().getSchema().generateSchema(TestSchemaGenerationChild.class);
-      if (url.startsWith(OEngineRemote.NAME)) {
+      if (url.startsWith(OStorageRemote.TYPE)) {
         database.getMetadata().reload();
       }
     } catch (Exception e) {
