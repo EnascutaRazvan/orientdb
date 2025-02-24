@@ -124,7 +124,6 @@ public interface ODatabaseDocumentInternal extends ODatabaseSession, ODatabaseIn
       final String fetchPlan,
       final boolean ignoreCache,
       final boolean iUpdateCache,
-      final OStorage.LOCKING_STRATEGY lockingStrategy,
       RecordReader recordReader);
 
   void executeDeleteRecord(OIdentifiable record, final int iVersion, final boolean iRequired);

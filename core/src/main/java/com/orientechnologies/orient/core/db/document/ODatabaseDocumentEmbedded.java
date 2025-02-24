@@ -1372,7 +1372,6 @@ public class ODatabaseDocumentEmbedded extends ODatabaseDocumentAbstract
       final String fetchPlan,
       final boolean ignoreCache,
       final boolean iUpdateCache,
-      final OStorage.LOCKING_STRATEGY lockingStrategy,
       RecordReader recordReader) {
     checkOpenness();
     checkIfActive();
@@ -1403,18 +1402,6 @@ public class ODatabaseDocumentEmbedded extends ODatabaseDocumentAbstract
 
         if (record.getInternalStatus() == ORecordElement.STATUS.NOT_LOADED) {
           record = reload(record, null, true, true);
-        }
-
-        if (lockingStrategy == OStorage.LOCKING_STRATEGY.KEEP_SHARED_LOCK) {
-          logger.warn(
-              "You use deprecated record locking strategy: %s it may lead to deadlocks ",
-              lockingStrategy);
-          getTransaction().lockRecord(iRecord, OStorage.LOCKING_STRATEGY.SHARED_LOCK);
-        } else if (lockingStrategy == OStorage.LOCKING_STRATEGY.KEEP_EXCLUSIVE_LOCK) {
-          logger.warn(
-              "You use deprecated record locking strategy: %s it may lead to deadlocks ",
-              lockingStrategy);
-          getTransaction().lockRecord(iRecord, OStorage.LOCKING_STRATEGY.EXCLUSIVE_LOCK);
         }
 
         afterReadOperations(record);

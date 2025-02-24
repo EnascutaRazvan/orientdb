@@ -89,7 +89,6 @@ import com.orientechnologies.orient.core.serialization.serializer.binary.OBinary
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
-import com.orientechnologies.orient.core.storage.OStorage;
 import com.orientechnologies.orient.core.storage.OStorageInfo;
 import com.orientechnologies.orient.core.storage.OStorageOperationResult;
 import com.orientechnologies.orient.core.storage.ridbag.sbtree.OBonsaiCollectionPointer;
@@ -802,7 +801,6 @@ public abstract class ODatabaseDocumentAbstract extends OListenerManger<ODatabas
       final String fetchPlan,
       final boolean ignoreCache,
       final boolean iUpdateCache,
-      final OStorage.LOCKING_STRATEGY lockingStrategy,
       RecordReader recordReader);
 
   public int assignAndCheckCluster(ORecord record, String iClusterName) {

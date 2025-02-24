@@ -33,7 +33,6 @@ import com.orientechnologies.orient.core.index.OIndex;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.storage.OStorage;
 import com.orientechnologies.orient.core.tx.OTransactionIndexChanges.OPERATION;
 import java.util.Collection;
 import java.util.List;
@@ -72,14 +71,7 @@ public class OTransactionNoTx extends OTransactionAbstract {
     if (iRid.isNew()) return null;
 
     return database.executeReadRecord(
-        (ORecordId) iRid,
-        iRecord,
-        -1,
-        iFetchPlan,
-        ignoreCache,
-        !ignoreCache,
-        OStorage.LOCKING_STRATEGY.NONE,
-        database::directRead);
+        (ORecordId) iRid, iRecord, -1, iFetchPlan, ignoreCache, !ignoreCache, database::directRead);
   }
 
   @Override
@@ -101,14 +93,7 @@ public class OTransactionNoTx extends OTransactionAbstract {
 
     final ORecord loadedRecord =
         database.executeReadRecord(
-            (ORecordId) rid,
-            record,
-            -1,
-            fetchPlan,
-            ignoreCache,
-            !ignoreCache,
-            OStorage.LOCKING_STRATEGY.NONE,
-            recordReader);
+            (ORecordId) rid, record, -1, fetchPlan, ignoreCache, !ignoreCache, recordReader);
 
     if (force) {
       return loadedRecord;
@@ -132,7 +117,6 @@ public class OTransactionNoTx extends OTransactionAbstract {
         fetchPlan,
         ignoreCache,
         !ignoreCache,
-        OStorage.LOCKING_STRATEGY.NONE,
         database::readIfVersionIsNotLatest);
   }
 

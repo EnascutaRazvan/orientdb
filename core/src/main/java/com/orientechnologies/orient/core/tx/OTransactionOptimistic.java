@@ -51,7 +51,6 @@ import com.orientechnologies.orient.core.record.impl.ODirtyManager;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.record.impl.ODocumentInternal;
 import com.orientechnologies.orient.core.schedule.OScheduledEvent;
-import com.orientechnologies.orient.core.storage.OStorage;
 import com.orientechnologies.orient.core.tx.OTransactionIndexChanges.OPERATION;
 import com.orientechnologies.orient.core.tx.OTransactionIndexChangesPerKey.OTransactionIndexEntry;
 import java.io.ByteArrayOutputStream;
@@ -230,17 +229,7 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
       final ORecord iRecord,
       final String fetchPlan,
       final boolean ignoreCache,
-      final OStorage.LOCKING_STRATEGY lockingStrategy) {
-    return loadRecord(rid, iRecord, fetchPlan, ignoreCache, true, lockingStrategy);
-  }
-
-  public ORecord loadRecord(
-      final ORID rid,
-      final ORecord iRecord,
-      final String fetchPlan,
-      final boolean ignoreCache,
-      final boolean iUpdateCache,
-      final OStorage.LOCKING_STRATEGY lockingStrategy) {
+      final boolean iUpdateCache) {
     checkTransactionValid();
 
     final ORecord txRecord = getRecord(rid);
@@ -273,7 +262,6 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
             fetchPlan,
             ignoreCache,
             iUpdateCache,
-            lockingStrategy,
             database::directRead);
 
     if (record != null && isolationLevel == ISOLATION_LEVEL.REPEATABLE_READ) {
@@ -314,7 +302,6 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
             fetchPlan,
             ignoreCache,
             !ignoreCache,
-            OStorage.LOCKING_STRATEGY.NONE,
             database::readIfVersionIsNotLatest);
 
     if (record != null && isolationLevel == ISOLATION_LEVEL.REPEATABLE_READ) {
@@ -373,7 +360,6 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
               fetchPlan,
               ignoreCache,
               !ignoreCache,
-              OStorage.LOCKING_STRATEGY.NONE,
               recordReader);
 
       if (force) {
@@ -398,7 +384,7 @@ public class OTransactionOptimistic extends OTransactionAbstract implements OTra
 
   @Override
   public ORecord loadRecord(ORID rid, ORecord record, String fetchPlan, boolean ignoreCache) {
-    return loadRecord(rid, record, fetchPlan, ignoreCache, OStorage.LOCKING_STRATEGY.NONE);
+    return loadRecord(rid, record, fetchPlan, ignoreCache, true);
   }
 
   public void deleteRecord(final ORecord iRecord) {

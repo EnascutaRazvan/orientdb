@@ -21,8 +21,6 @@
 package com.orientechnologies.orient.client.remote.db.document;
 
 import static com.orientechnologies.orient.core.storage.OStorage.LOCKING_STRATEGY.EXCLUSIVE_LOCK;
-import static com.orientechnologies.orient.core.storage.OStorage.LOCKING_STRATEGY.KEEP_EXCLUSIVE_LOCK;
-import static com.orientechnologies.orient.core.storage.OStorage.LOCKING_STRATEGY.KEEP_SHARED_LOCK;
 
 import com.orientechnologies.common.concur.lock.OLockException;
 import com.orientechnologies.common.exception.OException;
@@ -629,7 +627,6 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
       final String fetchPlan,
       final boolean ignoreCache,
       final boolean iUpdateCache,
-      final OStorage.LOCKING_STRATEGY lockingStrategy,
       RecordReader recordReader) {
     checkOpenness();
     checkIfActive();
@@ -657,19 +654,6 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
 
         if (record.getInternalStatus() == ORecordElement.STATUS.NOT_LOADED) {
           record = reload(record, null, true, true);
-        }
-
-        if (lockingStrategy == KEEP_SHARED_LOCK) {
-          logger.warn(
-              "You use deprecated record locking strategy: %s it may lead to deadlocks ",
-              lockingStrategy);
-          getTransaction().lockRecord(iRecord, OStorage.LOCKING_STRATEGY.SHARED_LOCK);
-
-        } else if (lockingStrategy == KEEP_EXCLUSIVE_LOCK) {
-          logger.warn(
-              "You use deprecated record locking strategy: %s it may lead to deadlocks ",
-              lockingStrategy);
-          getTransaction().lockRecord(iRecord, OStorage.LOCKING_STRATEGY.EXCLUSIVE_LOCK);
         }
 
         afterReadOperations(record);
