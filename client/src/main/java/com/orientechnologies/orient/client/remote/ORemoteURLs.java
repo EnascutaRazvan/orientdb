@@ -4,7 +4,7 @@ import static com.orientechnologies.orient.core.config.OGlobalConfiguration.CLIE
 
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
-import com.orientechnologies.orient.client.remote.OStorageRemote.CONNECTION_STRATEGY;
+import com.orientechnologies.orient.client.remote.ORemoteClient.CONNECTION_STRATEGY;
 import com.orientechnologies.orient.core.config.OContextConfiguration;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.exception.OConfigurationException;
@@ -105,7 +105,7 @@ public class ORemoteURLs {
       // SHORT FORM
       addresses.add(url);
     } else {
-      for (String host : url.substring(0, dbPos).split(OStorageRemote.ADDRESS_SEPARATOR)) {
+      for (String host : url.substring(0, dbPos).split(ORemoteClient.ADDRESS_SEPARATOR)) {
         addresses.add(host);
       }
     }

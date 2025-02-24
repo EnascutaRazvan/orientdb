@@ -19,7 +19,7 @@
  */
 package com.orientechnologies.orient.stresstest;
 
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import java.io.File;
 
 /**
@@ -42,8 +42,8 @@ public class OStressTesterSettings {
   public boolean keepDatabaseAfterTest;
   public int remotePort = 2424;
   public boolean checkDatabase = false;
-  public OStorageRemote.CONNECTION_STRATEGY loadBalancing =
-      OStorageRemote.CONNECTION_STRATEGY.ROUND_ROBIN_REQUEST;
+  public ORemoteClient.CONNECTION_STRATEGY loadBalancing =
+      ORemoteClient.CONNECTION_STRATEGY.ROUND_ROBIN_REQUEST;
   public String dbUser;
   public String dbPassword;
 

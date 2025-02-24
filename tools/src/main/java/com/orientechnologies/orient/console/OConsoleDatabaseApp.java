@@ -34,7 +34,7 @@ import com.orientechnologies.common.listener.OProgressListener;
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
 import com.orientechnologies.orient.client.remote.ODatabaseImportRemote;
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import com.orientechnologies.orient.client.remote.OrientDBRemote;
 import com.orientechnologies.orient.client.remote.db.document.ODatabaseDocumentRemote;
 import com.orientechnologies.orient.core.OConstants;
@@ -3277,7 +3277,7 @@ public class OConsoleDatabaseApp extends OConsoleApplication
     if (currentDatabase == null) return;
 
     if (currentDatabase.isRemote()) {
-      final OStorageRemote stg = ((ODatabaseDocumentRemote) currentDatabase).getStorageRemote();
+      final ORemoteClient stg = ((ODatabaseDocumentRemote) currentDatabase).getRemoteClinet();
       final ODocument distributedCfg = stg.getClusterConfiguration();
       if (distributedCfg != null && !distributedCfg.isEmpty()) {
         message("\n\nDISTRIBUTED CONFIGURATION:\n" + distributedCfg.toJSON("prettyPrint"));
@@ -3289,7 +3289,7 @@ public class OConsoleDatabaseApp extends OConsoleApplication
   protected ODocument getDistributedConfiguration() {
     if (currentDatabase != null) {
       final OStorage stg = currentDatabase.getStorage();
-      if (stg instanceof OStorageRemote) return ((OStorageRemote) stg).getClusterConfiguration();
+      if (stg instanceof ORemoteClient) return ((ORemoteClient) stg).getClusterConfiguration();
     }
     return null;
   }

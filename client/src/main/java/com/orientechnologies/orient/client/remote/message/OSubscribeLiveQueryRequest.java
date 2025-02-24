@@ -3,7 +3,7 @@ package com.orientechnologies.orient.client.remote.message;
 import com.orientechnologies.orient.client.binary.OBinaryRequestExecutor;
 import com.orientechnologies.orient.client.remote.OBinaryRequest;
 import com.orientechnologies.orient.client.remote.OBinaryResponse;
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import com.orientechnologies.orient.client.remote.OStorageRemoteSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer;
@@ -29,7 +29,7 @@ public class OSubscribeLiveQueryRequest implements OBinaryRequest<OSubscribeLive
 
   public OSubscribeLiveQueryRequest(String query, Object[] params) {
     this.query = query;
-    this.params = OStorageRemote.paramsArrayToParamsMap(params);
+    this.params = ORemoteClient.paramsArrayToParamsMap(params);
     this.namedParams = false;
   }
 

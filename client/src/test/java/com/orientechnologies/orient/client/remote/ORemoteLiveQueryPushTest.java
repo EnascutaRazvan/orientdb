@@ -53,7 +53,7 @@ public class ORemoteLiveQueryPushTest {
     }
   }
 
-  private OStorageRemote storage;
+  private ORemoteClient storage;
 
   @Mock private ORemoteConnectionManager connectionManager;
 
@@ -63,7 +63,7 @@ public class ORemoteLiveQueryPushTest {
   public void before() throws IOException {
     MockitoAnnotations.initMocks(this);
     storage =
-        new OStorageRemote(
+        new ORemoteClient(
             new ORemoteURLs(new String[] {}, new OContextConfiguration()),
             "none",
             null,

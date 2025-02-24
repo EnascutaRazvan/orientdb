@@ -22,7 +22,7 @@ package com.orientechnologies.orient.client.remote.message;
 import com.orientechnologies.orient.client.binary.OBinaryRequestExecutor;
 import com.orientechnologies.orient.client.remote.OBinaryRequest;
 import com.orientechnologies.orient.client.remote.OBinaryResponse;
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import com.orientechnologies.orient.client.remote.OStorageRemoteSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer;
@@ -56,7 +56,7 @@ public final class OServerQueryRequest implements OBinaryRequest<OServerQueryRes
       int recordsPerPage) {
     this.language = language;
     this.statement = iCommand;
-    params = OStorageRemote.paramsArrayToParamsMap(positionalParams);
+    params = ORemoteClient.paramsArrayToParamsMap(positionalParams);
     namedParams = false;
     this.serializer = serializer;
     //    this.recordsPerPage = recordsPerPage;

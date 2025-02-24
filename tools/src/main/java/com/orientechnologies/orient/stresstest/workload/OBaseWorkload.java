@@ -24,7 +24,7 @@ import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
 import com.orientechnologies.common.util.OCallable;
 import com.orientechnologies.common.util.OUncaughtExceptionHandler;
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentAbstract;
 import com.orientechnologies.orient.core.record.impl.ODocument;
@@ -41,8 +41,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public abstract class OBaseWorkload implements OWorkload {
   private static final OLogger logger = OLogManager.instance().logger(OBaseWorkload.class);
-  protected OStorageRemote.CONNECTION_STRATEGY connectionStrategy =
-      OStorageRemote.CONNECTION_STRATEGY.STICKY;
+  protected ORemoteClient.CONNECTION_STRATEGY connectionStrategy =
+      ORemoteClient.CONNECTION_STRATEGY.STICKY;
 
   public abstract class OBaseWorkLoadContext {
     public int threadId;

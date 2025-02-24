@@ -184,8 +184,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** This object is bound to each remote ODatabase instances. */
-public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
-  private static final OLogger logger = OLogManager.instance().logger(OStorageRemote.class);
+public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
+  private static final OLogger logger = OLogManager.instance().logger(ORemoteClient.class);
   @Deprecated public static final String PARAM_CONNECTION_STRATEGY = "connectionStrategy";
 
   public static final String DRIVER_NAME = "OrientDB Java";
@@ -236,7 +236,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
     return String.join(ADDRESS_SEPARATOR, hosts) + "/" + name;
   }
 
-  public OStorageRemote(
+  public ORemoteClient(
       final ORemoteURLs hosts,
       String name,
       OrientDBRemote context,
@@ -247,7 +247,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
     this(hosts, name, context, iMode, connectionManager, null, config);
   }
 
-  public OStorageRemote(
+  public ORemoteClient(
       final ORemoteURLs hosts,
       String name,
       OrientDBRemote context,
@@ -1384,7 +1384,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
   }
 
   public String getURL() {
-    return OStorageRemote.TYPE + ":" + url;
+    return ORemoteClient.TYPE + ":" + url;
   }
 
   public int getClusters() {
@@ -1397,7 +1397,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
   }
 
   public String getType() {
-    return OStorageRemote.TYPE;
+    return ORemoteClient.TYPE;
   }
 
   public String getUserName() {
@@ -1833,7 +1833,7 @@ public class OStorageRemote implements ORemotePushHandler, OStorageInfo {
     return session.isClosed();
   }
 
-  public OStorageRemote copy(
+  public ORemoteClient copy(
       final ODatabaseDocumentRemote source, final ODatabaseDocumentRemote dest) {
     ODatabaseDocumentInternal origin = null;
     if (ODatabaseRecordThreadLocal.instance() != null)

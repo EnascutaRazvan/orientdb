@@ -22,7 +22,7 @@ package com.orientechnologies.orient.client.remote.message;
 import com.orientechnologies.orient.client.binary.OBinaryRequestExecutor;
 import com.orientechnologies.orient.client.remote.OBinaryRequest;
 import com.orientechnologies.orient.client.remote.OBinaryResponse;
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import com.orientechnologies.orient.client.remote.OStorageRemoteSession;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer;
@@ -101,7 +101,7 @@ public final class OQueryRequest implements OBinaryRequest<OQueryResponse> {
   }
 
   private static ODocument paramsDoc(Object[] params) {
-    HashMap<String, Object> pm = OStorageRemote.paramsArrayToParamsMap(params);
+    HashMap<String, Object> pm = ORemoteClient.paramsArrayToParamsMap(params);
     ODocument pd = new ODocument();
     pd.field("params", pm);
     return pd;

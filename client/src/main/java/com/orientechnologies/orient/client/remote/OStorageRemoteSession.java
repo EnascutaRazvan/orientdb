@@ -137,7 +137,7 @@ public class OStorageRemoteSession {
       OChannelBinaryAsynchClient network = null;
       try {
         network =
-            OStorageRemote.getNetwork(
+            ORemoteClient.getNetwork(
                 nodeSession.getServerURL(), connectionManager, clientConfiguration);
         OCloseRequest request = new OCloseRequest();
         network.beginRequest(request.getCommand(), this);

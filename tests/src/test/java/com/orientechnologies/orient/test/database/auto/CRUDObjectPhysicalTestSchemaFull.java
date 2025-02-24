@@ -17,7 +17,7 @@ package com.orientechnologies.orient.test.database.auto;
 
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.object.OLazyObjectSetInterface;
 import com.orientechnologies.orient.core.db.record.ORecordLazyList;
@@ -116,20 +116,20 @@ public class CRUDObjectPhysicalTestSchemaFull extends ObjectDBBaseTest {
     database
         .getEntityManager()
         .registerEntityClasses("com.orientechnologies.orient.test.domain.business");
-    if (url.startsWith(OStorageRemote.TYPE)) {
+    if (url.startsWith(ORemoteClient.TYPE)) {
       database.getMetadata().reload();
     }
     database
         .getEntityManager()
         .registerEntityClasses("com.orientechnologies.orient.test.domain.base");
-    if (url.startsWith(OStorageRemote.TYPE)) {
+    if (url.startsWith(ORemoteClient.TYPE)) {
       database.getMetadata().reload();
     }
     database.setAutomaticSchemaGeneration(false);
     database
         .getEntityManager()
         .registerEntityClasses("com.orientechnologies.orient.test.domain.whiz");
-    if (url.startsWith(OStorageRemote.TYPE)) {
+    if (url.startsWith(ORemoteClient.TYPE)) {
       database.getMetadata().reload();
     }
 

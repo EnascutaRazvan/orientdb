@@ -20,7 +20,7 @@
 
 package com.orientechnologies.orient.client.remote;
 
-import static com.orientechnologies.orient.client.remote.OStorageRemote.ADDRESS_SEPARATOR;
+import static com.orientechnologies.orient.client.remote.ORemoteClient.ADDRESS_SEPARATOR;
 import static com.orientechnologies.orient.core.config.OGlobalConfiguration.NETWORK_SOCKET_RETRY;
 
 import com.orientechnologies.common.exception.OException;
@@ -28,7 +28,7 @@ import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
 import com.orientechnologies.common.thread.OThreadPoolExecutors;
 import com.orientechnologies.orient.client.binary.OChannelBinaryAsynchClient;
-import com.orientechnologies.orient.client.remote.OStorageRemote.CONNECTION_STRATEGY;
+import com.orientechnologies.orient.client.remote.ORemoteClient.CONNECTION_STRATEGY;
 import com.orientechnologies.orient.client.remote.db.document.ODatabaseDocumentRemote;
 import com.orientechnologies.orient.client.remote.db.document.OSharedContextRemote;
 import com.orientechnologies.orient.client.remote.message.OConnect37Request;
@@ -102,7 +102,7 @@ import java.util.concurrent.TimeUnit;
 public class OrientDBRemote implements OrientDBInternal {
   private static final OLogger logger = OLogManager.instance().logger(OrientDBRemote.class);
   protected final Map<String, OSharedContext> sharedContexts = new HashMap<>();
-  private final Map<String, OStorageRemote> storages = new HashMap<>();
+  private final Map<String, ORemoteClient> storages = new HashMap<>();
   private final Set<ODatabasePoolInternal> pools = new HashSet<>();
   private final String[] hosts;
   private final OrientDBConfig configurations;
@@ -166,11 +166,11 @@ public class OrientDBRemote implements OrientDBInternal {
     checkOpen();
     OrientDBConfig resolvedConfig = solveConfig(config);
     try {
-      OStorageRemote storage;
+      ORemoteClient storage;
       synchronized (this) {
         storage = storages.get(name);
         if (storage == null) {
-          storage = new OStorageRemote(urls, name, this, "rw", connectionManager, resolvedConfig);
+          storage = new ORemoteClient(urls, name, this, "rw", connectionManager, resolvedConfig);
           storages.put(name, storage);
         }
       }
@@ -228,13 +228,13 @@ public class OrientDBRemote implements OrientDBInternal {
 
   public ODatabaseDocumentRemotePooled poolOpen(
       String name, String user, String password, ODatabasePoolInternal pool) {
-    OStorageRemote storage;
+    ORemoteClient storage;
     synchronized (this) {
       storage = storages.get(name);
       if (storage == null) {
         try {
           storage =
-              new OStorageRemote(
+              new ORemoteClient(
                   urls, name, this, "rw", connectionManager, solveConfig(pool.getConfig()));
           storages.put(name, storage);
         } catch (Exception e) {
@@ -249,7 +249,7 @@ public class OrientDBRemote implements OrientDBInternal {
     return db;
   }
 
-  public synchronized void closeStorage(OStorageRemote remote) {
+  public synchronized void closeStorage(ORemoteClient remote) {
     OSharedContext ctx = sharedContexts.get(remote.getName());
     if (ctx != null) {
       ctx.close();
@@ -415,7 +415,7 @@ public class OrientDBRemote implements OrientDBInternal {
       timer.cancel();
     }
 
-    final List<OStorageRemote> storagesCopy;
+    final List<ORemoteClient> storagesCopy;
     synchronized (this) {
       // SHUTDOWN ENGINES AVOID OTHER OPENS
       open = false;
@@ -423,7 +423,7 @@ public class OrientDBRemote implements OrientDBInternal {
       storagesCopy = new ArrayList<>(storages.values());
     }
 
-    for (OStorageRemote stg : storagesCopy) {
+    for (ORemoteClient stg : storagesCopy) {
       try {
         logger.info("- shutdown storage: %s ...", stg.getName());
         stg.shutdown();
@@ -495,7 +495,7 @@ public class OrientDBRemote implements OrientDBInternal {
 
   @Override
   public synchronized void forceDatabaseClose(String databaseName) {
-    OStorageRemote remote = storages.get(databaseName);
+    ORemoteClient remote = storages.get(databaseName);
     if (remote != null) closeStorage(remote);
   }
 
@@ -515,7 +515,7 @@ public class OrientDBRemote implements OrientDBInternal {
         "impossible skip authentication and authorization in remote");
   }
 
-  protected synchronized OSharedContext getOrCreateSharedContext(OStorageRemote storage) {
+  protected synchronized OSharedContext getOrCreateSharedContext(ORemoteClient storage) {
 
     OSharedContext result = sharedContexts.get(storage.getName());
     if (result == null) {
@@ -525,7 +525,7 @@ public class OrientDBRemote implements OrientDBInternal {
     return result;
   }
 
-  private OSharedContext createSharedContext(OStorageRemote storage) {
+  private OSharedContext createSharedContext(ORemoteClient storage) {
     OSharedContextRemote context = new OSharedContextRemote(storage, this);
     storage.setSharedContext(context);
     return context;
@@ -649,7 +649,7 @@ public class OrientDBRemote implements OrientDBInternal {
             }
             T response = request.createResponse();
             try {
-              OStorageRemote.beginResponse(network, session);
+              ORemoteClient.beginResponse(network, session);
               response.read(network, session);
             } finally {
               network.endResponse();
@@ -673,7 +673,7 @@ public class OrientDBRemote implements OrientDBInternal {
           urls.getNextAvailableServerURL(false, session, config, CONNECTION_STRATEGY.STICKY);
       do {
         try {
-          network = OStorageRemote.getNetwork(serverUrl, connectionManager, config);
+          network = ORemoteClient.getNetwork(serverUrl, connectionManager, config);
         } catch (OException e) {
           serverUrl = urls.removeAndGet(serverUrl);
           if (serverUrl == null) throw e;
@@ -779,6 +779,6 @@ public class OrientDBRemote implements OrientDBInternal {
 
   @Override
   public String getConnectionUrl() {
-    return "remote:" + String.join(OStorageRemote.ADDRESS_SEPARATOR, this.urls.getUrls());
+    return "remote:" + String.join(ORemoteClient.ADDRESS_SEPARATOR, this.urls.getUrls());
   }
 }

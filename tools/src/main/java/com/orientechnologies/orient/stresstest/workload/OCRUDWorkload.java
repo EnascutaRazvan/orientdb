@@ -21,7 +21,7 @@ package com.orientechnologies.orient.stresstest.workload;
 
 import com.orientechnologies.common.listener.OProgressListener;
 import com.orientechnologies.common.util.OCallable;
-import com.orientechnologies.orient.client.remote.OStorageRemote;
+import com.orientechnologies.orient.client.remote.ORemoteClient;
 import com.orientechnologies.orient.core.db.ODatabase;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.OrientDB;
@@ -67,7 +67,7 @@ public class OCRUDWorkload extends OBaseDocumentWorkload implements OCheckWorklo
   private int scans;
 
   public OCRUDWorkload() {
-    connectionStrategy = OStorageRemote.CONNECTION_STRATEGY.ROUND_ROBIN_REQUEST;
+    connectionStrategy = ORemoteClient.CONNECTION_STRATEGY.ROUND_ROBIN_REQUEST;
   }
 
   @Override
