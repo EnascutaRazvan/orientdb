@@ -7,7 +7,6 @@ import com.orientechnologies.common.concur.ONeedRetryException;
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
 import com.orientechnologies.orient.client.remote.db.document.ODatabaseDocumentRemote;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
@@ -31,7 +30,6 @@ public class ConnectionStrategiesEEIT {
 
   @Before
   public void before() throws Exception {
-    OGlobalConfiguration.SERVER_BACKWARD_COMPATIBILITY.setValue(false);
     server0 = OServer.startFromClasspathConfig("orientdb-simple-dserver-config-0.xml");
     server1 = OServer.startFromClasspathConfig("orientdb-simple-dserver-config-1.xml");
     server2 = OServer.startFromClasspathConfig("orientdb-simple-dserver-config-2.xml");

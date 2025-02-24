@@ -7,7 +7,6 @@ import static org.junit.Assert.assertTrue;
 
 import com.orientechnologies.orient.client.remote.OStorageRemote;
 import com.orientechnologies.orient.client.remote.db.document.ODatabaseDocumentRemote;
-import com.orientechnologies.orient.core.config.OGlobalConfiguration;
 import com.orientechnologies.orient.core.db.ODatabasePool;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.db.OrientDB;
@@ -33,7 +32,6 @@ public class SimpleConnectionStrategiesIT {
 
   @BeforeClass
   public static void before() {
-    OGlobalConfiguration.SERVER_BACKWARD_COMPATIBILITY.setValue(false);
     config = new SimpleDServerConfig();
     server0 = SimpleDServerConfig.SERVER0;
     server1 = SimpleDServerConfig.SERVER1;

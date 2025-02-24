@@ -21,7 +21,6 @@ import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
 import com.orientechnologies.common.util.OCallable;
-import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.OrientDB;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
@@ -58,7 +57,6 @@ public abstract class AbstractServerClusterTest {
   protected final List<ServerRun> serverInstance = new ArrayList<ServerRun>();
 
   public void init(final int servers) {
-    Orient.setRegisterDatabaseByPath(true);
     for (int i = 0; i < servers; ++i) serverInstance.add(new ServerRun(rootDirectory, "" + i));
   }
 

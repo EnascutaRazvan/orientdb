@@ -1,7 +1,6 @@
 package com.orientechnologies.orient.server.distributed.asynch;
 
 import com.orientechnologies.common.io.OFileUtils;
-import com.orientechnologies.orient.core.Orient;
 import java.io.File;
 import junit.framework.TestCase;
 
@@ -34,7 +33,6 @@ public abstract class BareBoneBase1ClientTest extends TestCase {
   }
 
   public void testReplication() throws Throwable {
-    Orient.setRegisterDatabaseByPath(true);
 
     final BareBonesServer[] servers = new BareBonesServer[1];
     // Start the first DB server.

@@ -622,16 +622,14 @@ public class OServer {
         lock.unlock();
       }
 
-      if (shutdownEngineOnExit && !Orient.isRegisterDatabaseByPath())
+      if (shutdownEngineOnExit)
         try {
           logger.info("Shutting down databases:");
           Orient.instance().shutdown();
         } catch (Exception e) {
           logger.error("Error during OrientDB shutdown", e);
         }
-      if (!getContextConfiguration()
-              .getValueAsBoolean(OGlobalConfiguration.SERVER_BACKWARD_COMPATIBILITY)
-          && databases != null) {
+      if (databases != null) {
         databases.close();
         databases = null;
       }

@@ -24,7 +24,6 @@ import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
 import com.orientechnologies.common.util.OCallable;
-import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocument;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import java.io.IOException;
@@ -66,7 +65,6 @@ public abstract class AbstractEnterpriseServerClusterTest {
 
     GroupProperty.WAIT_SECONDS_BEFORE_JOIN.setSystemProperty("1");
 
-    Orient.setRegisterDatabaseByPath(true);
     for (int i = 0; i < servers; ++i) serverInstance.add(new ServerRun(rootDirectory, "" + i));
   }
 
@@ -175,7 +173,6 @@ public abstract class AbstractEnterpriseServerClusterTest {
       }
 
       banner("Clean server directories...");
-      Orient.setRegisterDatabaseByPath(false);
       deleteServers();
     }
   }
