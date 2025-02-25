@@ -236,7 +236,7 @@ public class OSelectExecutionPlanner {
       if (info.distributedFetchExecutionPlans.get(currentNode) != null) {
         // everything is executed on local server
         OSelectExecutionPlan localSteps = info.distributedFetchExecutionPlans.get(currentNode);
-        for (OExecutionStep step : localSteps.getSteps()) {
+        for (OExecutionStepInternal step : localSteps.getSteps()) {
           result.chain((OExecutionStepInternal) step);
         }
       } else {
@@ -249,7 +249,7 @@ public class OSelectExecutionPlanner {
       info.distributedFetchExecutionPlans = null;
     } else {
       // sharded fetching
-      List<OExecutionPlan> subPlans = new ArrayList<>();
+      List<OInternalExecutionPlan> subPlans = new ArrayList<>();
       for (Map.Entry<String, OSelectExecutionPlan> entry :
           info.distributedFetchExecutionPlans.entrySet()) {
         if (entry.getKey().equals(currentNode)) {
@@ -2391,7 +2391,7 @@ public class OSelectExecutionPlanner {
           boolean prevCreatedDist = info.distributedPlanCreated;
           info.distributedPlanCreated = true; // little hack, check this!!!
           handleLet(stubPlan, info, ctx);
-          for (OExecutionStep step : stubPlan.getSteps()) {
+          for (OExecutionStepInternal step : stubPlan.getSteps()) {
             result.add((OExecutionStepInternal) step);
           }
           info.distributedPlanCreated = prevCreatedDist;

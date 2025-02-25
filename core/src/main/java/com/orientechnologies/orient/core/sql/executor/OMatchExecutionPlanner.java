@@ -134,7 +134,7 @@ public class OMatchExecutionPlanner {
     } else {
       OInternalExecutionPlan plan =
           createPlanForPattern(pattern, context, estimatedRootEntries, aliasesToPrefetch);
-      for (OExecutionStep step : plan.getSteps()) {
+      for (OExecutionStepInternal step : plan.getSteps()) {
         result.chain((OExecutionStepInternal) step);
       }
     }

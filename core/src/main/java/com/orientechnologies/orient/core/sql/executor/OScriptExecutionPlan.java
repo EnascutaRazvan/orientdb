@@ -55,11 +55,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(null, depth, indent));
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
     for (int i = 0; i < steps.size(); i++) {
@@ -70,11 +65,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
       }
     }
     return result.toString();
-  }
-
-  @Override
-  public String prettyPrint() {
-    return prettyPrint(0, 0);
   }
 
   public void chain(OStatement nextStm, OCommandContext ctx) {
@@ -109,18 +99,13 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public List<OExecutionStep> getSteps() {
+  public List<OExecutionStepInternal> getSteps() {
     // TODO do a copy of the steps
-    return (List) steps;
+    return steps;
   }
 
   public void setSteps(List<OExecutionStepInternal> steps) {
-    this.steps = (List) steps;
-  }
-
-  @Override
-  public OResult toResult() {
-    return toResult(new OToResultContextImpl(null));
+    this.steps = steps;
   }
 
   @Override
@@ -173,7 +158,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   @Override
   public Set<String> getIndexes() {
     Set<String> indexes = new HashSet<>();
-    for (OExecutionStep chilStep : steps) {
+    for (OExecutionStepInternal chilStep : steps) {
       OExecutionStepInternal.fillIndexes(chilStep, indexes);
     }
     return indexes;

@@ -143,8 +143,8 @@ public class ParallelExecStep extends AbstractExecutionStep {
     return "| " + p;
   }
 
-  public List<OExecutionPlan> getSubExecutionPlans() {
-    return (List) subExecutionPlans;
+  public List<OInternalExecutionPlan> getSubExecutionPlans() {
+    return subExecutionPlans;
   }
 
   @Override
@@ -164,7 +164,7 @@ public class ParallelExecStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new ParallelExecStep(
         subExecutionPlans.stream().map(x -> x.copy(ctx)).collect(Collectors.toList()), ctx);
   }

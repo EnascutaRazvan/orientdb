@@ -101,7 +101,6 @@ import com.orientechnologies.orient.core.serialization.serializer.record.ORecord
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
 import com.orientechnologies.orient.core.sql.OSQLEngine;
 import com.orientechnologies.orient.core.sql.executor.LiveQueryListenerImpl;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
@@ -821,7 +820,8 @@ public class ODatabaseDocumentEmbedded extends ODatabaseDocumentAbstract
     }
   }
 
-  public OLocalResultSetLifecycleDecorator query(OExecutionPlan plan, Map<Object, Object> params) {
+  public OLocalResultSetLifecycleDecorator query(
+      OInternalExecutionPlan plan, Map<Object, Object> params) {
     checkOpenness();
     checkIfActive();
     getSharedContext().getOrientDB().startCommand(Optional.empty());

@@ -1,16 +1,16 @@
 package com.orientechnologies.orient.core.sql.executor.resultset;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
-import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
+import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 
 public class OCostMeasureExecutionStream implements OExecutionStream {
 
   private OExecutionStream set;
-  private OExecutionStep step;
+  private OExecutionStepInternal step;
   private long cost;
 
-  public OCostMeasureExecutionStream(OExecutionStream set, OExecutionStep step) {
+  public OCostMeasureExecutionStream(OExecutionStream set, OExecutionStepInternal step) {
     this.set = set;
     this.cost = 0;
     this.step = step;

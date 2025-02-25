@@ -66,7 +66,7 @@ public class GlobalLetQueryStep extends AbstractExecutionStep {
   }
 
   @Override
-  public List<OExecutionPlan> getSubExecutionPlans() {
+  public List<OInternalExecutionPlan> getSubExecutionPlans() {
     return Collections.singletonList(this.subExecutionPlan);
   }
 

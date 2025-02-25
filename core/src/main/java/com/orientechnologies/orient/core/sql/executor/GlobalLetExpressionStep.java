@@ -42,7 +42,7 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new GlobalLetExpressionStep(varname.copy(), expression.copy(), ctx);
   }
 

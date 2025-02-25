@@ -27,12 +27,12 @@ public class OCreateVertexExecutionPlanner extends OInsertExecutionPlanner {
   @Override
   public OInsertExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OInsertExecutionPlan prev = super.createExecutionPlan(ctx);
-    List<OExecutionStep> steps = new ArrayList<>(prev.getSteps());
+    List<OExecutionStepInternal> steps = new ArrayList<>(prev.getSteps());
     OInsertExecutionPlan result = new OInsertExecutionPlan();
 
     handleCheckType(result, ctx);
-    for (OExecutionStep step : steps) {
-      result.chain((OExecutionStepInternal) step);
+    for (OExecutionStepInternal step : steps) {
+      result.chain(step);
     }
     return result;
   }

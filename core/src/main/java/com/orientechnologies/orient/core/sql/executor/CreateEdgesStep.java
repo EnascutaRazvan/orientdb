@@ -219,7 +219,7 @@ public class CreateEdgesStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new CreateEdgesStep(
         targetClass == null ? null : targetClass.copy(),
         targetCluster == null ? null : targetCluster.copy(),

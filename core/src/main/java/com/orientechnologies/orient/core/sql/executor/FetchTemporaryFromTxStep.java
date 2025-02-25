@@ -165,7 +165,7 @@ public class FetchTemporaryFromTxStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     FetchTemporaryFromTxStep result = new FetchTemporaryFromTxStep(ctx, this.className);
     return result;
   }

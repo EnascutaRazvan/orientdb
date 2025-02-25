@@ -44,7 +44,7 @@ public class DeleteStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new DeleteStep(ctx);
   }
 

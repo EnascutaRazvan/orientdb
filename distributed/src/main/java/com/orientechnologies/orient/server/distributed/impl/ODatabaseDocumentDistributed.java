@@ -50,7 +50,7 @@ import com.orientechnologies.orient.core.query.live.OLiveQueryHookV2;
 import com.orientechnologies.orient.core.record.ORecord;
 import com.orientechnologies.orient.core.record.ORecordInternal;
 import com.orientechnologies.orient.core.record.impl.ODocument;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.storage.ORecordDuplicatedException;
 import com.orientechnologies.orient.core.storage.ORecordMetadata;
@@ -249,7 +249,7 @@ public class ODatabaseDocumentDistributed extends ODatabaseDocumentEmbedded {
 
   @Override
   public OExecutionStream queryOnNode(
-      String nodeName, OExecutionPlan executionPlan, Map<Object, Object> inputParameters) {
+      String nodeName, OInternalExecutionPlan executionPlan, Map<Object, Object> inputParameters) {
     ORunQueryExecutionPlanTask task =
         new ORunQueryExecutionPlanTask(executionPlan, inputParameters, nodeName);
     ODistributedResponse result = executeTaskOnNode(task, nodeName);

@@ -15,7 +15,7 @@ public class OServerResultSet implements OResultSetInternal {
 
   private final OExecutionStream stream;
   private final OCommandContext context;
-  private final Optional<OExecutionPlan> plan;
+  private final OExecutionPlanContextOps plan;
   private boolean closed = false;
 
   public OServerResultSet(
@@ -23,11 +23,7 @@ public class OServerResultSet implements OResultSetInternal {
     super();
     this.stream = stream;
     this.context = context;
-    this.plan =
-        Optional.ofNullable(plan)
-            .map(
-                (p) ->
-                    OInfoExecutionPlan.fromResult(p.toResult(new OToResultContextImpl(context))));
+    this.plan = plan;
   }
 
   @Override
@@ -58,7 +54,10 @@ public class OServerResultSet implements OResultSetInternal {
 
   @Override
   public Optional<OExecutionPlan> getExecutionPlan() {
-    return plan;
+    return Optional.ofNullable(plan)
+        .map(
+            (p) ->
+                OInfoExecutionPlan.fromResult(p.toResult(new OToResultContextImpl(this.context))));
   }
 
   @Override

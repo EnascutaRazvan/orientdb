@@ -16,7 +16,7 @@ public class EmptyStep extends AbstractExecutionStep {
     return OExecutionStream.empty();
   }
 
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     throw new UnsupportedOperationException();
   }
 

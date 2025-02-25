@@ -66,7 +66,7 @@ public class FilterNotMatchPatternStep extends AbstractExecutionStep {
   }
 
   @Override
-  public List<OExecutionStep> getSubSteps() {
+  public List<OExecutionStepInternal> getSubSteps() {
     return (List) subSteps;
   }
 

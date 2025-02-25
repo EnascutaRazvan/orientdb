@@ -39,13 +39,8 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public List<OExecutionStep> getSteps() {
+  public List<OExecutionStepInternal> getSteps() {
     return Collections.emptyList();
-  }
-
-  @Override
-  public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(null, depth, indent));
   }
 
   @Override
@@ -57,16 +52,6 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
     result.append("  ");
     result.append(statement.prettyPrint(ctx));
     return result.toString();
-  }
-
-  @Override
-  public String prettyPrint() {
-    return prettyPrint(0, 0);
-  }
-
-  @Override
-  public OResult toResult() {
-    return toResult(new OToResultContextImpl(null));
   }
 
   @Override

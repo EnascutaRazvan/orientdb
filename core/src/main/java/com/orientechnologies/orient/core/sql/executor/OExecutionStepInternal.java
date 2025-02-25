@@ -30,7 +30,16 @@ import java.util.stream.Collectors;
  *
  * @author Luigi Dell'Aquila l.dellaquila - at - orientdb.com
  */
-public interface OExecutionStepInternal extends OExecutionStep {
+public interface OExecutionStepInternal {
+
+  /**
+   * returns the absolute cost (in nanoseconds) of the execution of this step
+   *
+   * @return the absolute cost (in nanoseconds) of the execution of this step, -1 if not calculated
+   */
+  default long getCost() {
+    return -1l;
+  }
 
   OExecutionStream start(OCommandContext ctx) throws OTimeoutException;
 
@@ -71,11 +80,11 @@ public interface OExecutionStepInternal extends OExecutionStep {
     return "<local>";
   }
 
-  default List<OExecutionStep> getSubSteps() {
+  default List<OExecutionStepInternal> getSubSteps() {
     return Collections.EMPTY_LIST;
   }
 
-  default List<OExecutionPlan> getSubExecutionPlans() {
+  default List<OInternalExecutionPlan> getSubExecutionPlans() {
     return Collections.EMPTY_LIST;
   }
 
@@ -96,7 +105,7 @@ public interface OExecutionStepInternal extends OExecutionStep {
     result.setProperty(OInternalExecutionPlan.JAVA_TYPE, step.getClass().getName());
     if (step.getSubSteps() != null && step.getSubSteps().size() > 0) {
       List<OResult> serializedSubsteps = new ArrayList<>();
-      for (OExecutionStep substep : step.getSubSteps()) {
+      for (OExecutionStepInternal substep : step.getSubSteps()) {
         serializedSubsteps.add(((OExecutionStepInternal) substep).serialize());
       }
       result.setProperty("subSteps", serializedSubsteps);
@@ -104,7 +113,7 @@ public interface OExecutionStepInternal extends OExecutionStep {
 
     if (step.getSubExecutionPlans() != null && step.getSubExecutionPlans().size() > 0) {
       List<OResult> serializedSubPlans = new ArrayList<>();
-      for (OExecutionPlan substep : step.getSubExecutionPlans()) {
+      for (OInternalExecutionPlan substep : step.getSubExecutionPlans()) {
         serializedSubPlans.add(((OInternalExecutionPlan) substep).serialize());
       }
       result.setProperty("subExecutionPlans", serializedSubPlans);
@@ -137,7 +146,7 @@ public interface OExecutionStepInternal extends OExecutionStep {
     }
   }
 
-  default OExecutionStep copy(OCommandContext ctx) {
+  default OExecutionStepInternal copy(OCommandContext ctx) {
     throw new UnsupportedOperationException();
   }
 
@@ -151,8 +160,8 @@ public interface OExecutionStepInternal extends OExecutionStep {
 
   default void serializeToResult(OResultInternal result, OToResultContext ctx) {}
 
-  static void fillIndexes(OExecutionStep step, Set<String> indexes) {
-    for (OExecutionStep chilStep : step.getSubSteps()) {
+  static void fillIndexes(OExecutionStepInternal step, Set<String> indexes) {
+    for (OExecutionStepInternal chilStep : step.getSubSteps()) {
       fillIndexes(chilStep, indexes);
     }
     String index = step.toResult().getProperty("index");

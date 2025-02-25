@@ -81,7 +81,7 @@ public class GetValueFromIndexEntryStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new GetValueFromIndexEntryStep(ctx, this.filterClusterIds);
   }
 }

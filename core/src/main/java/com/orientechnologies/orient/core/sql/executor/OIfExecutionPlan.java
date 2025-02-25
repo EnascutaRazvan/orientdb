@@ -34,20 +34,10 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(context, depth, indent));
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
     result.append(step.prettyPrint(ctx));
     return result.toString();
-  }
-
-  @Override
-  public String prettyPrint() {
-    return prettyPrint(0, 0);
   }
 
   public void chain(IfStep step) {
@@ -55,18 +45,13 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public List<OExecutionStep> getSteps() {
+  public List<OExecutionStepInternal> getSteps() {
     // TODO do a copy of the steps
     return Collections.singletonList(step);
   }
 
   public void setSteps(List<OExecutionStepInternal> steps) {
     this.step = (IfStep) steps.get(0);
-  }
-
-  @Override
-  public OResult toResult() {
-    return toResult(new OToResultContextImpl(this.context));
   }
 
   @Override

@@ -42,7 +42,7 @@ public class OPrintContexImpl implements OPrintContext {
     depth--;
   }
 
-  public long getCost(OExecutionStep step) {
+  public long getCost(OExecutionStepInternal step) {
     if (ctx != null) {
       OStepStats stats = this.ctx.getStats(step);
       if (stats != null) {
@@ -55,7 +55,7 @@ public class OPrintContexImpl implements OPrintContext {
     }
   }
 
-  public String getCostFormatted(OExecutionStep step) {
+  public String getCostFormatted(OExecutionStepInternal step) {
     if (ctx != null) {
       return new DecimalFormat().format(getCost(step) / 1000) + "μs";
     } else {

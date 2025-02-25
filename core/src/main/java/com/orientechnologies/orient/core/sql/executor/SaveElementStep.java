@@ -56,7 +56,7 @@ public class SaveElementStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new SaveElementStep(ctx, cluster == null ? null : cluster.copy());
   }
 }

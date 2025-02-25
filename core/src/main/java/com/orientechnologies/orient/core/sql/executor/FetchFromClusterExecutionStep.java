@@ -189,7 +189,7 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     FetchFromClusterExecutionStep result =
         new FetchFromClusterExecutionStep(
             this.clusterId, this.queryPlanning == null ? null : this.queryPlanning.copy(), ctx);

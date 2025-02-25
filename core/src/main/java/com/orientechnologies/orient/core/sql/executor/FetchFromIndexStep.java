@@ -779,7 +779,7 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new FetchFromIndexStep(desc, this.orderAsc, ctx);
   }
 

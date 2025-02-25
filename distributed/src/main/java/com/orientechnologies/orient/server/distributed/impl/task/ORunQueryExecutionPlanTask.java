@@ -9,7 +9,6 @@ import com.orientechnologies.orient.core.db.OSharedContextEmbedded;
 import com.orientechnologies.orient.core.db.document.ODatabaseDocumentEmbedded;
 import com.orientechnologies.orient.core.serialization.serializer.record.binary.BytesContainer;
 import com.orientechnologies.orient.core.serialization.serializer.result.binary.OResultSerializerNetwork;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
@@ -38,11 +37,11 @@ public class ORunQueryExecutionPlanTask extends OAbstractRemoteTask {
   public static final int FACTORYID = 40;
 
   private String nodeName;
-  private OExecutionPlan plan;
+  private OInternalExecutionPlan plan;
   private Map<Object, Object> inputParams;
 
   public ORunQueryExecutionPlanTask(
-      OExecutionPlan executionPlan, Map<Object, Object> inputParameters, String nodeName) {
+      OInternalExecutionPlan executionPlan, Map<Object, Object> inputParameters, String nodeName) {
     this.plan = executionPlan;
     this.inputParams = inputParameters;
     this.nodeName = nodeName;
@@ -158,7 +157,7 @@ public class ORunQueryExecutionPlanTask extends OAbstractRemoteTask {
     this.plan = deserializePlan(serializedExecutionPlan);
   }
 
-  private OExecutionPlan deserializePlan(OResult serializedExecutionPlan) {
+  private OInternalExecutionPlan deserializePlan(OResult serializedExecutionPlan) {
     String className = serializedExecutionPlan.getProperty(OInternalExecutionPlan.JAVA_TYPE);
 
     OInternalExecutionPlan internalPlan = null;
@@ -172,8 +171,8 @@ public class ORunQueryExecutionPlanTask extends OAbstractRemoteTask {
     return internalPlan;
   }
 
-  private OResult serializePlan(OExecutionPlan plan) {
-    return ((OInternalExecutionPlan) plan).serialize();
+  private OResult serializePlan(OInternalExecutionPlan plan) {
+    return plan.serialize();
   }
 
   @Override

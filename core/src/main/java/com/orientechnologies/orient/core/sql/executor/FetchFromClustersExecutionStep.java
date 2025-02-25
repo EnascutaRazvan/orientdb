@@ -12,7 +12,7 @@ import java.util.List;
 /** Created by luigidellaquila on 21/07/16. */
 public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
 
-  private List<OExecutionStep> subSteps;
+  private List<OExecutionStepInternal> subSteps;
   private boolean orderByRidAsc = false;
   private boolean orderByRidDesc = false;
 
@@ -32,7 +32,7 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
       orderByRidDesc = true;
     }
 
-    subSteps = new ArrayList<OExecutionStep>();
+    subSteps = new ArrayList<>();
     sortClusers(clusterIds);
     for (int i = 0; i < clusterIds.length; i++) {
       FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterIds[i], ctx);
@@ -63,18 +63,18 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     getPrev().ifPresent(x -> x.start(ctx).close(ctx));
 
-    List<OExecutionStep> stepsIter = getSubSteps();
+    List<OExecutionStepInternal> stepsIter = getSubSteps();
 
     return OExecutionStream.streamsFromIterator(stepsIter.iterator(), this::startStep);
   }
 
-  private OExecutionStream startStep(OExecutionStep step, OCommandContext context) {
+  private OExecutionStream startStep(OExecutionStepInternal step, OCommandContext context) {
     return ((AbstractExecutionStep) step).start(context);
   }
 
   @Override
   public void sendTimeout() {
-    for (OExecutionStep step : subSteps) {
+    for (OExecutionStepInternal step : subSteps) {
       ((AbstractExecutionStep) step).sendTimeout();
     }
     prev.ifPresent(p -> p.sendTimeout());
@@ -82,7 +82,7 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
 
   @Override
   public void close() {
-    for (OExecutionStep step : subSteps) {
+    for (OExecutionStepInternal step : subSteps) {
       ((AbstractExecutionStep) step).close();
     }
     prev.ifPresent(p -> p.close());
@@ -109,7 +109,7 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public List<OExecutionStep> getSubSteps() {
+  public List<OExecutionStepInternal> getSubSteps() {
     return subSteps;
   }
 

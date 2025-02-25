@@ -6,9 +6,6 @@ import com.orientechnologies.orient.core.command.OServerCommandContext;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.sql.parser.OSimpleExecServerStatement;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 /** @author Luigi Dell'Aquila (l.dellaquila-(at)-orientdb.com) */
 public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
@@ -41,16 +38,6 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
     return statement.executeSimple(ctx);
   }
 
-  @Override
-  public List<OExecutionStep> getSteps() {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl());
-  }
-
   public String prettyPrint(OPrintContext ctx) {
     String spaces = OExecutionStepInternal.getIndent(ctx);
     StringBuilder result = new StringBuilder();
@@ -58,16 +45,6 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
     result.append("+ ");
     result.append(statement.toString());
     return result.toString();
-  }
-
-  @Override
-  public String prettyPrint() {
-    return prettyPrint(0, 0);
-  }
-
-  @Override
-  public OResult toResult() {
-    return toResult(new OToResultContextImpl());
   }
 
   @Override
@@ -81,11 +58,6 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
     result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(ctx.getContext(), 0, 2)));
     result.setProperty("steps", null);
     return result;
-  }
-
-  @Override
-  public Set<String> getIndexes() {
-    return Collections.emptySet();
   }
 
   @Override

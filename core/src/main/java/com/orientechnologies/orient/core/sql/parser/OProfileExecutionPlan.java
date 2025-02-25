@@ -4,7 +4,6 @@ import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseInternal;
 import com.orientechnologies.orient.core.db.ODatabaseStats;
-import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
 import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OPrintContexImpl;
@@ -30,23 +29,8 @@ public class OProfileExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public List<OExecutionStep> getSteps() {
+  public List<OExecutionStepInternal> getSteps() {
     return toProfile.getSteps();
-  }
-
-  @Override
-  public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(null, depth, indent));
-  }
-
-  @Override
-  public String prettyPrint() {
-    return prettyPrint(new OPrintContexImpl(null));
-  }
-
-  @Override
-  public OResult toResult() {
-    return toResult(new OToResultContextImpl(null));
   }
 
   @Override
@@ -108,7 +92,7 @@ public class OProfileExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("stmText", getStatement());
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty("statement", Arrays.asList(toProfile.toResult(ctx)));
-    List<OExecutionStep> steps = toProfile.getSteps();
+    List<OExecutionStepInternal> steps = toProfile.getSteps();
     if (steps != null) {
       var resultSteps =
           steps.stream()

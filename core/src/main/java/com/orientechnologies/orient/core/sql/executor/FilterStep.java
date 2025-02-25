@@ -87,7 +87,7 @@ public class FilterStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new FilterStep(this.whereClause.copy(), ctx, timeoutMillis, locked);
   }
 }

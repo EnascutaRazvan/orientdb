@@ -2,7 +2,7 @@ package com.orientechnologies.orient.core.sql.executor.resultset;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
-import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
+import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,7 +81,7 @@ public interface OExecutionStream {
     return new OResultCollectionExecutionStream(iterator);
   }
 
-  public default OCostMeasureExecutionStream profile(OExecutionStep step) {
+  public default OCostMeasureExecutionStream profile(OExecutionStepInternal step) {
     return new OCostMeasureExecutionStream(this, step);
   }
 

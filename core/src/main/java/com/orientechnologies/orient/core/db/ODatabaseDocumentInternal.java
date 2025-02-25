@@ -37,7 +37,7 @@ import com.orientechnologies.orient.core.record.OVertex;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.serialization.serializer.binary.OBinarySerializerFactory;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializer;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
+import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import com.orientechnologies.orient.core.storage.OPhysicalPosition;
@@ -208,7 +208,7 @@ public interface ODatabaseDocumentInternal extends ODatabaseSession, ODatabaseIn
    * @return an OResultSet to fetch the results of the query execution
    */
   default OExecutionStream queryOnNode(
-      String nodeName, OExecutionPlan executionPlan, Map<Object, Object> inputParameters) {
+      String nodeName, OInternalExecutionPlan executionPlan, Map<Object, Object> inputParameters) {
     throw new UnsupportedOperationException();
   }
 

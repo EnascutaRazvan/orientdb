@@ -19,7 +19,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
   protected String className;
   protected boolean orderByRidAsc = false;
   protected boolean orderByRidDesc = false;
-  protected List<OExecutionStep> subSteps = new ArrayList<>();
+  protected List<OExecutionStepInternal> subSteps = new ArrayList<>();
 
   protected FetchFromClassExecutionStep(OCommandContext ctx) {
     super(ctx);
@@ -123,7 +123,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     getPrev().ifPresent(x -> x.start(ctx).close(ctx));
 
-    List<OExecutionStep> stepsIter = getSubSteps();
+    List<OExecutionStepInternal> stepsIter = getSubSteps();
 
     return OExecutionStream.streamsFromIterator(stepsIter.iterator(), this::startStep)
         .map(this::setCurrent);
@@ -134,13 +134,13 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
     return result;
   }
 
-  private OExecutionStream startStep(OExecutionStep value, OCommandContext cx) {
+  private OExecutionStream startStep(OExecutionStepInternal value, OCommandContext cx) {
     return ((AbstractExecutionStep) value).start(cx);
   }
 
   @Override
   public void sendTimeout() {
-    for (OExecutionStep step : getSubSteps()) {
+    for (OExecutionStepInternal step : getSubSteps()) {
       ((AbstractExecutionStep) step).sendTimeout();
     }
     prev.ifPresent(p -> p.sendTimeout());
@@ -148,7 +148,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
 
   @Override
   public void close() {
-    for (OExecutionStep step : getSubSteps()) {
+    for (OExecutionStepInternal step : getSubSteps()) {
       ((AbstractExecutionStep) step).close();
     }
     prev.ifPresent(p -> p.close());
@@ -198,7 +198,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public List<OExecutionStep> getSubSteps() {
+  public List<OExecutionStepInternal> getSubSteps() {
     return subSteps;
   }
 
@@ -208,15 +208,12 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     FetchFromClassExecutionStep result = new FetchFromClassExecutionStep(ctx);
     result.className = this.className;
     result.orderByRidAsc = this.orderByRidAsc;
     result.orderByRidDesc = this.orderByRidDesc;
-    result.subSteps =
-        this.subSteps.stream()
-            .map(x -> ((OExecutionStepInternal) x).copy(ctx))
-            .collect(Collectors.toList());
+    result.subSteps = this.subSteps.stream().map(x -> x.copy(ctx)).collect(Collectors.toList());
     return result;
   }
 }

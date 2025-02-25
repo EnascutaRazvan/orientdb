@@ -10,7 +10,6 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.exception.OQueryParsingException;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
@@ -72,11 +71,11 @@ public class OStatement extends SimpleNode {
 
   public OInternalExecutionPlan resolvePlan(boolean useCache, OCommandContext ctx) {
     if (useCache && !ctx.isProfiling() && executinPlanCanBeCached()) {
-      OExecutionPlan plan =
+      OInternalExecutionPlan plan =
           OExecutionPlanCache.get(
               getOriginalStatement(), ctx, (ODatabaseDocumentInternal) ctx.getDatabase());
       if (plan != null) {
-        return (OInternalExecutionPlan) plan;
+        return plan;
       }
     }
     return createExecutionPlan(ctx);

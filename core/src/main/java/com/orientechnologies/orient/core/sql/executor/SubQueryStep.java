@@ -56,7 +56,7 @@ public class SubQueryStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new SubQueryStep(subExecuitonPlan.copy(ctx), ctx, ctx);
   }
 }

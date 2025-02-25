@@ -82,7 +82,7 @@ public class FilterByClassStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new FilterByClassStep(this.identifier.copy(), ctx);
   }
 }

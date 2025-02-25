@@ -44,7 +44,7 @@ public class TimeoutStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new TimeoutStep(this.timeout.copy(), ctx);
   }
 }

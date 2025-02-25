@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Created by luigidellaquila on 19/12/16. */
-public class OInfoExecutionPlan implements OExecutionPlanContextOps {
+public class OInfoExecutionPlan implements OExecutionPlan {
 
   private List<OExecutionStep> steps = new ArrayList<>();
   private String prettyPrint;
@@ -33,11 +33,6 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
 
   @Override
   public OResult toResult() {
-    return result;
-  }
-
-  @Override
-  public OResult toResult(OToResultContext ctx) {
     return result;
   }
 
@@ -94,9 +89,19 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
   public Set<String> getIndexes() {
     Set<String> indexes = new HashSet<>();
     for (OExecutionStep chilStep : steps) {
-      OExecutionStepInternal.fillIndexes(chilStep, indexes);
+      fillIndexes(chilStep, indexes);
     }
     return indexes;
+  }
+
+  static void fillIndexes(OExecutionStep step, Set<String> indexes) {
+    for (OExecutionStep chilStep : step.getSubSteps()) {
+      fillIndexes(chilStep, indexes);
+    }
+    String index = step.toResult().getProperty("index");
+    if (index != null) {
+      indexes.add(index);
+    }
   }
 
   public String getGenericStatement() {

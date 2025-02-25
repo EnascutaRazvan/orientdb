@@ -34,8 +34,7 @@ public class OResultSetReady implements OResultSetInternal, OResettable {
   }
 
   public void setPlan(OExecutionPlan plan) {
-    this.plan = OInfoExecutionPlan.fromResult(plan.toResult());
-    ;
+    this.plan = plan;
   }
 
   @Override

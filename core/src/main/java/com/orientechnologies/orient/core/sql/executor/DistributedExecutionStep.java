@@ -26,7 +26,7 @@ public class DistributedExecutionStep extends AbstractExecutionStep {
   }
 
   private OExecutionStream sendSerializedExecutionPlan(
-      String nodeName, OExecutionPlan serializedExecutionPlan, OCommandContext ctx) {
+      String nodeName, OInternalExecutionPlan serializedExecutionPlan, OCommandContext ctx) {
     ODatabaseDocumentInternal db = (ODatabaseDocumentInternal) ctx.getDatabase();
     return db.queryOnNode(nodeName, serializedExecutionPlan, ctx.getInputParameters());
   }

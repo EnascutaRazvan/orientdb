@@ -2,6 +2,8 @@ package com.orientechnologies.orient.core.sql.executor;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
+import java.util.List;
+import java.util.Set;
 
 /** Created by luigidellaquila on 06/07/16. */
 public interface OInternalExecutionPlan extends OExecutionPlanContextOps {
@@ -46,9 +48,13 @@ public interface OInternalExecutionPlan extends OExecutionPlanContextOps {
 
   void setGenericStatement(String stm);
 
-  public String prettyPrint(OPrintContext ctx);
+  String prettyPrint(OPrintContext ctx);
 
-  public OResult toResult(OToResultContext ctx);
+  OResult toResult(OToResultContext ctx);
+
+  List<OExecutionStepInternal> getSteps();
+
+  Set<String> getIndexes();
 
   default boolean isExplain() {
     return false;

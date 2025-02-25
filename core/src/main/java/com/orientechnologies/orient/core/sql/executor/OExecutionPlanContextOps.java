@@ -1,5 +1,5 @@
 package com.orientechnologies.orient.core.sql.executor;
 
-public interface OExecutionPlanContextOps extends OExecutionPlan {
+public interface OExecutionPlanContextOps {
   OResult toResult(OToResultContext ctx);
 }

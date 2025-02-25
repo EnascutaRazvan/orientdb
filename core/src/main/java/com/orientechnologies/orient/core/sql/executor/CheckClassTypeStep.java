@@ -86,7 +86,7 @@ public class CheckClassTypeStep extends AbstractExecutionStep {
   }
 
   @Override
-  public OExecutionStep copy(OCommandContext ctx) {
+  public OExecutionStepInternal copy(OCommandContext ctx) {
     return new CheckClassTypeStep(targetClass, parentClass, ctx);
   }
 

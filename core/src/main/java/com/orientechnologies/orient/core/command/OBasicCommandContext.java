@@ -27,7 +27,7 @@ import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.metadata.schema.OType;
 import com.orientechnologies.orient.core.record.impl.ODocumentHelper;
 import com.orientechnologies.orient.core.serialization.serializer.OStringSerializerHelper;
-import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
+import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OIndexStreamStat;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import java.util.HashMap;
@@ -68,7 +68,7 @@ public class OBasicCommandContext implements OCommandContext {
   private long timeoutMs;
   private OCommandContext.TIMEOUT_STRATEGY timeoutStrategy;
   protected AtomicLong resultsProcessed = new AtomicLong(0);
-  private Map<OExecutionStep, OStepStats> stepStats = new IdentityHashMap<>();
+  private Map<OExecutionStepInternal, OStepStats> stepStats = new IdentityHashMap<>();
   private LinkedList<OStepStats> currentStepStats = new LinkedList<>();
   private boolean indexStats = true;
   private boolean profiling = false;
@@ -475,7 +475,7 @@ public class OBasicCommandContext implements OCommandContext {
         || (parent != null && parent.isScriptVariableDeclared(varName));
   }
 
-  public void startProfiling(OExecutionStep step) {
+  public void startProfiling(OExecutionStepInternal step) {
     OStepStats stats = stepStats.get(step);
     if (stats == null) {
       stats = new OStepStats();
@@ -488,7 +488,7 @@ public class OBasicCommandContext implements OCommandContext {
     this.currentStepStats.push(stats);
   }
 
-  public void endProfiling(OExecutionStep step) {
+  public void endProfiling(OExecutionStepInternal step) {
     if (!this.currentStepStats.isEmpty()) {
       this.currentStepStats.pop().end();
       if (!this.currentStepStats.isEmpty()) {
@@ -498,7 +498,7 @@ public class OBasicCommandContext implements OCommandContext {
   }
 
   @Override
-  public OStepStats getStats(OExecutionStep step) {
+  public OStepStats getStats(OExecutionStepInternal step) {
     return stepStats.get(step);
   }
 
