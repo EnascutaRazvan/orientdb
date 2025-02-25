@@ -43,17 +43,15 @@ public class OrderByStep extends AbstractExecutionStep {
   }
 
   private List<OResult> init(OExecutionStepInternal p, OCommandContext ctx) {
-    long timeoutBegin = System.currentTimeMillis();
     List<OResult> cachedResult = new ArrayList<>();
     final long maxElementsAllowed =
         OGlobalConfiguration.QUERY_MAX_HEAP_ELEMENTS_ALLOWED_PER_OP.getValueAsLong();
     boolean sorted = true;
     OExecutionStream lastBatch = p.start(ctx);
+    if (timeoutMillis > 0) {
+      lastBatch = lastBatch.timeout(timeoutMillis, this::fail);
+    }
     while (lastBatch.hasNext(ctx)) {
-      if (timeoutMillis > 0 && timeoutBegin + timeoutMillis < System.currentTimeMillis()) {
-        sendTimeout();
-      }
-
       OResult item = lastBatch.next(ctx);
       cachedResult.add(item);
       if (maxElementsAllowed >= 0 && maxElementsAllowed < cachedResult.size()) {
@@ -86,6 +84,10 @@ public class OrderByStep extends AbstractExecutionStep {
       cachedResult.sort((a, b) -> orderBy.compare(a, b, ctx));
     }
     return cachedResult;
+  }
+
+  private void fail() {
+    throw new OTimeoutException("Timeout expired");
   }
 
   @Override

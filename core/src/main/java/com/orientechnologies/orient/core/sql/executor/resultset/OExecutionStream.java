@@ -4,6 +4,7 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.record.OIdentifiable;
 import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OResult;
+import com.orientechnologies.orient.core.sql.executor.resultset.OTimeoutExecutionStream.TimedOut;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -59,6 +60,10 @@ public interface OExecutionStream {
 
   public default OExecutionStream interruptable() {
     return new OInterruptExecutionStream(this);
+  }
+
+  public default OExecutionStream timeout(long timeInMills, TimedOut timedout) {
+    return new OTimeoutExecutionStream(this, timeInMills, timedout);
   }
 
   public default OExecutionStream limit(long limit) {

@@ -9,6 +9,7 @@ import com.orientechnologies.orient.core.sql.parser.OGroupBy;
 import com.orientechnologies.orient.core.sql.parser.OProjection;
 import com.orientechnologies.orient.core.sql.parser.OProjectionItem;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,42 +35,50 @@ public class AggregateProjectionCalculationStep extends ProjectionCalculationSte
 
   @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
-    List<OResult> finalResults = executeAggregation(ctx);
-    return OExecutionStream.resultCollection(finalResults);
+    return executeAggregation(ctx);
   }
 
-  private List<OResult> executeAggregation(OCommandContext ctx) {
-    long timeoutBegin = System.currentTimeMillis();
+  private OExecutionStream executeAggregation(OCommandContext ctx) {
+    long timeoutBegin = System.nanoTime() / 1_000_000;
     if (!prev.isPresent()) {
       throw new OCommandExecutionException(
           "Cannot execute an aggregation or a GROUP BY without a previous result");
     }
     OExecutionStepInternal prevStep = prev.get();
     OExecutionStream lastRs = prevStep.start(ctx);
+    if (timeoutMillis > 0) {
+      lastRs = lastRs.timeout(timeoutMillis, this::fail);
+    }
     Map<List, OResultInternal> aggregateResults = new LinkedHashMap<>();
     while (lastRs.hasNext(ctx)) {
-      if (timeoutMillis > 0 && timeoutBegin + timeoutMillis < System.currentTimeMillis()) {
-        sendTimeout();
-      }
       aggregate(lastRs.next(ctx), ctx, aggregateResults);
     }
     lastRs.close(ctx);
-    List<OResult> finalResults = new ArrayList<>();
-    finalResults.addAll(aggregateResults.values());
-    aggregateResults.clear();
-    for (OResult ele : finalResults) {
-      OResultInternal item = (OResultInternal) ele;
-      if (timeoutMillis > 0 && timeoutBegin + timeoutMillis < System.currentTimeMillis()) {
-        sendTimeout();
-      }
-      for (String name : item.getTemporaryProperties()) {
-        Object prevVal = item.getTemporaryProperty(name);
-        if (prevVal instanceof AggregationContext) {
-          item.setTemporaryProperty(name, ((AggregationContext) prevVal).getFinalValue(ctx));
-        }
-      }
+    OExecutionStream stream =
+        OExecutionStream.resultCollection((Collection) aggregateResults.values());
+    stream =
+        stream.map(
+            (res, cont) -> {
+              OResultInternal item = (OResultInternal) res;
+              for (String name : item.getTemporaryProperties()) {
+                Object prevVal = item.getTemporaryProperty(name);
+                if (prevVal instanceof AggregationContext) {
+                  item.setTemporaryProperty(
+                      name, ((AggregationContext) prevVal).getFinalValue(ctx));
+                }
+              }
+              return item;
+            });
+    if (timeoutMillis > 0) {
+      long currentTime = System.nanoTime() / 1_000_000;
+      long usedTime = currentTime - timeoutBegin;
+      stream = stream.timeout(timeoutMillis - usedTime, this::fail);
     }
-    return finalResults;
+    return stream;
+  }
+
+  private void fail() {
+    throw new OTimeoutException("Timeout expired");
   }
 
   private void aggregate(

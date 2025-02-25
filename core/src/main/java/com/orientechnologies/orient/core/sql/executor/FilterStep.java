@@ -5,7 +5,6 @@ import com.orientechnologies.common.exception.OException;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
-import com.orientechnologies.orient.core.sql.executor.resultset.OExpireResultSet;
 import com.orientechnologies.orient.core.sql.parser.OWhereClause;
 
 /** Created by luigidellaquila on 12/07/16. */
@@ -31,7 +30,7 @@ public class FilterStep extends AbstractExecutionStep {
     OExecutionStream resultSet = prev.get().start(ctx);
     resultSet = resultSet.filter(this::filterMap);
     if (timeoutMillis > 0) {
-      resultSet = new OExpireResultSet(resultSet, timeoutMillis, this::sendTimeout);
+      resultSet = resultSet.timeout(timeoutMillis, this::fail);
     }
     return resultSet;
   }
@@ -58,6 +57,10 @@ public class FilterStep extends AbstractExecutionStep {
     result.append("  ");
     result.append(whereClause.toString());
     return result.toString();
+  }
+
+  private void fail() {
+    throw new OTimeoutException("Timeout expired");
   }
 
   @Override

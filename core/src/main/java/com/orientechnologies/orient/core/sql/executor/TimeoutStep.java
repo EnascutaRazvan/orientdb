@@ -3,7 +3,6 @@ package com.orientechnologies.orient.core.sql.executor;
 import com.orientechnologies.common.concur.OTimeoutException;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
-import com.orientechnologies.orient.core.sql.executor.resultset.OExpireResultSet;
 import com.orientechnologies.orient.core.sql.parser.OTimeout;
 
 /** Created by luigidellaquila on 08/08/16. */
@@ -17,12 +16,10 @@ public class TimeoutStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
-    return new OExpireResultSet(
-        getPrev().get().start(ctx), timeout.getVal().longValue(), this::fail);
+    return getPrev().get().start(ctx).timeout(timeout.getVal().longValue(), this::fail);
   }
 
   private void fail() {
-    sendTimeout();
     if (OTimeout.RETURN.equals(this.timeout.getFailureStrategy())) {
       return;
     } else {
