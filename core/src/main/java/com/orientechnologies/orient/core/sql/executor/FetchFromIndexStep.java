@@ -52,6 +52,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -60,8 +61,6 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   protected IndexSearchDescriptor desc;
 
   private boolean orderAsc;
-
-  private long count = 0;
 
   public FetchFromIndexStep(IndexSearchDescriptor desc, boolean orderAsc, OCommandContext ctx) {
     super(ctx);
@@ -80,12 +79,13 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
     OExecutionStreamProducer res =
         new OExecutionStreamProducer() {
           private final Iterator<OIndexStream> iter = streams.iterator();
+          private final AtomicLong count = new AtomicLong(0);
 
           @Override
           public OExecutionStream next(OCommandContext ctx) {
             Stream<ORawPair<Object, ORID>> s = iter.next().start(ctx);
             return OExecutionStream.resultIterator(
-                s.map((nextEntry) -> readResult(ctx, nextEntry)).iterator());
+                s.map((nextEntry) -> readResult(ctx, nextEntry, count)).iterator());
           }
 
           @Override
@@ -99,17 +99,18 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
             for (OIndexStream stream : streams) {
               stats.add(stream.indexStats());
             }
-            updateIndexStats(ctx, stats);
+            updateIndexStats(ctx, stats, count);
           }
         };
     return OExecutionStream.multipleStreams(res);
   }
 
-  private OResult readResult(OCommandContext ctx, ORawPair<Object, ORID> nextEntry) {
+  private OResult readResult(
+      OCommandContext ctx, ORawPair<Object, ORID> nextEntry, AtomicLong count) {
     if (OExecutionThreadLocal.isInterruptCurrentOperation()) {
       throw new OCommandInterruptedException("The command has been interrupted");
     }
-    count++;
+    count.incrementAndGet();
     Object key = nextEntry.first;
     OIdentifiable value = nextEntry.second;
 
@@ -129,7 +130,8 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
     return key;
   }
 
-  private void updateIndexStats(OCommandContext ctx, List<OIndexStreamStat> indexStats) {
+  private void updateIndexStats(
+      OCommandContext ctx, List<OIndexStreamStat> indexStats, AtomicLong count) {
     // stats
     OQueryStats stats = OQueryStats.get((ODatabaseDocumentInternal) ctx.getDatabase());
     OIndex index = desc.getIndex();
@@ -160,7 +162,7 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
         size = 1;
       }
     }
-    stats.pushIndexStats(indexName, size, range, additionalRangeCondition != null, count);
+    stats.pushIndexStats(indexName, size, range, additionalRangeCondition != null, count.get());
     ((OBasicCommandContext) ctx).updateProfilerIndex(indexStats);
   }
 
@@ -769,9 +771,7 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {
-    count = 0;
-  }
+  public void reset() {}
 
   @Override
   public boolean canBeCached() {

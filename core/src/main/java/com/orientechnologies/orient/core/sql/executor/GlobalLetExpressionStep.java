@@ -11,8 +11,6 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
   private final OIdentifier varname;
   private final OExpression expression;
 
-  private boolean executed = false;
-
   public GlobalLetExpressionStep(OIdentifier varName, OExpression expression, OCommandContext ctx) {
     super(ctx);
     this.varname = varName;
@@ -22,17 +20,9 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
   @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     getPrev().ifPresent(x -> x.start(ctx).close(ctx));
-    calculate(ctx);
-    return OExecutionStream.empty();
-  }
-
-  private void calculate(OCommandContext ctx) {
-    if (executed) {
-      return;
-    }
     Object value = expression.execute((OResult) null, ctx);
     ctx.setVariable(varname.getStringValue(), value);
-    executed = true;
+    return OExecutionStream.empty();
   }
 
   @Override
