@@ -20,11 +20,10 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
    * iterates over a class and its subclasses
    *
    * @param clusterIds the clusters
-   * @param ctx the query context
    * @param ridOrder true to sort by RID asc, false to sort by RID desc, null for no sort.
    */
-  public FetchFromClustersExecutionStep(int[] clusterIds, OCommandContext ctx, Boolean ridOrder) {
-    super(ctx);
+  public FetchFromClustersExecutionStep(int[] clusterIds, Boolean ridOrder) {
+    super();
 
     if (Boolean.TRUE.equals(ridOrder)) {
       orderByRidAsc = true;
@@ -35,7 +34,7 @@ public class FetchFromClustersExecutionStep extends AbstractExecutionStep {
     subSteps = new ArrayList<>();
     sortClusers(clusterIds);
     for (int i = 0; i < clusterIds.length; i++) {
-      FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterIds[i], ctx);
+      FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterIds[i]);
       if (orderByRidAsc) {
         step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
       } else if (orderByRidDesc) {

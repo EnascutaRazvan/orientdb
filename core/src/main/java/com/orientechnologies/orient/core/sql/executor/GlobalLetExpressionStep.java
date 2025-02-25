@@ -11,8 +11,8 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
   private final OIdentifier varname;
   private final OExpression expression;
 
-  public GlobalLetExpressionStep(OIdentifier varName, OExpression expression, OCommandContext ctx) {
-    super(ctx);
+  public GlobalLetExpressionStep(OIdentifier varName, OExpression expression) {
+    super();
     this.varname = varName;
     this.expression = expression;
   }
@@ -33,7 +33,7 @@ public class GlobalLetExpressionStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new GlobalLetExpressionStep(varname.copy(), expression.copy(), ctx);
+    return new GlobalLetExpressionStep(varname.copy(), expression.copy());
   }
 
   @Override

@@ -149,10 +149,10 @@ public class OSelectExecutionPlanner {
       buildDistributedExecutionPlan(result, info, ctx);
     }
 
-    handleLet(result, info, ctx);
+    handleLet(result, info);
 
-    handleLockRecord(result, info, ctx);
-    handleWhere(result, info, ctx);
+    handleLockRecord(result, info);
+    handleWhere(result, info);
 
     // TODO optimization: in most cases the projections can be calculated on remote nodes
     buildDistributedExecutionPlan(result, info, ctx);
@@ -160,7 +160,7 @@ public class OSelectExecutionPlanner {
     handleProjectionsBlock(result, info, ctx);
 
     if (info.timeout != null) {
-      result.chain(new AccumulatingTimeoutStep(info.timeout, ctx));
+      result.chain(new AccumulatingTimeoutStep(info.timeout));
     }
 
     if (useCache
@@ -174,14 +174,13 @@ public class OSelectExecutionPlanner {
     return result;
   }
 
-  private void handleLockRecord(
-      OSelectExecutionPlan result, QueryPlanningInfo info, OCommandContext ctx) {
+  private void handleLockRecord(OSelectExecutionPlan result, QueryPlanningInfo info) {
     if (info.lockRecord != null) {
       if (info.distributedPlanCreated) {
-        result.chain(new LockRecordStep(info.lockRecord, ctx));
+        result.chain(new LockRecordStep(info.lockRecord));
       } else {
         for (OSelectExecutionPlan shardedPlan : info.distributedFetchExecutionPlans.values()) {
-          shardedPlan.chain(new LockRecordStep(info.lockRecord, ctx));
+          shardedPlan.chain(new LockRecordStep(info.lockRecord));
         }
       }
     }
@@ -194,14 +193,14 @@ public class OSelectExecutionPlanner {
     if (info.expand || info.unwind != null || info.groupBy != null) {
 
       handleProjections(result, info, ctx);
-      handleExpand(result, info, ctx);
-      handleUnwind(result, info, ctx);
+      handleExpand(result, info);
+      handleUnwind(result, info);
       handleOrderBy(result, info, ctx);
       if (info.skip != null) {
-        result.chain(new SkipExecutionStep(info.skip, ctx));
+        result.chain(new SkipExecutionStep(info.skip));
       }
       if (info.limit != null) {
-        result.chain(new LimitExecutionStep(info.limit, ctx));
+        result.chain(new LimitExecutionStep(info.limit));
       }
     } else {
       handleOrderBy(result, info, ctx);
@@ -209,17 +208,17 @@ public class OSelectExecutionPlanner {
         handleProjections(result, info, ctx);
         handleDistinct(result, info, ctx);
         if (info.skip != null) {
-          result.chain(new SkipExecutionStep(info.skip, ctx));
+          result.chain(new SkipExecutionStep(info.skip));
         }
         if (info.limit != null) {
-          result.chain(new LimitExecutionStep(info.limit, ctx));
+          result.chain(new LimitExecutionStep(info.limit));
         }
       } else {
         if (info.skip != null) {
-          result.chain(new SkipExecutionStep(info.skip, ctx));
+          result.chain(new SkipExecutionStep(info.skip));
         }
         if (info.limit != null) {
-          result.chain(new LimitExecutionStep(info.limit, ctx));
+          result.chain(new LimitExecutionStep(info.limit));
         }
         handleProjections(result, info, ctx);
       }
@@ -243,7 +242,7 @@ public class OSelectExecutionPlanner {
         // everything is executed on a single remote node
         String node = info.distributedFetchExecutionPlans.keySet().iterator().next();
         OSelectExecutionPlan subPlan = info.distributedFetchExecutionPlans.get(node);
-        DistributedExecutionStep step = new DistributedExecutionStep(subPlan, node, ctx);
+        DistributedExecutionStep step = new DistributedExecutionStep(subPlan, node);
         result.chain(step);
       }
       info.distributedFetchExecutionPlans = null;
@@ -256,13 +255,13 @@ public class OSelectExecutionPlanner {
           subPlans.add(entry.getValue());
         } else {
           DistributedExecutionStep step =
-              new DistributedExecutionStep(entry.getValue(), entry.getKey(), ctx);
+              new DistributedExecutionStep(entry.getValue(), entry.getKey());
           OSelectExecutionPlan subPlan = new OSelectExecutionPlan();
           subPlan.chain(step);
           subPlans.add(subPlan);
         }
       }
-      result.chain(new ParallelExecStep((List) subPlans, ctx));
+      result.chain(new ParallelExecStep((List) subPlans));
     }
     info.distributedPlanCreated = true;
   }
@@ -597,7 +596,7 @@ public class OSelectExecutionPlanner {
   }
 
   private boolean handleHardwiredOptimizations(OSelectExecutionPlan result, OCommandContext ctx) {
-    if (handleHardwiredCountOnIndex(result, info, ctx)) {
+    if (handleHardwiredCountOnIndex(result, info)) {
       return true;
     }
     if (handleHardwiredCountOnClass(result, info, ctx)) {
@@ -628,8 +627,7 @@ public class OSelectExecutionPlanner {
       return false;
     }
     result.chain(
-        new CountFromClassStep(
-            targetClass, info.projection.getAllAliases().iterator().next(), ctx));
+        new CountFromClassStep(targetClass, info.projection.getAllAliases().iterator().next()));
     return true;
   }
 
@@ -714,8 +712,7 @@ public class OSelectExecutionPlanner {
             new CountFromIndexWithKeyStep(
                 new OIndexIdentifier(classIndex.getName(), OIndexIdentifier.Type.INDEX),
                 expr,
-                info.projection.getAllAliases().iterator().next(),
-                ctx));
+                info.projection.getAllAliases().iterator().next()));
         return true;
       }
     }
@@ -723,8 +720,7 @@ public class OSelectExecutionPlanner {
     return false;
   }
 
-  private boolean handleHardwiredCountOnIndex(
-      OSelectExecutionPlan result, QueryPlanningInfo info, OCommandContext ctx) {
+  private boolean handleHardwiredCountOnIndex(OSelectExecutionPlan result, QueryPlanningInfo info) {
     OIndexIdentifier targetIndex = info.target == null ? null : info.target.getItem().getIndex();
     if (targetIndex == null) {
       return false;
@@ -742,8 +738,7 @@ public class OSelectExecutionPlanner {
       return false;
     }
     result.chain(
-        new CountFromIndexStep(
-            targetIndex, info.projection.getAllAliases().iterator().next(), ctx));
+        new CountFromIndexStep(targetIndex, info.projection.getAllAliases().iterator().next()));
     return true;
   }
 
@@ -795,10 +790,9 @@ public class OSelectExecutionPlanner {
     return false;
   }
 
-  public static void handleUnwind(
-      OSelectExecutionPlan result, QueryPlanningInfo info, OCommandContext ctx) {
+  public static void handleUnwind(OSelectExecutionPlan result, QueryPlanningInfo info) {
     if (info.unwind != null) {
-      result.chain(new UnwindStep(info.unwind, ctx));
+      result.chain(new UnwindStep(info.unwind));
     }
   }
 
@@ -820,7 +814,7 @@ public class OSelectExecutionPlanner {
       OSelectExecutionPlan result, QueryPlanningInfo info, OCommandContext ctx) {
     if (!info.projectionsCalculated && info.projection != null) {
       if (info.preAggregateProjection != null) {
-        result.chain(new ProjectionCalculationStep(info.preAggregateProjection, ctx));
+        result.chain(new ProjectionCalculationStep(info.preAggregateProjection));
       }
       if (info.aggregateProjection != null) {
         long aggregationLimit = -1;
@@ -835,14 +829,12 @@ public class OSelectExecutionPlanner {
                 info.aggregateProjection,
                 info.groupBy,
                 aggregationLimit,
-                ctx,
                 info.timeout != null ? info.timeout.getVal().longValue() : -1));
         if (isCountOnly(info) && info.groupBy == null) {
-          result.chain(
-              new GuaranteeEmptyCountStep(info.aggregateProjection.getItems().get(0), ctx));
+          result.chain(new GuaranteeEmptyCountStep(info.aggregateProjection.getItems().get(0)));
         }
       }
-      result.chain(new ProjectionCalculationStep(info.projection, ctx));
+      result.chain(new ProjectionCalculationStep(info.projection));
 
       info.projectionsCalculated = true;
     }
@@ -1286,7 +1278,7 @@ public class OSelectExecutionPlanner {
     for (Map.Entry<String, OSelectExecutionPlan> shardedPlan :
         info.distributedFetchExecutionPlans.entrySet()) {
       if (target == null) {
-        handleNoTarget(shardedPlan.getValue(), ctx);
+        handleNoTarget(shardedPlan.getValue());
       } else if (target.getIdentifier() != null) {
         String className = target.getIdentifier().getStringValue();
         if (className.startsWith("$")
@@ -1294,7 +1286,7 @@ public class OSelectExecutionPlanner {
                 .getMetadata()
                 .getImmutableSchemaSnapshot()
                 .existsClass(className)) {
-          handleVariableAsTarget(shardedPlan.getValue(), info, ctx);
+          handleVariableAsTarget(shardedPlan.getValue(), info);
         } else {
           Set<String> filterClusters = info.serverToClusters.get(shardedPlan.getKey());
 
@@ -1346,14 +1338,13 @@ public class OSelectExecutionPlanner {
               subPlan, info.serverToClusters.get(shardedPlan.getKey()), info, param, ctx);
           plans.add(subPlan);
         }
-        shardedPlan.getValue().chain(new ParallelExecStep(plans, ctx));
+        shardedPlan.getValue().chain(new ParallelExecStep(plans));
       } else if (target.getIndex() != null) {
         handleIndexAsTarget(shardedPlan.getValue(), info, target.getIndex(), null, ctx);
         if (info.serverToClusters.size() > 1) {
           shardedPlan
               .getValue()
-              .chain(
-                  new FilterByClustersStep(info.serverToClusters.get(shardedPlan.getKey()), ctx));
+              .chain(new FilterByClustersStep(info.serverToClusters.get(shardedPlan.getKey())));
         }
       } else if (target.getMetadata() != null) {
         handleMetadataAsTarget(shardedPlan.getValue(), target.getMetadata(), ctx);
@@ -1368,19 +1359,18 @@ public class OSelectExecutionPlanner {
         if (rids.size() > 0) {
           handleRidsAsTarget(shardedPlan.getValue(), rids, ctx);
         } else {
-          result.chain(new EmptyStep(ctx)); // nothing to return
+          result.chain(new EmptyStep()); // nothing to return
         }
       } else if (target.isEmptyList()) {
-        result.chain(new EmptyStep(ctx));
+        result.chain(new EmptyStep());
       } else {
         throw new UnsupportedOperationException();
       }
     }
   }
 
-  private void handleVariableAsTarget(
-      OSelectExecutionPlan plan, QueryPlanningInfo info, OCommandContext ctx) {
-    plan.chain(new FetchFromVariableStep(info.target.getItem(), ctx));
+  private void handleVariableAsTarget(OSelectExecutionPlan plan, QueryPlanningInfo info) {
+    plan.chain(new FetchFromVariableStep(info.target.getItem()));
   }
 
   private boolean clusterMatchesRidRange(
@@ -1466,7 +1456,7 @@ public class OSelectExecutionPlanner {
       OCommandContext ctx) {
     Object paramValue = inputParam.getValue(ctx.getInputParameters());
     if (paramValue == null) {
-      result.chain(new EmptyStep(ctx)); // nothing to return
+      result.chain(new EmptyStep()); // nothing to return
     } else if (paramValue instanceof OClass) {
       OFromClause from = new OFromClause(-1);
       OFromItem item = new OFromItem(-1);
@@ -1495,7 +1485,7 @@ public class OSelectExecutionPlanner {
       if (filterClusters == null || isFromClusters(rid, filterClusters, ctx.getDatabase())) {
         handleRidsAsTarget(result, Collections.singletonList(rid), ctx);
       } else {
-        result.chain(new EmptyStep(ctx)); // nothing to return
+        result.chain(new EmptyStep()); // nothing to return
       }
 
     } else if (paramValue instanceof Iterable) {
@@ -1521,7 +1511,7 @@ public class OSelectExecutionPlanner {
       if (rids.size() > 0) {
         handleRidsAsTarget(result, rids, ctx);
       } else {
-        result.chain(new EmptyStep(ctx)); // nothing to return
+        result.chain(new EmptyStep()); // nothing to return
       }
     } else {
       throw new OCommandExecutionException("Invalid target: " + paramValue);
@@ -1544,8 +1534,8 @@ public class OSelectExecutionPlanner {
     return filterClusters.contains(clusterName);
   }
 
-  private void handleNoTarget(OSelectExecutionPlan result, OCommandContext ctx) {
-    result.chain(new EmptyDataGeneratorStep(1, ctx));
+  private void handleNoTarget(OSelectExecutionPlan result) {
+    result.chain(new EmptyDataGeneratorStep(1));
   }
 
   private void handleIndexAsTarget(
@@ -1619,7 +1609,6 @@ public class OSelectExecutionPlanner {
           result.chain(
               new FilterStep(
                   where,
-                  ctx,
                   this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                   this.info.isExclusiveLock()));
         }
@@ -1632,7 +1621,7 @@ public class OSelectExecutionPlanner {
         }
         result.chain(
             new FetchFromIndexValuesStep(new IndexSearchDescriptor(index, null), true, ctx));
-        result.chain(new GetValueFromIndexEntryStep(ctx, filterClusterIds));
+        result.chain(new GetValueFromIndexEntryStep(filterClusterIds));
         break;
       case VALUESDESC:
         if (!index.supportsOrderedIterations()) {
@@ -1641,7 +1630,7 @@ public class OSelectExecutionPlanner {
         }
         result.chain(
             new FetchFromIndexValuesStep(new IndexSearchDescriptor(index, null), false, ctx));
-        result.chain(new GetValueFromIndexEntryStep(ctx, filterClusterIds));
+        result.chain(new GetValueFromIndexEntryStep(filterClusterIds));
         break;
     }
   }
@@ -1679,17 +1668,17 @@ public class OSelectExecutionPlanner {
     if (metadata.getName().equalsIgnoreCase("schema")) {
       schemaRecordIdAsString = db.getStorageInfo().getConfiguration().getSchemaRecordId();
       ORecordId schemaRid = new ORecordId(schemaRecordIdAsString);
-      plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid), ctx));
+      plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid)));
     } else if (metadata.getName().equalsIgnoreCase("indexmanager")) {
       schemaRecordIdAsString = db.getStorageInfo().getConfiguration().getIndexMgrRecordId();
       ORecordId schemaRid = new ORecordId(schemaRecordIdAsString);
-      plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid), ctx));
+      plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid)));
     } else if (metadata.getName().equalsIgnoreCase("storage")) {
-      plan.chain(new FetchFromStorageMetadataStep(ctx));
+      plan.chain(new FetchFromStorageMetadataStep());
     } else if (metadata.getName().equalsIgnoreCase("database")) {
-      plan.chain(new FetchFromDatabaseMetadataStep(ctx));
+      plan.chain(new FetchFromDatabaseMetadataStep());
     } else if (metadata.getName().equalsIgnoreCase("distributed")) {
-      plan.chain(new FetchFromDistributedMetadataStep(ctx));
+      plan.chain(new FetchFromDistributedMetadataStep());
     } else {
       throw new UnsupportedOperationException("Invalid metadata: " + metadata.getName());
     }
@@ -1700,13 +1689,12 @@ public class OSelectExecutionPlanner {
     for (ORid rid : rids) {
       actualRids.add(rid.toRecordId((OResult) null, ctx));
     }
-    plan.chain(new FetchFromRidsStep(actualRids, ctx));
+    plan.chain(new FetchFromRidsStep(actualRids));
   }
 
-  private static void handleExpand(
-      OSelectExecutionPlan result, QueryPlanningInfo info, OCommandContext ctx) {
+  private static void handleExpand(OSelectExecutionPlan result, QueryPlanningInfo info) {
     if (info.expand) {
-      result.chain(new ExpandStep(ctx));
+      result.chain(new ExpandStep());
     }
   }
 
@@ -1719,7 +1707,7 @@ public class OSelectExecutionPlanner {
       for (OLetItem item : items) {
         ctx.declareScriptVariable(item.getVarName().getStringValue());
         if (item.getExpression() != null) {
-          result.chain(new GlobalLetExpressionStep(item.getVarName(), item.getExpression(), ctx));
+          result.chain(new GlobalLetExpressionStep(item.getVarName(), item.getExpression()));
         } else {
           result.chain(new GlobalLetQueryStep(item.getVarName(), item.getQuery(), ctx, scriptVars));
         }
@@ -1729,7 +1717,7 @@ public class OSelectExecutionPlanner {
     }
   }
 
-  private void handleLet(OSelectExecutionPlan plan, QueryPlanningInfo info, OCommandContext ctx) {
+  private void handleLet(OSelectExecutionPlan plan, QueryPlanningInfo info) {
     // this could be invoked multiple times
     // so it can be optimized
     // checking whether the execution plan already contains some LET steps
@@ -1740,9 +1728,9 @@ public class OSelectExecutionPlanner {
       if (plan.steps.size() > 0 || info.distributedPlanCreated) {
         for (OLetItem item : items) {
           if (item.getExpression() != null) {
-            plan.chain(new LetExpressionStep(item.getVarName(), item.getExpression(), ctx));
+            plan.chain(new LetExpressionStep(item.getVarName(), item.getExpression()));
           } else {
-            plan.chain(new LetQueryStep(item.getVarName(), item.getQuery(), ctx));
+            plan.chain(new LetQueryStep(item.getVarName(), item.getQuery()));
           }
         }
       } else {
@@ -1750,11 +1738,9 @@ public class OSelectExecutionPlanner {
           for (OLetItem item : items) {
             if (item.getExpression() != null) {
               shardedPlan.chain(
-                  new LetExpressionStep(
-                      item.getVarName().copy(), item.getExpression().copy(), ctx));
+                  new LetExpressionStep(item.getVarName().copy(), item.getExpression().copy()));
             } else {
-              shardedPlan.chain(
-                  new LetQueryStep(item.getVarName().copy(), item.getQuery().copy(), ctx));
+              shardedPlan.chain(new LetQueryStep(item.getVarName().copy(), item.getQuery().copy()));
             }
           }
         }
@@ -1788,13 +1774,12 @@ public class OSelectExecutionPlanner {
     return result;
   }
 
-  private void handleWhere(OSelectExecutionPlan plan, QueryPlanningInfo info, OCommandContext ctx) {
+  private void handleWhere(OSelectExecutionPlan plan, QueryPlanningInfo info) {
     if (info.whereClause != null) {
       if (info.distributedPlanCreated) {
         plan.chain(
             new FilterStep(
                 info.whereClause,
-                ctx,
                 this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                 this.info.isExclusiveLock()));
       } else {
@@ -1802,7 +1787,6 @@ public class OSelectExecutionPlanner {
           shardedPlan.chain(
               new FilterStep(
                   info.whereClause.copy(),
-                  ctx,
                   this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                   this.info.isExclusiveLock()));
         }
@@ -1832,10 +1816,9 @@ public class OSelectExecutionPlanner {
           new OrderByStep(
               info.orderBy,
               maxResults,
-              ctx,
               info.timeout != null ? info.timeout.getVal().longValue() : -1));
       if (info.projectionAfterOrderBy != null) {
-        plan.chain(new ProjectionCalculationStep(info.projectionAfterOrderBy, ctx));
+        plan.chain(new ProjectionCalculationStep(info.projectionAfterOrderBy));
       }
     }
   }
@@ -1862,18 +1845,18 @@ public class OSelectExecutionPlanner {
       OCommandContext ctx) {
     OIdentifier identifier = from.getItem().getIdentifier();
     if (handleClassAsTargetWithIndexedFunction(plan, filterClusters, identifier, info, ctx)) {
-      plan.chain(new FilterByClassStep(identifier, ctx));
+      plan.chain(new FilterByClassStep(identifier));
       return;
     }
 
     if (handleClassAsTargetWithIndex(plan, identifier, filterClusters, info, ctx)) {
-      plan.chain(new FilterByClassStep(identifier, ctx));
+      plan.chain(new FilterByClassStep(identifier));
       return;
     }
 
     if (info.orderBy != null
         && handleClassWithIndexForSortOnly(plan, identifier, filterClusters, info, ctx)) {
-      plan.chain(new FilterByClassStep(identifier, ctx));
+      plan.chain(new FilterByClassStep(identifier));
       return;
     }
 
@@ -1964,18 +1947,17 @@ public class OSelectExecutionPlanner {
           } else {
             filterClusterIds = clazz.getPolymorphicClusterIds();
           }
-          subPlan.chain(new GetValueFromIndexEntryStep(ctx, filterClusterIds));
+          subPlan.chain(new GetValueFromIndexEntryStep(filterClusterIds));
           if (bestIndex.requiresDistinctStep()) {
             subPlan.chain(new DistinctExecutionStep(ctx));
           }
           if (!block.getSubBlocks().isEmpty()) {
             if ((info.perRecordLetClause != null && refersToLet(block.getSubBlocks()))) {
-              handleLet(subPlan, info, ctx);
+              handleLet(subPlan, info);
             }
             subPlan.chain(
                 new FilterStep(
                     createWhereFrom(block),
-                    ctx,
                     this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                     this.info.isExclusiveLock()));
           }
@@ -1991,12 +1973,11 @@ public class OSelectExecutionPlanner {
           subPlan.chain(step);
           if (!block.getSubBlocks().isEmpty()) {
             if ((info.perRecordLetClause != null && refersToLet(block.getSubBlocks()))) {
-              handleLet(subPlan, info, ctx);
+              handleLet(subPlan, info);
             }
             subPlan.chain(
                 new FilterStep(
                     createWhereFrom(block),
-                    ctx,
                     this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                     this.info.isExclusiveLock()));
           }
@@ -2041,22 +2022,21 @@ public class OSelectExecutionPlanner {
         }
 
         FetchFromIndexedFunctionStep step =
-            new FetchFromIndexedFunctionStep(blockCandidateFunction, info.target, ctx);
+            new FetchFromIndexedFunctionStep(blockCandidateFunction, info.target);
         if (!blockCandidateFunction.executeIndexedFunctionAfterIndexSearch(info.target, ctx)) {
           block = block.copy();
           block.getSubBlocks().remove(blockCandidateFunction);
         }
         if (info.flattenedWhereClause.size() == 1) {
           plan.chain(step);
-          plan.chain(new FilterByClustersStep(filterClusters, ctx));
+          plan.chain(new FilterByClustersStep(filterClusters));
           if (!block.getSubBlocks().isEmpty()) {
             if ((info.perRecordLetClause != null && refersToLet(block.getSubBlocks()))) {
-              handleLet(plan, info, ctx);
+              handleLet(plan, info);
             }
             plan.chain(
                 new FilterStep(
                     createWhereFrom(block),
-                    ctx,
                     this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                     this.info.isExclusiveLock()));
           }
@@ -2067,7 +2047,6 @@ public class OSelectExecutionPlanner {
             subPlan.chain(
                 new FilterStep(
                     createWhereFrom(block),
-                    ctx,
                     this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                     this.info.isExclusiveLock()));
           }
@@ -2080,8 +2059,8 @@ public class OSelectExecutionPlanner {
     if (indexedFunctionsFound) {
       if (resultSubPlans.size()
           > 1) { // if resultSubPlans.size() == 1 the step was already chained (see above)
-        plan.chain(new ParallelExecStep(resultSubPlans, ctx));
-        plan.chain(new FilterByClustersStep(filterClusters, ctx));
+        plan.chain(new ParallelExecStep(resultSubPlans));
+        plan.chain(new FilterByClustersStep(filterClusters));
         plan.chain(new DistinctExecutionStep(ctx));
       }
       // WHERE condition already applied
@@ -2187,7 +2166,7 @@ public class OSelectExecutionPlanner {
         } else {
           filterClusterIds = clazz.getPolymorphicClusterIds();
         }
-        plan.chain(new GetValueFromIndexEntryStep(ctx, filterClusterIds));
+        plan.chain(new GetValueFromIndexEntryStep(filterClusterIds));
         if (info.serverToClusters.size() == 1) {
           info.orderApplied = true;
         }
@@ -2252,7 +2231,7 @@ public class OSelectExecutionPlanner {
       subclassPlans.add(subPlan);
     }
     if (subclassPlans.size() > 0) {
-      plan.chain(new ParallelExecStep(subclassPlans, ctx));
+      plan.chain(new ParallelExecStep(subclassPlans));
       return true;
     }
     return false;
@@ -2315,7 +2294,7 @@ public class OSelectExecutionPlanner {
         subclassPlans.add(subPlan);
       }
       if (subclassPlans.size() > 0) {
-        result.add(new ParallelExecStep(subclassPlans, ctx));
+        result.add(new ParallelExecStep(subclassPlans));
       }
     }
     return result.size() == 0 ? null : result;
@@ -2374,7 +2353,7 @@ public class OSelectExecutionPlanner {
       } else {
         filterClusterIds = clazz.getPolymorphicClusterIds();
       }
-      result.add(new GetValueFromIndexEntryStep(ctx, filterClusterIds));
+      result.add(new GetValueFromIndexEntryStep(filterClusterIds));
       if (desc.requiresDistinctStep()) {
         result.add(new DistinctExecutionStep(ctx));
       }
@@ -2390,7 +2369,7 @@ public class OSelectExecutionPlanner {
           OSelectExecutionPlan stubPlan = new OSelectExecutionPlan();
           boolean prevCreatedDist = info.distributedPlanCreated;
           info.distributedPlanCreated = true; // little hack, check this!!!
-          handleLet(stubPlan, info, ctx);
+          handleLet(stubPlan, info);
           for (OExecutionStepInternal step : stubPlan.getSteps()) {
             result.add((OExecutionStepInternal) step);
           }
@@ -2399,7 +2378,6 @@ public class OSelectExecutionPlanner {
         result.add(
             new FilterStep(
                 createWhereFrom(desc.getRemainingCondition()),
-                ctx,
                 this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                 this.info.isExclusiveLock()));
       }
@@ -2460,7 +2438,7 @@ public class OSelectExecutionPlanner {
         filterClusterIds =
             ((ODatabaseDocumentInternal) ctx.getDatabase()).getClustersIds(filterClusters);
       }
-      subPlan.chain(new GetValueFromIndexEntryStep(ctx, filterClusterIds));
+      subPlan.chain(new GetValueFromIndexEntryStep(filterClusterIds));
       if (desc.requiresDistinctStep()) {
         subPlan.chain(new DistinctExecutionStep(ctx));
       }
@@ -2468,13 +2446,12 @@ public class OSelectExecutionPlanner {
         subPlan.chain(
             new FilterStep(
                 createWhereFrom(desc.getRemainingCondition()),
-                ctx,
                 this.info.timeout != null ? this.info.timeout.getVal().longValue() : -1,
                 this.info.isExclusiveLock()));
       }
       subPlans.add(subPlan);
     }
-    return new ParallelExecStep(subPlans, ctx);
+    return new ParallelExecStep(subPlans);
   }
 
   private OWhereClause createWhereFrom(OBooleanExpression remainingCondition) {
@@ -2905,7 +2882,7 @@ public class OSelectExecutionPlanner {
       if (clusterId == null) {
         throw new OCommandExecutionException("Cluster " + cluster + " does not exist");
       }
-      FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterId, ctx);
+      FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterId);
       if (Boolean.TRUE.equals(orderByRidAsc)) {
         step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
       } else if (Boolean.FALSE.equals(orderByRidAsc)) {
@@ -2926,7 +2903,7 @@ public class OSelectExecutionPlanner {
         clusterIds[i] = clusterId;
       }
       FetchFromClustersExecutionStep step =
-          new FetchFromClustersExecutionStep(clusterIds, ctx, orderByRidAsc);
+          new FetchFromClustersExecutionStep(clusterIds, orderByRidAsc);
       plan.chain(step);
     }
   }

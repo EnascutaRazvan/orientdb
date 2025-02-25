@@ -13,8 +13,8 @@ import java.util.Optional;
  */
 public class DeleteStep extends AbstractExecutionStep {
 
-  public DeleteStep(OCommandContext ctx) {
-    super(ctx);
+  public DeleteStep() {
+    super();
   }
 
   @Override
@@ -45,7 +45,7 @@ public class DeleteStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new DeleteStep(ctx);
+    return new DeleteStep();
   }
 
   @Override

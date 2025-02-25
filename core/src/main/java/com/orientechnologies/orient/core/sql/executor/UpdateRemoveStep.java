@@ -10,8 +10,8 @@ import java.util.List;
 public class UpdateRemoveStep extends AbstractExecutionStep {
   private final List<OUpdateRemoveItem> items;
 
-  public UpdateRemoveStep(List<OUpdateRemoveItem> items, OCommandContext ctx) {
-    super(ctx);
+  public UpdateRemoveStep(List<OUpdateRemoveItem> items) {
+    super();
     this.items = items;
   }
 

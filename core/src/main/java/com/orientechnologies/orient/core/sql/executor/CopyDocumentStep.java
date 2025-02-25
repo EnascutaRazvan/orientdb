@@ -19,8 +19,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class CopyDocumentStep extends AbstractExecutionStep {
 
-  public CopyDocumentStep(OCommandContext ctx) {
-    super(ctx);
+  public CopyDocumentStep() {
+    super();
   }
 
   @Override

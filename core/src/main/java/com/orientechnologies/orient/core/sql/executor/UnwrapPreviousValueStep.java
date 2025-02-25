@@ -12,8 +12,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class UnwrapPreviousValueStep extends AbstractExecutionStep {
 
-  public UnwrapPreviousValueStep(OCommandContext ctx) {
-    super(ctx);
+  public UnwrapPreviousValueStep() {
+    super();
   }
 
   @Override

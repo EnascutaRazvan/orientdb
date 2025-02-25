@@ -44,9 +44,8 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
       OIndex index,
       OBooleanExpression condition,
       OBinaryCondition additionalRangeCondition,
-      OBooleanExpression ridCondition,
-      OCommandContext ctx) {
-    this(index, condition, additionalRangeCondition, ridCondition, true, ctx);
+      OBooleanExpression ridCondition) {
+    this(index, condition, additionalRangeCondition, ridCondition, true);
   }
 
   private DeleteFromIndexStep(
@@ -54,9 +53,8 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
       OBooleanExpression condition,
       OBinaryCondition additionalRangeCondition,
       OBooleanExpression ridCondition,
-      boolean orderAsc,
-      OCommandContext ctx) {
-    super(ctx);
+      boolean orderAsc) {
+    super();
     this.index = index.getInternal();
     this.condition = condition;
     this.additional = additionalRangeCondition;

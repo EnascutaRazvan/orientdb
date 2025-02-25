@@ -27,10 +27,9 @@ public class CheckClassTypeStep extends AbstractExecutionStep {
    * @param targetClass a class to be checked
    * @param parentClass a class that is supposed to be the same or a parent class of the target
    *     class
-   * @param ctx execuiton context
    */
-  public CheckClassTypeStep(String targetClass, String parentClass, OCommandContext ctx) {
-    super(ctx);
+  public CheckClassTypeStep(String targetClass, String parentClass) {
+    super();
     this.targetClass = targetClass;
     this.parentClass = parentClass;
   }
@@ -87,7 +86,7 @@ public class CheckClassTypeStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new CheckClassTypeStep(targetClass, parentClass, ctx);
+    return new CheckClassTypeStep(targetClass, parentClass);
   }
 
   @Override

@@ -58,7 +58,7 @@ public class OIfStatement extends OStatement {
 
     OIfExecutionPlan plan = new OIfExecutionPlan();
 
-    IfStep step = new IfStep(ctx);
+    IfStep step = new IfStep();
     step.setCondition(this.expression);
     plan.chain(step);
 

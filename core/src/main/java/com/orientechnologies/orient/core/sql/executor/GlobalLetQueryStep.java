@@ -18,7 +18,7 @@ public class GlobalLetQueryStep extends AbstractExecutionStep {
 
   public GlobalLetQueryStep(
       OIdentifier varName, OStatement query, OCommandContext ctx, List<String> scriptVars) {
-    super(ctx);
+    super();
     this.varName = varName;
 
     OBasicCommandContext subCtx = new OBasicCommandContext(ctx.getDatabase());

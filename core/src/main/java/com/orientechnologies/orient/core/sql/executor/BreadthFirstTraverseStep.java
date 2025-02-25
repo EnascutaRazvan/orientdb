@@ -19,11 +19,8 @@ import java.util.Set;
 public class BreadthFirstTraverseStep extends AbstractTraverseStep {
 
   public BreadthFirstTraverseStep(
-      List<OTraverseProjectionItem> projections,
-      OWhereClause whileClause,
-      OInteger maxDepth,
-      OCommandContext ctx) {
-    super(projections, whileClause, maxDepth, ctx);
+      List<OTraverseProjectionItem> projections, OWhereClause whileClause, OInteger maxDepth) {
+    super(projections, whileClause, maxDepth);
   }
 
   @Override

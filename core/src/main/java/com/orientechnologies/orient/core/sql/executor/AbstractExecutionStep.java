@@ -8,12 +8,9 @@ import java.util.Optional;
 /** @author Luigi Dell'Aquila (l.dellaquila-(at)-orientdb.com) */
 public abstract class AbstractExecutionStep implements OExecutionStepInternal {
 
-  protected final OCommandContext ctx;
   protected Optional<OExecutionStepInternal> prev = Optional.empty();
 
-  public AbstractExecutionStep(OCommandContext ctx) {
-    this.ctx = ctx;
-  }
+  public AbstractExecutionStep() {}
 
   @Override
   public void setPrevious(OExecutionStepInternal step) {

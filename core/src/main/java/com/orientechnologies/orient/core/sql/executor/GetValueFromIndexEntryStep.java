@@ -14,12 +14,11 @@ public class GetValueFromIndexEntryStep extends AbstractExecutionStep {
   private final int[] filterClusterIds;
 
   /**
-   * @param ctx the execution context
    * @param filterClusterIds only extract values from these clusters. Pass null if no filtering is
    *     needed
    */
-  public GetValueFromIndexEntryStep(OCommandContext ctx, int[] filterClusterIds) {
-    super(ctx);
+  public GetValueFromIndexEntryStep(int[] filterClusterIds) {
+    super();
     this.filterClusterIds = filterClusterIds;
     if (this.filterClusterIds != null) {
       Arrays.sort(this.filterClusterIds);
@@ -82,6 +81,6 @@ public class GetValueFromIndexEntryStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new GetValueFromIndexEntryStep(ctx, this.filterClusterIds);
+    return new GetValueFromIndexEntryStep(this.filterClusterIds);
   }
 }

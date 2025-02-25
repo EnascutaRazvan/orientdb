@@ -15,8 +15,8 @@ import java.util.Optional;
 public class CheckRecordTypeStep extends AbstractExecutionStep {
   private final String clazz;
 
-  public CheckRecordTypeStep(OCommandContext ctx, String className) {
-    super(ctx);
+  public CheckRecordTypeStep(String className) {
+    super();
     this.clazz = className;
   }
 

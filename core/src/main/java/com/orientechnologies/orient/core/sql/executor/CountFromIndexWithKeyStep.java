@@ -25,11 +25,10 @@ public class CountFromIndexWithKeyStep extends AbstractExecutionStep {
   /**
    * @param targetIndex the index name as it is parsed by the SQL parsed
    * @param alias the name of the property returned in the result-set
-   * @param ctx the query context
    */
   public CountFromIndexWithKeyStep(
-      OIndexIdentifier targetIndex, OExpression keyValue, String alias, OCommandContext ctx) {
-    super(ctx);
+      OIndexIdentifier targetIndex, OExpression keyValue, String alias) {
+    super();
     this.target = targetIndex;
     this.alias = alias;
     this.keyValue = keyValue;

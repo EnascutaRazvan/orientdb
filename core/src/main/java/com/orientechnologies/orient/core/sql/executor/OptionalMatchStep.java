@@ -1,11 +1,9 @@
 package com.orientechnologies.orient.core.sql.executor;
 
-import com.orientechnologies.orient.core.command.OCommandContext;
-
 /** Created by luigidellaquila on 17/10/16. */
 public class OptionalMatchStep extends MatchStep {
-  public OptionalMatchStep(OCommandContext context, EdgeTraversal edge) {
-    super(context, edge);
+  public OptionalMatchStep(EdgeTraversal edge) {
+    super(edge);
   }
 
   @Override

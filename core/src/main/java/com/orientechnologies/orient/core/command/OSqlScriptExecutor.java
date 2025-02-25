@@ -84,7 +84,7 @@ public class OSqlScriptExecutor extends OAbstractScriptExecutor {
       }
 
       if (nestedTxLevel <= 0) {
-        plan.chain(stm, scriptContext);
+        plan.chain(stm);
       } else {
         lastRetryBlock.add(stm);
       }
@@ -103,15 +103,14 @@ public class OSqlScriptExecutor extends OAbstractScriptExecutor {
                     lastRetryBlock,
                     nRetries,
                     ((OCommitStatement) stm).getElseStatements(),
-                    ((OCommitStatement) stm).getElseFail(),
-                    scriptContext);
+                    ((OCommitStatement) stm).getElseFail());
             ORetryExecutionPlan retryPlan = new ORetryExecutionPlan();
             retryPlan.chain(step);
-            plan.chain(retryPlan, scriptContext);
+            plan.chain(retryPlan);
             lastRetryBlock = new ArrayList<>();
           } else {
             for (OStatement statement : lastRetryBlock) {
-              plan.chain(statement, scriptContext);
+              plan.chain(statement);
             }
             lastRetryBlock = new ArrayList<>();
           }
@@ -124,7 +123,7 @@ public class OSqlScriptExecutor extends OAbstractScriptExecutor {
     }
     if (!lastRetryBlock.isEmpty()) {
       for (OStatement statement : lastRetryBlock) {
-        plan.chain(statement, scriptContext);
+        plan.chain(statement);
       }
     }
     return new OExecutionResultSet(plan.start(scriptContext), scriptContext, plan);

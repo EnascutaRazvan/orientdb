@@ -13,8 +13,8 @@ import java.util.Collection;
  */
 public abstract class AbstractUnrollStep extends AbstractExecutionStep {
 
-  public AbstractUnrollStep(OCommandContext ctx) {
-    super(ctx);
+  public AbstractUnrollStep() {
+    super();
   }
 
   @Override

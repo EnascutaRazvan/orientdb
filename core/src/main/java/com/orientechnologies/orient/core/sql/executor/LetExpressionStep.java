@@ -14,8 +14,8 @@ public class LetExpressionStep extends AbstractExecutionStep {
   private OIdentifier varname;
   private OExpression expression;
 
-  public LetExpressionStep(OIdentifier varName, OExpression expression, OCommandContext ctx) {
-    super(ctx);
+  public LetExpressionStep(OIdentifier varName, OExpression expression) {
+    super();
     this.varname = varName;
     this.expression = expression;
   }

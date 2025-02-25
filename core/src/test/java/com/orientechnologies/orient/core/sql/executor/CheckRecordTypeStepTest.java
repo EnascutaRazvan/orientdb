@@ -19,9 +19,9 @@ public class CheckRecordTypeStepTest extends TestUtilsFixture {
   public void shouldCheckRecordsOfOneType() {
     OCommandContext context = new OBasicCommandContext(db);
     String className = createClassInstance().getName();
-    CheckRecordTypeStep step = new CheckRecordTypeStep(context, className);
+    CheckRecordTypeStep step = new CheckRecordTypeStep(className);
     AbstractExecutionStep previous =
-        new AbstractExecutionStep(context) {
+        new AbstractExecutionStep() {
           boolean done = false;
 
           @Override
@@ -48,9 +48,9 @@ public class CheckRecordTypeStepTest extends TestUtilsFixture {
     OCommandContext context = new OBasicCommandContext(db);
     OClass parentClass = createClassInstance();
     OClass childClass = createChildClassInstance(parentClass);
-    CheckRecordTypeStep step = new CheckRecordTypeStep(context, parentClass.getName());
+    CheckRecordTypeStep step = new CheckRecordTypeStep(parentClass.getName());
     AbstractExecutionStep previous =
-        new AbstractExecutionStep(context) {
+        new AbstractExecutionStep() {
           boolean done = false;
 
           @Override
@@ -78,9 +78,9 @@ public class CheckRecordTypeStepTest extends TestUtilsFixture {
     OCommandContext context = new OBasicCommandContext(db);
     String firstClassName = createClassInstance().getName();
     String secondClassName = createClassInstance().getName();
-    CheckRecordTypeStep step = new CheckRecordTypeStep(context, firstClassName);
+    CheckRecordTypeStep step = new CheckRecordTypeStep(firstClassName);
     AbstractExecutionStep previous =
-        new AbstractExecutionStep(context) {
+        new AbstractExecutionStep() {
           boolean done = false;
 
           @Override

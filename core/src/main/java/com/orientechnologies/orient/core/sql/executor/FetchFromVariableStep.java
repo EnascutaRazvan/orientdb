@@ -15,8 +15,8 @@ public class FetchFromVariableStep extends AbstractExecutionStep {
 
   private OFromItem variableName;
 
-  public FetchFromVariableStep(OFromItem variableName, OCommandContext ctx) {
-    super(ctx);
+  public FetchFromVariableStep(OFromItem variableName) {
+    super();
     this.variableName = variableName;
   }
 

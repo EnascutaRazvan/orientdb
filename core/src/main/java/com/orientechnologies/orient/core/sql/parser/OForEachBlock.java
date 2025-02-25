@@ -44,8 +44,8 @@ public class OForEachBlock extends OStatement {
       FOREACH_VARIABLE_PROGR = 0;
     }
     OIdentifier varName = new OIdentifier("$__ORIENTDB_FOREACH_VAR_" + nextProg);
-    plan.chain(new GlobalLetExpressionStep(varName, loopValues, ctx));
-    plan.chain(new ForEachStep(loopVariable, new OExpression(varName), statements, ctx));
+    plan.chain(new GlobalLetExpressionStep(varName, loopValues));
+    plan.chain(new ForEachStep(loopVariable, new OExpression(varName), statements));
     return plan;
   }
 

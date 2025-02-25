@@ -24,8 +24,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class CheckSafeDeleteStep extends AbstractExecutionStep {
 
-  public CheckSafeDeleteStep(OCommandContext ctx) {
-    super(ctx);
+  public CheckSafeDeleteStep() {
+    super();
   }
 
   @Override

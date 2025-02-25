@@ -13,9 +13,8 @@ public class FilterStep extends AbstractExecutionStep {
   private OWhereClause whereClause;
   private final boolean locked;
 
-  public FilterStep(
-      OWhereClause whereClause, OCommandContext ctx, long timeoutMillis, boolean locked) {
-    super(ctx);
+  public FilterStep(OWhereClause whereClause, long timeoutMillis, boolean locked) {
+    super();
     this.whereClause = whereClause;
     this.timeoutMillis = timeoutMillis;
     this.locked = locked;
@@ -91,6 +90,6 @@ public class FilterStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new FilterStep(this.whereClause.copy(), ctx, timeoutMillis, locked);
+    return new FilterStep(this.whereClause.copy(), timeoutMillis, locked);
   }
 }

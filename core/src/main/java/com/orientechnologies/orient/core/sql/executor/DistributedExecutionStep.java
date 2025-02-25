@@ -11,9 +11,8 @@ public class DistributedExecutionStep extends AbstractExecutionStep {
   private final OSelectExecutionPlan subExecuitonPlan;
   private final String nodeName;
 
-  public DistributedExecutionStep(
-      OSelectExecutionPlan subExecutionPlan, String nodeName, OCommandContext ctx) {
-    super(ctx);
+  public DistributedExecutionStep(OSelectExecutionPlan subExecutionPlan, String nodeName) {
+    super();
     this.subExecuitonPlan = subExecutionPlan;
     this.nodeName = nodeName;
   }

@@ -28,8 +28,8 @@ public class FetchTemporaryFromTxStep extends AbstractExecutionStep {
 
   private Object order;
 
-  public FetchTemporaryFromTxStep(OCommandContext ctx, String className) {
-    super(ctx);
+  public FetchTemporaryFromTxStep(String className) {
+    super();
     this.className = className;
   }
 
@@ -166,7 +166,7 @@ public class FetchTemporaryFromTxStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    FetchTemporaryFromTxStep result = new FetchTemporaryFromTxStep(ctx, this.className);
+    FetchTemporaryFromTxStep result = new FetchTemporaryFromTxStep(this.className);
     return result;
   }
 }

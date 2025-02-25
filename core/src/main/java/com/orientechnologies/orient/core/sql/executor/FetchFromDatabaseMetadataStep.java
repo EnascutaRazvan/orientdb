@@ -12,8 +12,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class FetchFromDatabaseMetadataStep extends AbstractExecutionStep {
 
-  public FetchFromDatabaseMetadataStep(OCommandContext ctx) {
-    super(ctx);
+  public FetchFromDatabaseMetadataStep() {
+    super();
   }
 
   @Override

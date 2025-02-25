@@ -117,7 +117,7 @@ public class OMatchExecutionPlanner {
             .collect(Collectors.toSet());
     for (Map.Entry<String, Long> entry : estimatedRootEntries.entrySet()) {
       if (entry.getValue() == 0L && !isOptional(entry.getKey())) {
-        result.chain(new EmptyStep(context));
+        result.chain(new EmptyStep());
         return result;
       }
     }
@@ -125,7 +125,7 @@ public class OMatchExecutionPlanner {
     addPrefetchSteps(result, aliasesToPrefetch, context);
 
     if (subPatterns.size() > 1) {
-      CartesianProductStep step = new CartesianProductStep(context);
+      CartesianProductStep step = new CartesianProductStep();
       for (Pattern subPattern : subPatterns) {
         step.addSubPlan(
             createPlanForPattern(subPattern, context, estimatedRootEntries, aliasesToPrefetch));
@@ -139,10 +139,10 @@ public class OMatchExecutionPlanner {
       }
     }
 
-    manageNotPatterns(result, pattern, notMatchExpressions, context);
+    manageNotPatterns(result, pattern, notMatchExpressions);
 
     if (foundOptional) {
-      result.chain(new RemoveEmptyOptionalsStep(context));
+      result.chain(new RemoveEmptyOptionalsStep());
     }
 
     if (returnElements || returnPaths || returnPatterns || returnPathElements) {
@@ -158,18 +158,18 @@ public class OMatchExecutionPlanner {
       }
 
       if (this.orderBy != null) {
-        result.chain(new OrderByStep(orderBy, context, -1));
+        result.chain(new OrderByStep(orderBy, -1));
       }
 
       if (this.unwind != null) {
-        result.chain(new UnwindStep(unwind, context));
+        result.chain(new UnwindStep(unwind));
       }
 
       if (this.skip != null && skip.getValue(context) >= 0) {
-        result.chain(new SkipExecutionStep(skip, context));
+        result.chain(new SkipExecutionStep(skip));
       }
       if (this.limit != null && limit.getValue(context) >= 0) {
-        result.chain(new LimitExecutionStep(limit, context));
+        result.chain(new LimitExecutionStep(limit));
       }
     } else {
       QueryPlanningInfo info = new QueryPlanningInfo();
@@ -221,10 +221,7 @@ public class OMatchExecutionPlanner {
   }
 
   private void manageNotPatterns(
-      OSelectExecutionPlan result,
-      Pattern pattern,
-      List<OMatchExpression> notMatchExpressions,
-      OCommandContext context) {
+      OSelectExecutionPlan result, Pattern pattern, List<OMatchExpression> notMatchExpressions) {
     for (OMatchExpression exp : notMatchExpressions) {
       if (pattern.aliasToNode.get(exp.getOrigin().getAlias()) == null) {
         throw new OCommandExecutionException(
@@ -250,11 +247,11 @@ public class OMatchExecutionPlanner {
         PatternNode out = new PatternNode(lastFilter.getAlias());
         PatternEdge edge = new PatternEdge(item, in, out);
         EdgeTraversal traversal = new EdgeTraversal(edge, true);
-        MatchStep step = new MatchStep(context, traversal);
+        MatchStep step = new MatchStep(traversal);
         steps.add(step);
         lastFilter = item.getFilter();
       }
-      result.chain(new FilterNotMatchPatternStep(steps, context));
+      result.chain(new FilterNotMatchPatternStep(steps));
     }
   }
 
@@ -262,9 +259,9 @@ public class OMatchExecutionPlanner {
     if (returnElements) {
       result.chain(new ReturnMatchElementsStep(context));
     } else if (returnPaths) {
-      result.chain(new ReturnMatchPathsStep(context));
+      result.chain(new ReturnMatchPathsStep());
     } else if (returnPatterns) {
-      result.chain(new ReturnMatchPatternsStep(context));
+      result.chain(new ReturnMatchPatternsStep());
     } else if (returnPathElements) {
       result.chain(new ReturnMatchPathElementsStep(context));
     } else {
@@ -277,7 +274,7 @@ public class OMatchExecutionPlanner {
         item.setNestedProjection(returnNestedProjections.get(i));
         projection.getItems().add(item);
       }
-      result.chain(new ProjectionCalculationStep(projection, context));
+      result.chain(new ProjectionCalculationStep(projection));
     }
   }
 
@@ -314,7 +311,7 @@ public class OMatchExecutionPlanner {
         ORid rid = aliasRids.get(node.getAlias());
         OWhereClause filter = aliasFilters.get(node.getAlias());
         OSelectStatement select = createSelectStatement(clazz, cluster, rid, filter);
-        plan.chain(new MatchFirstStep(context, node, select.createExecutionPlan(context)));
+        plan.chain(new MatchFirstStep(node, select.createExecutionPlan(context)));
       }
     }
     return plan;
@@ -599,13 +596,13 @@ public class OMatchExecutionPlanner {
       select.setWhereClause(where == null ? null : where.copy());
       OBasicCommandContext subContxt = new OBasicCommandContext();
       subContxt.setParentWithoutOverridingChild(context);
-      plan.chain(new MatchFirstStep(context, patternNode, select.createExecutionPlan(subContxt)));
+      plan.chain(new MatchFirstStep(patternNode, select.createExecutionPlan(subContxt)));
     }
     if (edge.edge.getIn().isOptionalNode()) {
       foundOptional = true;
-      plan.chain(new OptionalMatchStep(context, edge));
+      plan.chain(new OptionalMatchStep(edge));
     } else {
-      plan.chain(new MatchStep(context, edge));
+      plan.chain(new MatchStep(edge));
     }
   }
 
@@ -620,7 +617,7 @@ public class OMatchExecutionPlanner {
           createSelectStatement(targetClass, targetCluster, targetRid, filter);
 
       MatchPrefetchStep step =
-          new MatchPrefetchStep(context, prefetchStm.createExecutionPlan(context), alias);
+          new MatchPrefetchStep(prefetchStm.createExecutionPlan(context), alias);
       result.chain(step);
     }
   }

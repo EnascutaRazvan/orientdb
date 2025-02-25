@@ -12,7 +12,7 @@ public class BatchStep extends AbstractExecutionStep {
   private Integer batchSize;
 
   public BatchStep(OBatch batch, OCommandContext ctx) {
-    super(ctx);
+    super();
     batchSize = batch.evaluate(ctx);
   }
 

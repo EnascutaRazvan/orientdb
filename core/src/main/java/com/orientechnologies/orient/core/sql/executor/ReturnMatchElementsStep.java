@@ -10,7 +10,7 @@ import java.util.List;
 public class ReturnMatchElementsStep extends AbstractUnrollStep {
 
   public ReturnMatchElementsStep(OCommandContext context) {
-    super(context);
+    super();
   }
 
   @Override

@@ -46,13 +46,13 @@ public class ODeleteExecutionPlanner {
         throw new OCommandExecutionException("Cannot apply a RETURN BEFORE on a delete from index");
       }
 
-      handleReturn(result, ctx, this.returnBefore);
+      handleReturn(result, this.returnBefore);
     } else {
       handleTarget(result, ctx, this.fromClause, this.whereClause);
-      handleUnsafe(result, ctx, this.unsafe);
-      handleLimit(result, ctx, this.limit);
-      handleDelete(result, ctx);
-      handleReturn(result, ctx, this.returnBefore);
+      handleUnsafe(result, this.unsafe);
+      handleLimit(result, this.limit);
+      handleDelete(result);
+      handleReturn(result, this.returnBefore);
     }
     return result;
   }
@@ -116,11 +116,11 @@ public class ODeleteExecutionPlanner {
                 "Index queries with this kind of condition are not supported yet: " + whereClause);
           }
         }
-        result.chain(new DeleteFromIndexStep(index, keyCondition, null, ridCondition, ctx));
+        result.chain(new DeleteFromIndexStep(index, keyCondition, null, ridCondition));
         if (ridCondition != null) {
           OWhereClause where = new OWhereClause(-1);
           where.setBaseExpression(ridCondition);
-          result.chain(new FilterStep(where, ctx, -1, false));
+          result.chain(new FilterStep(where, -1, false));
         }
         return true;
       case VALUES:
@@ -130,7 +130,7 @@ public class ODeleteExecutionPlanner {
               "Index " + indexName + " does not allow iteration on values");
         }
         result.chain(new FetchFromIndexValuesStep(new IndexSearchDescriptor(index), true, ctx));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null));
+        result.chain(new GetValueFromIndexEntryStep(null));
         break;
       case VALUESDESC:
         if (!index.supportsOrderedIterations()) {
@@ -138,32 +138,31 @@ public class ODeleteExecutionPlanner {
               "Index " + indexName + " does not allow iteration on values");
         }
         result.chain(new FetchFromIndexValuesStep(new IndexSearchDescriptor(index), false, ctx));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null));
+        result.chain(new GetValueFromIndexEntryStep(null));
         break;
     }
     return false;
   }
 
-  private void handleDelete(ODeleteExecutionPlan result, OCommandContext ctx) {
-    result.chain(new DeleteStep(ctx));
+  private void handleDelete(ODeleteExecutionPlan result) {
+    result.chain(new DeleteStep());
   }
 
-  private void handleUnsafe(ODeleteExecutionPlan result, OCommandContext ctx, boolean unsafe) {
+  private void handleUnsafe(ODeleteExecutionPlan result, boolean unsafe) {
     if (!unsafe) {
-      result.chain(new CheckSafeDeleteStep(ctx));
+      result.chain(new CheckSafeDeleteStep());
     }
   }
 
-  private void handleReturn(
-      ODeleteExecutionPlan result, OCommandContext ctx, boolean returnBefore) {
+  private void handleReturn(ODeleteExecutionPlan result, boolean returnBefore) {
     if (!returnBefore) {
-      result.chain(new CountStep(ctx));
+      result.chain(new CountStep());
     }
   }
 
-  private void handleLimit(OUpdateExecutionPlan plan, OCommandContext ctx, OLimit limit) {
+  private void handleLimit(OUpdateExecutionPlan plan, OLimit limit) {
     if (limit != null) {
-      plan.chain(new LimitExecutionStep(limit, ctx));
+      plan.chain(new LimitExecutionStep(limit));
     }
   }
 

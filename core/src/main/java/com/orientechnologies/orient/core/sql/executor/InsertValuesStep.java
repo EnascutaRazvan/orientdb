@@ -17,10 +17,8 @@ public class InsertValuesStep extends AbstractExecutionStep {
   private final List<List<OExpression>> values;
 
   public InsertValuesStep(
-      List<OIdentifier> identifierList,
-      List<List<OExpression>> valueExpressions,
-      OCommandContext ctx) {
-    super(ctx);
+      List<OIdentifier> identifierList, List<List<OExpression>> valueExpressions) {
+    super();
     this.identifiers = identifierList;
     this.values = valueExpressions;
   }

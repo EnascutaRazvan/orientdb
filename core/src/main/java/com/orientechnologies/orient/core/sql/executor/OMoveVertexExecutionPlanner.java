@@ -31,11 +31,11 @@ public class OMoveVertexExecutionPlanner {
     OUpdateExecutionPlan result = new OUpdateExecutionPlan();
 
     handleSource(result, ctx, this.source);
-    convertToModifiableResult(result, ctx);
+    convertToModifiableResult(result);
     handleTarget(result, targetClass, targetCluster, ctx);
-    handleOperations(result, ctx, this.updateOperations);
+    handleOperations(result, this.updateOperations);
     handleBatch(result, ctx, this.batch);
-    handleSave(result, ctx);
+    handleSave(result);
     return result;
   }
 
@@ -58,31 +58,29 @@ public class OMoveVertexExecutionPlanner {
    * updates the actual OIdentifiable
    *
    * @param plan the execution plan
-   * @param ctx the executino context
    */
-  private void convertToModifiableResult(OUpdateExecutionPlan plan, OCommandContext ctx) {
-    plan.chain(new ConvertToUpdatableResultStep(ctx));
+  private void convertToModifiableResult(OUpdateExecutionPlan plan) {
+    plan.chain(new ConvertToUpdatableResultStep());
   }
 
-  private void handleSave(OUpdateExecutionPlan result, OCommandContext ctx) {
-    result.chain(new SaveElementStep(ctx));
+  private void handleSave(OUpdateExecutionPlan result) {
+    result.chain(new SaveElementStep());
   }
 
-  private void handleOperations(
-      OUpdateExecutionPlan plan, OCommandContext ctx, OUpdateOperations op) {
+  private void handleOperations(OUpdateExecutionPlan plan, OUpdateOperations op) {
     if (op != null) {
       switch (op.getType()) {
         case OUpdateOperations.TYPE_SET:
-          plan.chain(new UpdateSetStep(op.getUpdateItems(), ctx));
+          plan.chain(new UpdateSetStep(op.getUpdateItems()));
           break;
         case OUpdateOperations.TYPE_REMOVE:
-          plan.chain(new UpdateRemoveStep(op.getUpdateRemoveItems(), ctx));
+          plan.chain(new UpdateRemoveStep(op.getUpdateRemoveItems()));
           break;
         case OUpdateOperations.TYPE_MERGE:
-          plan.chain(new UpdateMergeStep(op.getJson(), ctx));
+          plan.chain(new UpdateMergeStep(op.getJson()));
           break;
         case OUpdateOperations.TYPE_CONTENT:
-          plan.chain(new UpdateContentStep(op.getJson(), ctx));
+          plan.chain(new UpdateContentStep(op.getJson()));
           break;
         case OUpdateOperations.TYPE_PUT:
         case OUpdateOperations.TYPE_INCREMENT:

@@ -7,8 +7,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
 /** Created by luigidellaquila on 12/10/16. */
 public class ReturnMatchPathsStep extends AbstractExecutionStep {
 
-  public ReturnMatchPathsStep(OCommandContext context) {
-    super(context);
+  public ReturnMatchPathsStep() {
+    super();
   }
 
   @Override

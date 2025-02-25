@@ -20,11 +20,8 @@ public abstract class AbstractTraverseStep extends AbstractExecutionStep {
   protected final OInteger maxDepth;
 
   public AbstractTraverseStep(
-      List<OTraverseProjectionItem> projections,
-      OWhereClause whileClause,
-      OInteger maxDepth,
-      OCommandContext ctx) {
-    super(ctx);
+      List<OTraverseProjectionItem> projections, OWhereClause whileClause, OInteger maxDepth) {
+    super();
     this.whileClause = whileClause;
     this.maxDepth = maxDepth;
 

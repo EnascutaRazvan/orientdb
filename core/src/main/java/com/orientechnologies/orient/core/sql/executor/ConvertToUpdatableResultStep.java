@@ -17,8 +17,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class ConvertToUpdatableResultStep extends AbstractExecutionStep {
 
-  public ConvertToUpdatableResultStep(OCommandContext ctx) {
-    super(ctx);
+  public ConvertToUpdatableResultStep() {
+    super();
   }
 
   @Override

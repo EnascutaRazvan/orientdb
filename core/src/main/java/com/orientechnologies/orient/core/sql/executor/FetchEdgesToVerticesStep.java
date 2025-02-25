@@ -21,8 +21,8 @@ public class FetchEdgesToVerticesStep extends AbstractExecutionStep {
   private final OIdentifier targetClass;
 
   public FetchEdgesToVerticesStep(
-      String toAlias, OIdentifier targetClass, OIdentifier targetCluster, OCommandContext ctx) {
-    super(ctx);
+      String toAlias, OIdentifier targetClass, OIdentifier targetCluster) {
+    super();
     this.toAlias = toAlias;
     this.targetClass = targetClass;
     this.targetCluster = targetCluster;

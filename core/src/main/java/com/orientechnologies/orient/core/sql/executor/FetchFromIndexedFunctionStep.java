@@ -15,9 +15,8 @@ public class FetchFromIndexedFunctionStep extends AbstractExecutionStep {
   private OBinaryCondition functionCondition;
   private OFromClause queryTarget;
 
-  public FetchFromIndexedFunctionStep(
-      OBinaryCondition functionCondition, OFromClause queryTarget, OCommandContext ctx) {
-    super(ctx);
+  public FetchFromIndexedFunctionStep(OBinaryCondition functionCondition, OFromClause queryTarget) {
+    super();
     this.functionCondition = functionCondition;
     this.queryTarget = queryTarget;
   }

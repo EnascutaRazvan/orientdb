@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.parser.OSimpleExecStatement;
 public class ReturnStep extends AbstractExecutionStep {
   private final OSimpleExecStatement statement;
 
-  public ReturnStep(OSimpleExecStatement statement, OCommandContext ctx) {
-    super(ctx);
+  public ReturnStep(OSimpleExecStatement statement) {
+    super();
     this.statement = statement;
   }
 

@@ -18,7 +18,7 @@ public class DistinctExecutionStepTest {
     DistinctExecutionStep step = new DistinctExecutionStep(ctx);
 
     AbstractExecutionStep prev =
-        new AbstractExecutionStep(ctx) {
+        new AbstractExecutionStep() {
           boolean done = false;
 
           @Override

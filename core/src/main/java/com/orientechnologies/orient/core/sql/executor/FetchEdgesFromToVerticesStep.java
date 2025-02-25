@@ -24,12 +24,8 @@ public class FetchEdgesFromToVerticesStep extends AbstractExecutionStep {
   private final String toAlias;
 
   public FetchEdgesFromToVerticesStep(
-      String fromAlias,
-      String toAlias,
-      OIdentifier targetClass,
-      OIdentifier targetCluster,
-      OCommandContext ctx) {
-    super(ctx);
+      String fromAlias, String toAlias, OIdentifier targetClass, OIdentifier targetCluster) {
+    super();
     this.targetClass = targetClass;
     this.targetCluster = targetCluster;
     this.fromAlias = fromAlias;
@@ -167,6 +163,6 @@ public class FetchEdgesFromToVerticesStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new FetchEdgesFromToVerticesStep(fromAlias, toAlias, targetClass, targetCluster, ctx);
+    return new FetchEdgesFromToVerticesStep(fromAlias, toAlias, targetClass, targetCluster);
   }
 }

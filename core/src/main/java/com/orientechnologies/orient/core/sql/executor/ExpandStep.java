@@ -14,8 +14,8 @@ import java.util.Iterator;
  */
 public class ExpandStep extends AbstractExecutionStep {
 
-  public ExpandStep(OCommandContext ctx) {
-    super(ctx);
+  public ExpandStep() {
+    super();
   }
 
   @Override

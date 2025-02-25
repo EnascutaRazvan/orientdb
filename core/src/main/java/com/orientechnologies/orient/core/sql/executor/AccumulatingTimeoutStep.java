@@ -10,8 +10,8 @@ public class AccumulatingTimeoutStep extends AbstractExecutionStep {
 
   private final OTimeout timeout;
 
-  public AccumulatingTimeoutStep(OTimeout timeout, OCommandContext ctx) {
-    super(ctx);
+  public AccumulatingTimeoutStep(OTimeout timeout) {
+    super();
     this.timeout = timeout;
   }
 
@@ -36,7 +36,7 @@ public class AccumulatingTimeoutStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new AccumulatingTimeoutStep(timeout.copy(), ctx);
+    return new AccumulatingTimeoutStep(timeout.copy());
   }
 
   @Override

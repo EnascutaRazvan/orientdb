@@ -23,8 +23,8 @@ public class UnwindStep extends AbstractExecutionStep {
   private final OUnwind unwind;
   private List<String> unwindFields;
 
-  public UnwindStep(OUnwind unwind, OCommandContext ctx) {
-    super(ctx);
+  public UnwindStep(OUnwind unwind) {
+    super();
     this.unwind = unwind;
     unwindFields =
         unwind.getItems().stream().map(x -> x.getStringValue()).collect(Collectors.toList());

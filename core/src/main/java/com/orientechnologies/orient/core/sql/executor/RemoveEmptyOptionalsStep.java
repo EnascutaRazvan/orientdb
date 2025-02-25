@@ -8,12 +8,12 @@ import com.orientechnologies.orient.core.sql.parser.OIdentifier;
 /** @author Luigi Dell'Aquila (l.dellaquila-(at)-orientdb.com) */
 public class RemoveEmptyOptionalsStep extends AbstractExecutionStep {
 
-  public RemoveEmptyOptionalsStep(OCommandContext ctx, OIdentifier cluster) {
-    super(ctx);
+  public RemoveEmptyOptionalsStep(OIdentifier cluster) {
+    super();
   }
 
-  public RemoveEmptyOptionalsStep(OCommandContext ctx) {
-    this(ctx, null);
+  public RemoveEmptyOptionalsStep() {
+    this(null);
   }
 
   @Override

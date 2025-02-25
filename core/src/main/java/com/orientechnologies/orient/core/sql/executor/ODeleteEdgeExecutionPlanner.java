@@ -81,15 +81,15 @@ public class ODeleteEdgeExecutionPlanner {
     ODeleteExecutionPlan result = new ODeleteExecutionPlan();
 
     if (leftExpression != null || rightExpression != null) {
-      handleGlobalLet(result, new OIdentifier("$__ORIENT_DELETE_EDGE_fromV"), leftExpression, ctx);
-      handleGlobalLet(result, new OIdentifier("$__ORIENT_DELETE_EDGE_toV"), rightExpression, ctx);
+      handleGlobalLet(result, new OIdentifier("$__ORIENT_DELETE_EDGE_fromV"), leftExpression);
+      handleGlobalLet(result, new OIdentifier("$__ORIENT_DELETE_EDGE_toV"), rightExpression);
       String fromLabel = null;
       if (leftExpression != null) {
         fromLabel = "$__ORIENT_DELETE_EDGE_fromV";
       }
       handleFetchFromTo(
-          result, ctx, fromLabel, "$__ORIENT_DELETE_EDGE_toV", className, targetClusterName);
-      handleWhere(result, ctx, whereClause);
+          result, fromLabel, "$__ORIENT_DELETE_EDGE_toV", className, targetClusterName);
+      handleWhere(result, whereClause);
     } else if (whereClause != null) {
       OFromClause fromClause = new OFromClause(-1);
       OFromItem item = new OFromItem(-1);
@@ -106,10 +106,10 @@ public class ODeleteEdgeExecutionPlanner {
       handleTargetRids(result, ctx, rids);
     }
 
-    handleLimit(result, ctx, this.limit);
-    handleCastToEdge(result, ctx);
-    handleDelete(result, ctx);
-    handleReturn(result, ctx);
+    handleLimit(result, this.limit);
+    handleCastToEdge(result);
+    handleDelete(result);
+    handleReturn(result);
 
     if (useCache
         && !ctx.isProfiling()
@@ -125,25 +125,23 @@ public class ODeleteEdgeExecutionPlanner {
     return result;
   }
 
-  private void handleWhere(
-      ODeleteExecutionPlan result, OCommandContext ctx, OWhereClause whereClause) {
+  private void handleWhere(ODeleteExecutionPlan result, OWhereClause whereClause) {
     if (whereClause != null) {
-      result.chain(new FilterStep(whereClause, ctx, -1, false));
+      result.chain(new FilterStep(whereClause, -1, false));
     }
   }
 
   private void handleFetchFromTo(
       ODeleteExecutionPlan result,
-      OCommandContext ctx,
       String fromAlias,
       String toAlias,
       OIdentifier targetClass,
       OIdentifier targetCluster) {
     if (fromAlias != null && toAlias != null) {
       result.chain(
-          new FetchEdgesFromToVerticesStep(fromAlias, toAlias, targetClass, targetCluster, ctx));
+          new FetchEdgesFromToVerticesStep(fromAlias, toAlias, targetClass, targetCluster));
     } else if (toAlias != null) {
-      result.chain(new FetchEdgesToVerticesStep(toAlias, targetClass, targetCluster, ctx));
+      result.chain(new FetchEdgesToVerticesStep(toAlias, targetClass, targetCluster));
     }
   }
 
@@ -153,8 +151,7 @@ public class ODeleteEdgeExecutionPlanner {
           new FetchFromRidsStep(
               rids.stream()
                   .map(x -> x.toRecordId((OResult) null, ctx))
-                  .collect(Collectors.toList()),
-              ctx));
+                  .collect(Collectors.toList())));
     }
   }
 
@@ -166,7 +163,7 @@ public class ODeleteEdgeExecutionPlanner {
       if (clusterId < 0) {
         throw new OCommandExecutionException("Cluster not found: " + name);
       }
-      result.chain(new FetchFromClusterExecutionStep(clusterId, ctx));
+      result.chain(new FetchFromClusterExecutionStep(clusterId));
     }
   }
 
@@ -188,22 +185,22 @@ public class ODeleteEdgeExecutionPlanner {
     throw new OCommandExecutionException("DELETE VERTEX FROM INDEX is not supported");
   }
 
-  private void handleDelete(ODeleteExecutionPlan result, OCommandContext ctx) {
-    result.chain(new DeleteStep(ctx));
+  private void handleDelete(ODeleteExecutionPlan result) {
+    result.chain(new DeleteStep());
   }
 
-  private void handleReturn(ODeleteExecutionPlan result, OCommandContext ctx) {
-    result.chain(new CountStep(ctx));
+  private void handleReturn(ODeleteExecutionPlan result) {
+    result.chain(new CountStep());
   }
 
-  private void handleLimit(OUpdateExecutionPlan plan, OCommandContext ctx, OLimit limit) {
+  private void handleLimit(OUpdateExecutionPlan plan, OLimit limit) {
     if (limit != null) {
-      plan.chain(new LimitExecutionStep(limit, ctx));
+      plan.chain(new LimitExecutionStep(limit));
     }
   }
 
-  private void handleCastToEdge(ODeleteExecutionPlan plan, OCommandContext ctx) {
-    plan.chain(new CastToEdgeStep(ctx));
+  private void handleCastToEdge(ODeleteExecutionPlan plan) {
+    plan.chain(new CastToEdgeStep());
   }
 
   private void handleTarget(
@@ -219,9 +216,9 @@ public class ODeleteEdgeExecutionPlanner {
   }
 
   private void handleGlobalLet(
-      ODeleteExecutionPlan result, OIdentifier name, OExpression expression, OCommandContext ctx) {
+      ODeleteExecutionPlan result, OIdentifier name, OExpression expression) {
     if (expression != null) {
-      result.chain(new GlobalLetExpressionStep(name, expression, ctx));
+      result.chain(new GlobalLetExpressionStep(name, expression));
     }
   }
 }

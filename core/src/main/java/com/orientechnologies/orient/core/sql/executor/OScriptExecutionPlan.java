@@ -61,17 +61,17 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     return result.toString();
   }
 
-  public void chain(OStatement nextStm, OCommandContext ctx) {
+  public void chain(OStatement nextStm) {
     idempotent &= nextStm.isIdempotent();
     OExecutionStepInternal lastStep = steps.size() == 0 ? null : steps.get(steps.size() - 1);
-    ScriptLineStep nextStep = new ScriptLineStep(nextStm, ctx);
+    ScriptLineStep nextStep = new ScriptLineStep(nextStm);
     if (lastStep != null) {
       nextStep.setPrevious(lastStep);
     }
     steps.add(nextStep);
   }
 
-  public void chain(ORetryExecutionPlan retryStep, OCommandContext ctx) {
+  public void chain(ORetryExecutionPlan retryStep) {
     idempotent = false;
     OExecutionStepInternal nextStep =
         new OExecutionStepInternal() {

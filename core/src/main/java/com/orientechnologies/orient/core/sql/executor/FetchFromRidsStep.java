@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 public class FetchFromRidsStep extends AbstractExecutionStep {
   private Collection<ORecordId> rids;
 
-  public FetchFromRidsStep(Collection<ORecordId> rids, OCommandContext ctx) {
-    super(ctx);
+  public FetchFromRidsStep(Collection<ORecordId> rids) {
+    super();
     this.rids = rids;
   }
 

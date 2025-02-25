@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.parser.OSkip;
 public class SkipExecutionStep extends AbstractExecutionStep {
   private final OSkip skip;
 
-  public SkipExecutionStep(OSkip skip, OCommandContext ctx) {
-    super(ctx);
+  public SkipExecutionStep(OSkip skip) {
+    super();
     this.skip = skip;
   }
 

@@ -15,8 +15,7 @@ public class CheckClassTypeStepTest extends TestUtilsFixture {
     OBasicCommandContext context = new OBasicCommandContext(db);
     OClass parentClass = createClassInstance();
     OClass childClass = createChildClassInstance(parentClass);
-    CheckClassTypeStep step =
-        new CheckClassTypeStep(childClass.getName(), parentClass.getName(), context);
+    CheckClassTypeStep step = new CheckClassTypeStep(childClass.getName(), parentClass.getName());
 
     OExecutionStream result = step.start(context);
     Assert.assertEquals(0, result.stream(context).count());
@@ -26,7 +25,7 @@ public class CheckClassTypeStepTest extends TestUtilsFixture {
   public void shouldCheckOneType() {
     OBasicCommandContext context = new OBasicCommandContext(db);
     String className = createClassInstance().getName();
-    CheckClassTypeStep step = new CheckClassTypeStep(className, className, context);
+    CheckClassTypeStep step = new CheckClassTypeStep(className, className);
 
     OExecutionStream result = step.start(context);
     Assert.assertEquals(0, result.stream(context).count());
@@ -36,8 +35,7 @@ public class CheckClassTypeStepTest extends TestUtilsFixture {
   public void shouldThrowExceptionWhenClassIsNotParent() {
     OBasicCommandContext context = new OBasicCommandContext(db);
     CheckClassTypeStep step =
-        new CheckClassTypeStep(
-            createClassInstance().getName(), createClassInstance().getName(), context);
+        new CheckClassTypeStep(createClassInstance().getName(), createClassInstance().getName());
 
     step.start(context);
   }

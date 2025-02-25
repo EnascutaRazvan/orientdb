@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
 /** Created by luigidellaquila on 20/02/17. */
 public class CastToVertexStep extends AbstractExecutionStep {
 
-  public CastToVertexStep(OCommandContext ctx) {
-    super(ctx);
+  public CastToVertexStep() {
+    super();
   }
 
   @Override

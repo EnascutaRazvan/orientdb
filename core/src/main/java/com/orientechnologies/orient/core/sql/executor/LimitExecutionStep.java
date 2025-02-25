@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.parser.OLimit;
 public class LimitExecutionStep extends AbstractExecutionStep {
   private final OLimit limit;
 
-  public LimitExecutionStep(OLimit limit, OCommandContext ctx) {
-    super(ctx);
+  public LimitExecutionStep(OLimit limit) {
+    super();
     this.limit = limit;
   }
 

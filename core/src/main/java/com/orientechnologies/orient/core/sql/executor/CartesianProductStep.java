@@ -12,8 +12,8 @@ public class CartesianProductStep extends AbstractExecutionStep {
 
   private List<OInternalExecutionPlan> subPlans = new ArrayList<>();
 
-  public CartesianProductStep(OCommandContext ctx) {
-    super(ctx);
+  public CartesianProductStep() {
+    super();
   }
 
   @Override

@@ -73,26 +73,25 @@ public class OTraverseExecutionPlanner {
 
     handleFetchFromTarger(result, ctx);
 
-    handleTraversal(result, ctx);
+    handleTraversal(result);
 
     if (skip != null) {
-      result.chain(new SkipExecutionStep(skip, ctx));
+      result.chain(new SkipExecutionStep(skip));
     }
     if (limit != null) {
-      result.chain(new LimitExecutionStep(limit, ctx));
+      result.chain(new LimitExecutionStep(limit));
     }
 
     return result;
   }
 
-  private void handleTraversal(OSelectExecutionPlan result, OCommandContext ctx) {
+  private void handleTraversal(OSelectExecutionPlan result) {
     switch (strategy) {
       case BREADTH_FIRST:
-        result.chain(
-            new BreadthFirstTraverseStep(this.projections, this.whileClause, maxDepth, ctx));
+        result.chain(new BreadthFirstTraverseStep(this.projections, this.whileClause, maxDepth));
         break;
       case DEPTH_FIRST:
-        result.chain(new DepthFirstTraverseStep(this.projections, this.whileClause, maxDepth, ctx));
+        result.chain(new DepthFirstTraverseStep(this.projections, this.whileClause, maxDepth));
         break;
     }
     // TODO
@@ -102,7 +101,7 @@ public class OTraverseExecutionPlanner {
 
     OFromItem target = this.target == null ? null : this.target.getItem();
     if (target == null) {
-      handleNoTarget(result, ctx);
+      handleNoTarget(result);
     } else if (target.getIdentifier() != null) {
       String className = target.getIdentifier().getStringValue();
       if (className.startsWith("$")
@@ -110,7 +109,7 @@ public class OTraverseExecutionPlanner {
               .getMetadata()
               .getImmutableSchemaSnapshot()
               .existsClass(className)) {
-        handleVariableAsTarget(result, this.target, ctx);
+        handleVariableAsTarget(result, this.target);
       } else {
         handleClassAsTarget(result, this.target, ctx);
       }
@@ -140,7 +139,7 @@ public class OTraverseExecutionPlanner {
       OSelectExecutionPlan result, OInputParameter inputParam, OCommandContext ctx) {
     Object paramValue = inputParam.getValue(ctx.getInputParameters());
     if (paramValue == null) {
-      result.chain(new EmptyStep(ctx)); // nothing to return
+      result.chain(new EmptyStep()); // nothing to return
     } else if (paramValue instanceof OClass) {
       OFromClause from = new OFromClause(-1);
       OFromItem item = new OFromItem(-1);
@@ -192,8 +191,8 @@ public class OTraverseExecutionPlanner {
     }
   }
 
-  private void handleNoTarget(OSelectExecutionPlan result, OCommandContext ctx) {
-    result.chain(new EmptyDataGeneratorStep(1, ctx));
+  private void handleNoTarget(OSelectExecutionPlan result) {
+    result.chain(new EmptyDataGeneratorStep(1));
   }
 
   private void handleIndexAsTarget(
@@ -213,7 +212,7 @@ public class OTraverseExecutionPlanner {
         }
 
         result.chain(new FetchFromIndexStep(new IndexSearchDescriptor(index), true, ctx));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null));
+        result.chain(new GetValueFromIndexEntryStep(null));
         break;
       case VALUES:
       case VALUESASC:
@@ -222,7 +221,7 @@ public class OTraverseExecutionPlanner {
               "Index " + indexName + " does not allow iteration on values");
         }
         result.chain(new FetchFromIndexValuesStep(new IndexSearchDescriptor(index), true, ctx));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null));
+        result.chain(new GetValueFromIndexEntryStep(null));
         break;
       case VALUESDESC:
         if (!index.supportsOrderedIterations()) {
@@ -230,7 +229,7 @@ public class OTraverseExecutionPlanner {
               "Index " + indexName + " does not allow iteration on values");
         }
         result.chain(new FetchFromIndexValuesStep(new IndexSearchDescriptor(index), false, ctx));
-        result.chain(new GetValueFromIndexEntryStep(ctx, null));
+        result.chain(new GetValueFromIndexEntryStep(null));
         break;
     }
   }
@@ -247,7 +246,7 @@ public class OTraverseExecutionPlanner {
       throw new UnsupportedOperationException("Invalid metadata: " + metadata.getName());
     }
     ORecordId schemaRid = new ORecordId(schemaRecordIdAsString);
-    plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid), ctx));
+    plan.chain(new FetchFromRidsStep(Collections.singleton(schemaRid)));
   }
 
   private void handleRidsAsTarget(OSelectExecutionPlan plan, List<ORid> rids, OCommandContext ctx) {
@@ -255,7 +254,7 @@ public class OTraverseExecutionPlanner {
     for (ORid rid : rids) {
       actualRids.add(rid.toRecordId((OResult) null, ctx));
     }
-    plan.chain(new FetchFromRidsStep(actualRids, ctx));
+    plan.chain(new FetchFromRidsStep(actualRids));
   }
 
   private void handleClassAsTarget(
@@ -281,7 +280,7 @@ public class OTraverseExecutionPlanner {
       if (clusterId == null) {
         throw new OCommandExecutionException("Cluster " + cluster + " does not exist");
       }
-      FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterId, ctx);
+      FetchFromClusterExecutionStep step = new FetchFromClusterExecutionStep(clusterId);
       if (Boolean.TRUE.equals(orderByRidAsc)) {
         step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
       } else if (Boolean.FALSE.equals(orderByRidAsc)) {
@@ -302,7 +301,7 @@ public class OTraverseExecutionPlanner {
         clusterIds[i] = clusterId;
       }
       FetchFromClustersExecutionStep step =
-          new FetchFromClustersExecutionStep(clusterIds, ctx, orderByRidAsc);
+          new FetchFromClustersExecutionStep(clusterIds, orderByRidAsc);
       plan.chain(step);
     }
   }
@@ -315,8 +314,7 @@ public class OTraverseExecutionPlanner {
     plan.chain(new SubQueryStep(subExecutionPlan, ctx, subCtx));
   }
 
-  private void handleVariableAsTarget(
-      OSelectExecutionPlan plan, OFromClause target, OCommandContext ctx) {
-    plan.chain(new FetchFromVariableStep(target.getItem(), ctx));
+  private void handleVariableAsTarget(OSelectExecutionPlan plan, OFromClause target) {
+    plan.chain(new FetchFromVariableStep(target.getItem()));
   }
 }

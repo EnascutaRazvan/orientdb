@@ -73,10 +73,10 @@ public class OCreateEdgeExecutionPlanner {
 
     OInsertExecutionPlan result = new OInsertExecutionPlan();
 
-    handleCheckType(result, ctx);
+    handleCheckType(result);
 
-    handleGlobalLet(result, new OIdentifier("$__ORIENT_CREATE_EDGE_fromV"), leftExpression, ctx);
-    handleGlobalLet(result, new OIdentifier("$__ORIENT_CREATE_EDGE_toV"), rightExpression, ctx);
+    handleGlobalLet(result, new OIdentifier("$__ORIENT_CREATE_EDGE_fromV"), leftExpression);
+    handleGlobalLet(result, new OIdentifier("$__ORIENT_CREATE_EDGE_toV"), rightExpression);
 
     String uniqueIndexName = null;
     if (upsert) {
@@ -118,11 +118,10 @@ public class OCreateEdgeExecutionPlanner {
             new OIdentifier("$__ORIENT_CREATE_EDGE_toV"),
             wait,
             retry,
-            batch,
-            ctx));
+            batch));
 
-    handleSetFields(result, body, ctx);
-    handleSave(result, targetClusterName, ctx);
+    handleSetFields(result, body);
+    handleSave(result, targetClusterName);
     // TODO implement batch, wait and retry
 
     if (useCache
@@ -138,37 +137,34 @@ public class OCreateEdgeExecutionPlanner {
   }
 
   private void handleGlobalLet(
-      OInsertExecutionPlan result, OIdentifier name, OExpression expression, OCommandContext ctx) {
-    result.chain(new GlobalLetExpressionStep(name, expression, ctx));
+      OInsertExecutionPlan result, OIdentifier name, OExpression expression) {
+    result.chain(new GlobalLetExpressionStep(name, expression));
   }
 
-  private void handleCheckType(OInsertExecutionPlan result, OCommandContext ctx) {
+  private void handleCheckType(OInsertExecutionPlan result) {
     if (targetClass != null) {
-      result.chain(new CheckClassTypeStep(targetClass.getStringValue(), "E", ctx));
+      result.chain(new CheckClassTypeStep(targetClass.getStringValue(), "E"));
     }
   }
 
-  private void handleSave(
-      OInsertExecutionPlan result, OIdentifier targetClusterName, OCommandContext ctx) {
-    result.chain(new SaveElementStep(ctx, targetClusterName));
+  private void handleSave(OInsertExecutionPlan result, OIdentifier targetClusterName) {
+    result.chain(new SaveElementStep(targetClusterName));
   }
 
-  private void handleSetFields(
-      OInsertExecutionPlan result, OInsertBody insertBody, OCommandContext ctx) {
+  private void handleSetFields(OInsertExecutionPlan result, OInsertBody insertBody) {
     if (insertBody == null) {
       return;
     }
     if (insertBody.getIdentifierList() != null) {
       result.chain(
-          new InsertValuesStep(
-              insertBody.getIdentifierList(), insertBody.getValueExpressions(), ctx));
+          new InsertValuesStep(insertBody.getIdentifierList(), insertBody.getValueExpressions()));
     } else if (insertBody.getContent() != null) {
       for (OJson json : insertBody.getContent()) {
-        result.chain(new UpdateContentStep(json, ctx));
+        result.chain(new UpdateContentStep(json));
       }
     } else if (insertBody.getContentInputParam() != null) {
       for (OInputParameter inputParam : insertBody.getContentInputParam()) {
-        result.chain(new UpdateContentStep(inputParam, ctx));
+        result.chain(new UpdateContentStep(inputParam));
       }
     } else if (insertBody.getSetExpressions() != null) {
       List<OUpdateItem> items = new ArrayList<>();
@@ -179,7 +175,7 @@ public class OCreateEdgeExecutionPlanner {
         item.setRight(exp.getRight().copy());
         items.add(item);
       }
-      result.chain(new UpdateSetStep(items, ctx));
+      result.chain(new UpdateSetStep(items));
     }
   }
 }

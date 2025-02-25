@@ -12,7 +12,7 @@ public class MoveVertexStep extends AbstractExecutionStep {
   private String targetClass;
 
   public MoveVertexStep(OIdentifier targetClass, OCluster targetCluster, OCommandContext ctx) {
-    super(ctx);
+    super();
     this.targetClass = targetClass == null ? null : targetClass.getStringValue();
     if (targetCluster != null) {
       this.targetCluster = targetCluster.getClusterName();

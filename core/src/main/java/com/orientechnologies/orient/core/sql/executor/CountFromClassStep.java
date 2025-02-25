@@ -22,10 +22,9 @@ public class CountFromClassStep extends AbstractExecutionStep {
   /**
    * @param targetClass An identifier containing the name of the class to count
    * @param alias the name of the property returned in the result-set
-   * @param ctx the query context
    */
-  public CountFromClassStep(OIdentifier targetClass, String alias, OCommandContext ctx) {
-    super(ctx);
+  public CountFromClassStep(OIdentifier targetClass, String alias) {
+    super();
     this.target = targetClass;
     this.alias = alias;
   }

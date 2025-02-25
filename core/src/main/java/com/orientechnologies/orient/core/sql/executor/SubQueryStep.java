@@ -19,7 +19,7 @@ public class SubQueryStep extends AbstractExecutionStep {
    */
   public SubQueryStep(
       OInternalExecutionPlan subExecutionPlan, OCommandContext ctx, OCommandContext subCtx) {
-    super(ctx);
+    super();
     this.subExecuitonPlan = subExecutionPlan;
     this.childCtx = subCtx;
 

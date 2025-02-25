@@ -34,11 +34,11 @@ public class OFindReferencesExecutionPlanner {
     OSelectExecutionPlan plan = new OSelectExecutionPlan();
     handleRidSource(plan, ctx);
     handleSubQuerySource(plan, ctx);
-    handleFindReferences(plan, ctx);
+    handleFindReferences(plan);
     return plan;
   }
 
-  private void handleFindReferences(OSelectExecutionPlan plan, OCommandContext ctx) {
+  private void handleFindReferences(OSelectExecutionPlan plan) {
     List<OIdentifier> classes = null;
     List<OCluster> clusters = null;
     if (targets != null) {
@@ -54,7 +54,7 @@ public class OFindReferencesExecutionPlanner {
               .collect(Collectors.toList());
     }
 
-    plan.chain(new FindReferencesStep(classes, clusters, ctx));
+    plan.chain(new FindReferencesStep(classes, clusters));
   }
 
   private void handleSubQuerySource(OSelectExecutionPlan plan, OCommandContext ctx) {
@@ -65,8 +65,7 @@ public class OFindReferencesExecutionPlanner {
 
   private void handleRidSource(OSelectExecutionPlan plan, OCommandContext ctx) {
     if (rid != null) {
-      plan.chain(
-          new FetchFromRidsStep(Collections.singleton(rid.toRecordId((OResult) null, ctx)), ctx));
+      plan.chain(new FetchFromRidsStep(Collections.singleton(rid.toRecordId((OResult) null, ctx))));
     }
   }
 }

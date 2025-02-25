@@ -64,7 +64,7 @@ public class CountFromIndexStepTest extends TestUtilsFixture {
     identifier.setType(identifierType);
 
     OBasicCommandContext context = new OBasicCommandContext(db);
-    CountFromIndexStep step = new CountFromIndexStep(identifier, ALIAS, context);
+    CountFromIndexStep step = new CountFromIndexStep(identifier, ALIAS);
 
     OExecutionStream result = step.start(context);
     Assert.assertEquals(20, (long) result.next(context).getProperty(ALIAS));

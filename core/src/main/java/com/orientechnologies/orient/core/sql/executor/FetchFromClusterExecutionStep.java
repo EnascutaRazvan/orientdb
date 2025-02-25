@@ -29,13 +29,12 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
   private int clusterId;
   private Object order;
 
-  public FetchFromClusterExecutionStep(int clusterId, OCommandContext ctx) {
-    this(clusterId, null, ctx);
+  public FetchFromClusterExecutionStep(int clusterId) {
+    this(clusterId, null);
   }
 
-  public FetchFromClusterExecutionStep(
-      int clusterId, QueryPlanningInfo queryPlanning, OCommandContext ctx) {
-    super(ctx);
+  public FetchFromClusterExecutionStep(int clusterId, QueryPlanningInfo queryPlanning) {
+    super();
     this.clusterId = clusterId;
     this.queryPlanning = queryPlanning;
   }
@@ -182,7 +181,7 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
   public OExecutionStepInternal copy(OCommandContext ctx) {
     FetchFromClusterExecutionStep result =
         new FetchFromClusterExecutionStep(
-            this.clusterId, this.queryPlanning == null ? null : this.queryPlanning.copy(), ctx);
+            this.clusterId, this.queryPlanning == null ? null : this.queryPlanning.copy());
     return result;
   }
 }

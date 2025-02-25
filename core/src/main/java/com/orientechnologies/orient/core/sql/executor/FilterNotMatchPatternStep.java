@@ -9,8 +9,8 @@ public class FilterNotMatchPatternStep extends AbstractExecutionStep {
 
   private List<AbstractExecutionStep> subSteps;
 
-  public FilterNotMatchPatternStep(List<AbstractExecutionStep> steps, OCommandContext ctx) {
-    super(ctx);
+  public FilterNotMatchPatternStep(List<AbstractExecutionStep> steps) {
+    super();
     this.subSteps = steps;
   }
 
@@ -43,7 +43,7 @@ public class FilterNotMatchPatternStep extends AbstractExecutionStep {
   private OSelectExecutionPlan createExecutionPlan(OResult nextItem, OCommandContext ctx) {
     OSelectExecutionPlan plan = new OSelectExecutionPlan();
     plan.chain(
-        new AbstractExecutionStep(ctx) {
+        new AbstractExecutionStep() {
 
           @Override
           public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {

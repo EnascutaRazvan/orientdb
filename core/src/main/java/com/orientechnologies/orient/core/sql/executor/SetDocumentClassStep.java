@@ -14,8 +14,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
 public class SetDocumentClassStep extends AbstractExecutionStep {
   private final String targetClass;
 
-  public SetDocumentClassStep(String targetClass, OCommandContext ctx) {
-    super(ctx);
+  public SetDocumentClassStep(String targetClass) {
+    super();
     this.targetClass = targetClass;
   }
 

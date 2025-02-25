@@ -22,12 +22,8 @@ public class AggregateProjectionCalculationStep extends ProjectionCalculationSte
   private final long limit;
 
   public AggregateProjectionCalculationStep(
-      OProjection projection,
-      OGroupBy groupBy,
-      long limit,
-      OCommandContext ctx,
-      long timeoutMillis) {
-    super(projection, ctx);
+      OProjection projection, OGroupBy groupBy, long limit, long timeoutMillis) {
+    super(projection);
     this.groupBy = groupBy;
     this.timeoutMillis = timeoutMillis;
     this.limit = limit;
@@ -139,6 +135,6 @@ public class AggregateProjectionCalculationStep extends ProjectionCalculationSte
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
     return new AggregateProjectionCalculationStep(
-        projection.copy(), groupBy == null ? null : groupBy.copy(), limit, ctx, timeoutMillis);
+        projection.copy(), groupBy == null ? null : groupBy.copy(), limit, timeoutMillis);
   }
 }

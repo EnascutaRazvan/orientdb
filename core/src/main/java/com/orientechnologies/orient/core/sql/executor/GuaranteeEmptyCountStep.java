@@ -9,8 +9,8 @@ public class GuaranteeEmptyCountStep extends AbstractExecutionStep {
 
   private final OProjectionItem item;
 
-  public GuaranteeEmptyCountStep(OProjectionItem oProjectionItem, OCommandContext ctx) {
-    super(ctx);
+  public GuaranteeEmptyCountStep(OProjectionItem oProjectionItem) {
+    super();
     this.item = oProjectionItem;
   }
 
@@ -31,7 +31,7 @@ public class GuaranteeEmptyCountStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new GuaranteeEmptyCountStep(item.copy(), ctx);
+    return new GuaranteeEmptyCountStep(item.copy());
   }
 
   public boolean canBeCached() {

@@ -32,7 +32,7 @@ public class OWhileBlock extends OStatement {
 
   public OUpdateExecutionPlan createExecutionPlan(OCommandContext ctx) {
     OForEachExecutionPlan plan = new OForEachExecutionPlan();
-    plan.chain(new WhileStep(condition, statements, ctx));
+    plan.chain(new WhileStep(condition, statements));
     return plan;
   }
 

@@ -63,7 +63,7 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   private boolean orderAsc;
 
   public FetchFromIndexStep(IndexSearchDescriptor desc, boolean orderAsc, OCommandContext ctx) {
-    super(ctx);
+    super();
     this.desc = desc;
     this.orderAsc = orderAsc;
 

@@ -30,22 +30,22 @@ public class OCreateVertexExecutionPlanner extends OInsertExecutionPlanner {
     List<OExecutionStepInternal> steps = new ArrayList<>(prev.getSteps());
     OInsertExecutionPlan result = new OInsertExecutionPlan();
 
-    handleCheckType(result, ctx);
+    handleCheckType(result);
     for (OExecutionStepInternal step : steps) {
       result.chain(step);
     }
     return result;
   }
 
-  private void handleCheckType(OInsertExecutionPlan result, OCommandContext ctx) {
+  private void handleCheckType(OInsertExecutionPlan result) {
     if (targetClass != null) {
-      result.chain(new CheckClassTypeStep(targetClass.getStringValue(), "V", ctx));
+      result.chain(new CheckClassTypeStep(targetClass.getStringValue(), "V"));
     }
     if (targetClusterName != null) {
-      result.chain(new CheckClusterTypeStep(targetClusterName.getStringValue(), "V", ctx));
+      result.chain(new CheckClusterTypeStep(targetClusterName.getStringValue(), "V"));
     }
     if (targetCluster != null) {
-      result.chain(new CheckClusterTypeStep(targetCluster, "V", ctx));
+      result.chain(new CheckClusterTypeStep(targetCluster, "V"));
     }
   }
 }

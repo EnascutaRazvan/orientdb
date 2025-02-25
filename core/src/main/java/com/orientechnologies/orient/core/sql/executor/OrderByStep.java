@@ -16,13 +16,12 @@ public class OrderByStep extends AbstractExecutionStep {
   private final long timeoutMillis;
   private Integer maxResults;
 
-  public OrderByStep(OOrderBy orderBy, OCommandContext ctx, long timeoutMillis) {
-    this(orderBy, null, ctx, timeoutMillis);
+  public OrderByStep(OOrderBy orderBy, long timeoutMillis) {
+    this(orderBy, null, timeoutMillis);
   }
 
-  public OrderByStep(
-      OOrderBy orderBy, Integer maxResults, OCommandContext ctx, long timeoutMillis) {
-    super(ctx);
+  public OrderByStep(OOrderBy orderBy, Integer maxResults, long timeoutMillis) {
+    super();
     this.orderBy = orderBy;
     this.maxResults = maxResults;
     if (this.maxResults != null && this.maxResults < 0) {

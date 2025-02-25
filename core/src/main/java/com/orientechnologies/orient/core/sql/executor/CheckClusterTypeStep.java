@@ -23,14 +23,14 @@ public class CheckClusterTypeStep extends AbstractExecutionStep {
   private String clusterName;
   private String targetClass;
 
-  public CheckClusterTypeStep(String targetClusterName, String clazz, OCommandContext ctx) {
-    super(ctx);
+  public CheckClusterTypeStep(String targetClusterName, String clazz) {
+    super();
     this.clusterName = targetClusterName;
     this.targetClass = clazz;
   }
 
-  public CheckClusterTypeStep(OCluster targetCluster, String clazz, OCommandContext ctx) {
-    super(ctx);
+  public CheckClusterTypeStep(OCluster targetCluster, String clazz) {
+    super();
     this.cluster = targetCluster;
     this.targetClass = clazz;
   }

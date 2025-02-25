@@ -13,8 +13,8 @@ public class ScriptLineStep extends AbstractExecutionStep {
   protected final OStatement statement;
   private OInternalExecutionPlan plan;
 
-  public ScriptLineStep(OStatement statement, OCommandContext ctx) {
-    super(ctx);
+  public ScriptLineStep(OStatement statement) {
+    super();
     this.statement = statement;
   }
 

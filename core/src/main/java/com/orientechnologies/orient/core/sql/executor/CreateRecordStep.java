@@ -12,8 +12,8 @@ public class CreateRecordStep extends AbstractExecutionStep {
   private int total = 0;
   private Optional<String> cl;
 
-  public CreateRecordStep(OCommandContext ctx, int total, Optional<String> cl) {
-    super(ctx);
+  public CreateRecordStep(int total, Optional<String> cl) {
+    super();
     this.total = total;
     this.cl = cl;
   }

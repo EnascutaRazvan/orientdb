@@ -16,8 +16,8 @@ public class FilterByClassStep extends AbstractExecutionStep {
   private OIdentifier identifier;
   private String className;
 
-  public FilterByClassStep(OIdentifier identifier, OCommandContext ctx) {
-    super(ctx);
+  public FilterByClassStep(OIdentifier identifier) {
+    super();
     this.identifier = identifier;
     this.className = identifier.getStringValue();
   }
@@ -83,6 +83,6 @@ public class FilterByClassStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new FilterByClassStep(this.identifier.copy(), ctx);
+    return new FilterByClassStep(this.identifier.copy());
   }
 }

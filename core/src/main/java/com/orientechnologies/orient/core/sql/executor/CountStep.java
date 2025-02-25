@@ -13,10 +13,9 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
 public class CountStep extends AbstractExecutionStep {
 
   /**
-   * @param ctx the query context
    */
-  public CountStep(OCommandContext ctx) {
-    super(ctx);
+  public CountStep() {
+    super();
   }
 
   @Override
@@ -52,6 +51,6 @@ public class CountStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new CountStep(ctx);
+    return new CountStep();
   }
 }

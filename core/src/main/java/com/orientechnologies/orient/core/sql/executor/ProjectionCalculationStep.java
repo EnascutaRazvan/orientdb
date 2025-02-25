@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.parser.OProjection;
 public class ProjectionCalculationStep extends AbstractExecutionStep {
   protected final OProjection projection;
 
-  public ProjectionCalculationStep(OProjection projection, OCommandContext ctx) {
-    super(ctx);
+  public ProjectionCalculationStep(OProjection projection) {
+    super();
     this.projection = projection;
   }
 
@@ -55,6 +55,6 @@ public class ProjectionCalculationStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new ProjectionCalculationStep(projection.copy(), ctx);
+    return new ProjectionCalculationStep(projection.copy());
   }
 }

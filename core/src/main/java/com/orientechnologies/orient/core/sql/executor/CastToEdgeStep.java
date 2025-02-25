@@ -9,8 +9,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
 /** Created by luigidellaquila on 20/02/17. */
 public class CastToEdgeStep extends AbstractExecutionStep {
 
-  public CastToEdgeStep(OCommandContext ctx) {
-    super(ctx);
+  public CastToEdgeStep() {
+    super();
   }
 
   @Override
@@ -46,7 +46,7 @@ public class CastToEdgeStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    return new CastToEdgeStep(ctx);
+    return new CastToEdgeStep();
   }
 
   @Override

@@ -37,11 +37,11 @@ public class ODeleteVertexExecutionPlanner {
 
     } else {
       handleTarget(result, ctx, this.fromClause, this.whereClause);
-      handleLimit(result, ctx, this.limit);
+      handleLimit(result, this.limit);
     }
-    handleCastToVertex(result, ctx);
-    handleDelete(result, ctx);
-    handleReturn(result, ctx, this.returnBefore);
+    handleCastToVertex(result);
+    handleDelete(result);
+    handleReturn(result, this.returnBefore);
     return result;
   }
 
@@ -56,31 +56,30 @@ public class ODeleteVertexExecutionPlanner {
     throw new OCommandExecutionException("DELETE VERTEX FROM INDEX is not supported");
   }
 
-  private void handleDelete(ODeleteExecutionPlan result, OCommandContext ctx) {
-    result.chain(new DeleteStep(ctx));
+  private void handleDelete(ODeleteExecutionPlan result) {
+    result.chain(new DeleteStep());
   }
 
-  private void handleUnsafe(ODeleteExecutionPlan result, OCommandContext ctx, boolean unsafe) {
+  private void handleUnsafe(ODeleteExecutionPlan result, boolean unsafe) {
     if (!unsafe) {
-      result.chain(new CheckSafeDeleteStep(ctx));
+      result.chain(new CheckSafeDeleteStep());
     }
   }
 
-  private void handleReturn(
-      ODeleteExecutionPlan result, OCommandContext ctx, boolean returnBefore) {
+  private void handleReturn(ODeleteExecutionPlan result, boolean returnBefore) {
     if (!returnBefore) {
-      result.chain(new CountStep(ctx));
+      result.chain(new CountStep());
     }
   }
 
-  private void handleLimit(OUpdateExecutionPlan plan, OCommandContext ctx, OLimit limit) {
+  private void handleLimit(OUpdateExecutionPlan plan, OLimit limit) {
     if (limit != null) {
-      plan.chain(new LimitExecutionStep(limit, ctx));
+      plan.chain(new LimitExecutionStep(limit));
     }
   }
 
-  private void handleCastToVertex(ODeleteExecutionPlan plan, OCommandContext ctx) {
-    plan.chain(new CastToVertexStep(ctx));
+  private void handleCastToVertex(ODeleteExecutionPlan plan) {
+    plan.chain(new CastToVertexStep());
   }
 
   private void handleTarget(

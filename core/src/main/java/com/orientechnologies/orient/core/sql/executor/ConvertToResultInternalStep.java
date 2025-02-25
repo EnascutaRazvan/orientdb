@@ -16,8 +16,8 @@ import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream
  */
 public class ConvertToResultInternalStep extends AbstractExecutionStep {
 
-  public ConvertToResultInternalStep(OCommandContext ctx) {
-    super(ctx);
+  public ConvertToResultInternalStep() {
+    super();
   }
 
   @Override

@@ -13,8 +13,8 @@ import java.util.stream.Collectors;
 public class FilterByClustersStep extends AbstractExecutionStep {
   private Set<String> clusters;
 
-  public FilterByClustersStep(Set<String> filterClusters, OCommandContext ctx) {
-    super(ctx);
+  public FilterByClustersStep(Set<String> filterClusters) {
+    super();
     this.clusters = filterClusters;
   }
 

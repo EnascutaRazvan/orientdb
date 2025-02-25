@@ -41,9 +41,8 @@ public class CreateEdgesStep extends AbstractExecutionStep {
       OIdentifier toAlias,
       Number wait,
       Number retry,
-      OBatch batch,
-      OCommandContext ctx) {
-    super(ctx);
+      OBatch batch) {
+    super();
     this.targetClass = targetClass;
     this.targetCluster = targetClusterName;
     this.uniqueIndexName = uniqueIndex;
@@ -228,7 +227,6 @@ public class CreateEdgesStep extends AbstractExecutionStep {
         toAlias == null ? null : toAlias.copy(),
         wait,
         retry,
-        batch == null ? null : batch.copy(),
-        ctx);
+        batch == null ? null : batch.copy());
   }
 }

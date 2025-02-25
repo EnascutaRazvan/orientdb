@@ -71,19 +71,19 @@ public class OUpdateExecutionPlanner {
 
     handleTarget(result, ctx, this.target, this.whereClause, this.timeout);
     if (updateEdge) {
-      result.chain(new CheckRecordTypeStep(ctx, "E"));
+      result.chain(new CheckRecordTypeStep("E"));
     }
-    handleUpsert(result, ctx, this.target, this.whereClause, this.upsert);
-    handleTimeout(result, ctx, this.timeout);
-    convertToModifiableResult(result, ctx);
-    handleLimit(result, ctx, this.limit);
-    handleReturnBefore(result, ctx, this.returnBefore);
-    handleOperations(result, ctx, this.operations);
+    handleUpsert(result, this.target, this.whereClause, this.upsert);
+    handleTimeout(result, this.timeout);
+    convertToModifiableResult(result);
+    handleLimit(result, this.limit);
+    handleReturnBefore(result, this.returnBefore);
+    handleOperations(result, this.operations);
     handleSave(result, ctx);
-    handleUnlock(result, ctx, this.lockRecord);
-    handleResultForReturnBefore(result, ctx, this.returnBefore, returnProjection);
-    handleResultForReturnAfter(result, ctx, this.returnAfter, returnProjection);
-    handleResultForReturnCount(result, ctx, this.returnCount);
+    handleUnlock(result, this.lockRecord);
+    handleResultForReturnBefore(result, this.returnBefore, returnProjection);
+    handleResultForReturnAfter(result, this.returnAfter, returnProjection);
+    handleResultForReturnCount(result, this.returnCount);
     return result;
   }
 
@@ -92,106 +92,91 @@ public class OUpdateExecutionPlanner {
    * updates the actual OIdentifiable
    *
    * @param plan the execution plan
-   * @param ctx the executino context
    */
-  private void convertToModifiableResult(OUpdateExecutionPlan plan, OCommandContext ctx) {
-    plan.chain(new ConvertToUpdatableResultStep(ctx));
+  private void convertToModifiableResult(OUpdateExecutionPlan plan) {
+    plan.chain(new ConvertToUpdatableResultStep());
   }
 
-  private void handleResultForReturnCount(
-      OUpdateExecutionPlan result, OCommandContext ctx, boolean returnCount) {
+  private void handleResultForReturnCount(OUpdateExecutionPlan result, boolean returnCount) {
     if (returnCount) {
-      result.chain(new CountStep(ctx));
+      result.chain(new CountStep());
     }
   }
 
   private void handleResultForReturnAfter(
-      OUpdateExecutionPlan result,
-      OCommandContext ctx,
-      boolean returnAfter,
-      OProjection returnProjection) {
+      OUpdateExecutionPlan result, boolean returnAfter, OProjection returnProjection) {
     if (returnAfter) {
       // re-convert to normal step
-      result.chain(new ConvertToResultInternalStep(ctx));
+      result.chain(new ConvertToResultInternalStep());
       if (returnProjection != null) {
-        result.chain(new ProjectionCalculationStep(returnProjection, ctx));
+        result.chain(new ProjectionCalculationStep(returnProjection));
       }
     }
   }
 
   private void handleResultForReturnBefore(
-      OUpdateExecutionPlan result,
-      OCommandContext ctx,
-      boolean returnBefore,
-      OProjection returnProjection) {
+      OUpdateExecutionPlan result, boolean returnBefore, OProjection returnProjection) {
     if (returnBefore) {
-      result.chain(new UnwrapPreviousValueStep(ctx));
+      result.chain(new UnwrapPreviousValueStep());
       if (returnProjection != null) {
-        result.chain(new ProjectionCalculationStep(returnProjection, ctx));
+        result.chain(new ProjectionCalculationStep(returnProjection));
       }
     }
   }
 
   private void handleSave(OUpdateExecutionPlan result, OCommandContext ctx) {
-    result.chain(new SaveElementStep(ctx));
+    result.chain(new SaveElementStep());
   }
 
-  private void handleTimeout(OUpdateExecutionPlan result, OCommandContext ctx, OTimeout timeout) {
+  private void handleTimeout(OUpdateExecutionPlan result, OTimeout timeout) {
     if (timeout != null && timeout.getVal().longValue() > 0) {
-      result.chain(new TimeoutStep(timeout, ctx));
+      result.chain(new TimeoutStep(timeout));
     }
   }
 
-  private void handleReturnBefore(
-      OUpdateExecutionPlan result, OCommandContext ctx, boolean returnBefore) {
+  private void handleReturnBefore(OUpdateExecutionPlan result, boolean returnBefore) {
     if (returnBefore) {
-      result.chain(new CopyRecordContentBeforeUpdateStep(ctx));
+      result.chain(new CopyRecordContentBeforeUpdateStep());
     }
   }
 
-  private void handleUnlock(
-      OUpdateExecutionPlan result, OCommandContext ctx, LOCKING_STRATEGY lockRecord2) {
+  private void handleUnlock(OUpdateExecutionPlan result, LOCKING_STRATEGY lockRecord2) {
     if (lockRecord != null) {
-      result.chain(new UnlockRecordStep(lockRecord, ctx));
+      result.chain(new UnlockRecordStep(lockRecord));
     }
   }
 
-  private void handleLimit(OUpdateExecutionPlan plan, OCommandContext ctx, OLimit limit) {
+  private void handleLimit(OUpdateExecutionPlan plan, OLimit limit) {
     if (limit != null) {
-      plan.chain(new LimitExecutionStep(limit, ctx));
+      plan.chain(new LimitExecutionStep(limit));
     }
   }
 
   private void handleUpsert(
-      OUpdateExecutionPlan plan,
-      OCommandContext ctx,
-      OFromClause target,
-      OWhereClause where,
-      boolean upsert) {
+      OUpdateExecutionPlan plan, OFromClause target, OWhereClause where, boolean upsert) {
     if (upsert) {
-      plan.chain(new UpsertStep(target, where, ctx));
+      plan.chain(new UpsertStep(target, where));
     }
   }
 
-  private void handleOperations(
-      OUpdateExecutionPlan plan, OCommandContext ctx, List<OUpdateOperations> ops) {
+  private void handleOperations(OUpdateExecutionPlan plan, List<OUpdateOperations> ops) {
     if (ops != null) {
       for (OUpdateOperations op : ops) {
         switch (op.getType()) {
           case OUpdateOperations.TYPE_SET:
-            plan.chain(new UpdateSetStep(op.getUpdateItems(), ctx));
+            plan.chain(new UpdateSetStep(op.getUpdateItems()));
             if (updateEdge) {
-              plan.chain(new UpdateEdgePointersStep(ctx));
+              plan.chain(new UpdateEdgePointersStep());
             }
             break;
           case OUpdateOperations.TYPE_REMOVE:
-            plan.chain(new UpdateRemoveStep(op.getUpdateRemoveItems(), ctx));
+            plan.chain(new UpdateRemoveStep(op.getUpdateRemoveItems()));
             break;
           case OUpdateOperations.TYPE_MERGE:
-            plan.chain(new UpdateMergeStep(op.getJson(), ctx));
+            plan.chain(new UpdateMergeStep(op.getJson()));
             break;
           case OUpdateOperations.TYPE_CONTENT:
-            plan.chain(new UpdateContentStep(op.getJson(), ctx));
+            plan.chain(new UpdateContentStep(op.getJson()));
             break;
           case OUpdateOperations.TYPE_PUT:
           case OUpdateOperations.TYPE_INCREMENT:

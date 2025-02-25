@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
  */
 public class RemoveEdgePointersStep extends AbstractExecutionStep {
 
-  public RemoveEdgePointersStep(OCommandContext ctx) {
-    super(ctx);
+  public RemoveEdgePointersStep() {
+    super();
   }
 
   @Override

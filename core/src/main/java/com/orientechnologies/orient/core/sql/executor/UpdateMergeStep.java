@@ -10,8 +10,8 @@ import com.orientechnologies.orient.core.sql.parser.OJson;
 public class UpdateMergeStep extends AbstractExecutionStep {
   private final OJson json;
 
-  public UpdateMergeStep(OJson json, OCommandContext ctx) {
-    super(ctx);
+  public UpdateMergeStep(OJson json) {
+    super();
     this.json = json;
   }
 

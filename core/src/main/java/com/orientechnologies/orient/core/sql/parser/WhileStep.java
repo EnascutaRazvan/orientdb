@@ -15,8 +15,8 @@ public class WhileStep extends AbstractExecutionStep {
   private final OBooleanExpression condition;
   private final List<OStatement> statements;
 
-  public WhileStep(OBooleanExpression condition, List<OStatement> statements, OCommandContext ctx) {
-    super(ctx);
+  public WhileStep(OBooleanExpression condition, List<OStatement> statements) {
+    super();
     this.condition = condition;
     this.statements = statements;
   }
@@ -46,7 +46,7 @@ public class WhileStep extends AbstractExecutionStep {
       if (stm.originalStatement == null) {
         stm.originalStatement = stm.toString();
       }
-      plan.chain(stm, subCtx1);
+      plan.chain(stm);
     }
     return plan;
   }

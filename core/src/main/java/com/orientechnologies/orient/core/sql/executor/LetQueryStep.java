@@ -16,8 +16,8 @@ public class LetQueryStep extends AbstractExecutionStep {
   private final OIdentifier varName;
   private final OStatement query;
 
-  public LetQueryStep(OIdentifier varName, OStatement query, OCommandContext ctx) {
-    super(ctx);
+  public LetQueryStep(OIdentifier varName, OStatement query) {
+    super();
     this.varName = varName;
     this.query = query;
   }

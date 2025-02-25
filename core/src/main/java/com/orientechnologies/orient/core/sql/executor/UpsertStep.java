@@ -19,8 +19,8 @@ public class UpsertStep extends AbstractExecutionStep {
   private final OFromClause commandTarget;
   private final OWhereClause initialFilter;
 
-  public UpsertStep(OFromClause target, OWhereClause where, OCommandContext ctx) {
-    super(ctx);
+  public UpsertStep(OFromClause target, OWhereClause where) {
+    super();
     this.commandTarget = target;
     this.initialFilter = where;
   }

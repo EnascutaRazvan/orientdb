@@ -9,8 +9,8 @@ public class EmptyDataGeneratorStep extends AbstractExecutionStep {
 
   private int size;
 
-  public EmptyDataGeneratorStep(int size, OCommandContext ctx) {
-    super(ctx);
+  public EmptyDataGeneratorStep(int size) {
+    super();
     this.size = size;
   }
 

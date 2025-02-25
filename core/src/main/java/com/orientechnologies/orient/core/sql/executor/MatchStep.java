@@ -11,8 +11,8 @@ import com.orientechnologies.orient.core.sql.parser.OMultiMatchPathItem;
 public class MatchStep extends AbstractExecutionStep {
   protected final EdgeTraversal edge;
 
-  public MatchStep(OCommandContext context, EdgeTraversal edge) {
-    super(context);
+  public MatchStep(EdgeTraversal edge) {
+    super();
     this.edge = edge;
   }
 

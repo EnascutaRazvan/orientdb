@@ -16,7 +16,7 @@ public class DistinctExecutionStep extends AbstractExecutionStep {
   private long maxElementsAllowed;
 
   public DistinctExecutionStep(OCommandContext ctx) {
-    super(ctx);
+    super();
     ODatabaseSession db = ctx == null ? null : ctx.getDatabase();
 
     maxElementsAllowed =

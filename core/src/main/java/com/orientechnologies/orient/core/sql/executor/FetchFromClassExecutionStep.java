@@ -21,8 +21,8 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
   protected boolean orderByRidDesc = false;
   protected List<OExecutionStepInternal> subSteps = new ArrayList<>();
 
-  protected FetchFromClassExecutionStep(OCommandContext ctx) {
-    super(ctx);
+  protected FetchFromClassExecutionStep() {
+    super();
   }
 
   public FetchFromClassExecutionStep(
@@ -44,7 +44,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
       QueryPlanningInfo planningInfo,
       OCommandContext ctx,
       Boolean ridOrder) {
-    super(ctx);
+    super();
 
     this.className = className;
 
@@ -73,7 +73,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
       int clusterId = clusterIds[i];
       if (clusterId > 0) {
         FetchFromClusterExecutionStep step =
-            new FetchFromClusterExecutionStep(clusterId, planningInfo, ctx);
+            new FetchFromClusterExecutionStep(clusterId, planningInfo);
         if (orderByRidAsc) {
           step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
         } else if (orderByRidDesc) {
@@ -82,7 +82,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
         getSubSteps().add(step);
       } else {
         // current tx
-        FetchTemporaryFromTxStep step = new FetchTemporaryFromTxStep(ctx, className);
+        FetchTemporaryFromTxStep step = new FetchTemporaryFromTxStep(className);
         if (orderByRidAsc) {
           step.setOrder(FetchFromClusterExecutionStep.ORDER_ASC);
         } else if (orderByRidDesc) {
@@ -193,7 +193,7 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
 
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
-    FetchFromClassExecutionStep result = new FetchFromClassExecutionStep(ctx);
+    FetchFromClassExecutionStep result = new FetchFromClassExecutionStep();
     result.className = this.className;
     result.orderByRidAsc = this.orderByRidAsc;
     result.orderByRidDesc = this.orderByRidDesc;

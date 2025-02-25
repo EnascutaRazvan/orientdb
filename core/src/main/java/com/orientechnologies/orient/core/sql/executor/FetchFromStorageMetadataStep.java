@@ -24,8 +24,8 @@ public class FetchFromStorageMetadataStep extends AbstractExecutionStep {
   private static final OLogger logger =
       OLogManager.instance().logger(FetchFromStorageMetadataStep.class);
 
-  public FetchFromStorageMetadataStep(OCommandContext ctx) {
-    super(ctx);
+  public FetchFromStorageMetadataStep() {
+    super();
   }
 
   @Override

@@ -18,11 +18,8 @@ public class ForEachStep extends AbstractExecutionStep {
   public List<OStatement> body;
 
   public ForEachStep(
-      OIdentifier loopVariable,
-      OExpression oExpression,
-      List<OStatement> statements,
-      OCommandContext ctx) {
-    super(ctx);
+      OIdentifier loopVariable, OExpression oExpression, List<OStatement> statements) {
+    super();
     this.loopVariable = loopVariable;
     this.source = oExpression;
     this.body = statements;
@@ -42,7 +39,7 @@ public class ForEachStep extends AbstractExecutionStep {
       }
     }
 
-    return new EmptyStep(ctx).start(ctx);
+    return new EmptyStep().start(ctx);
   }
 
   protected Iterator<Object> init(OCommandContext ctx) {
@@ -55,7 +52,7 @@ public class ForEachStep extends AbstractExecutionStep {
     subCtx1.setParent(ctx);
     OScriptExecutionPlan plan = new OScriptExecutionPlan();
     for (OStatement stm : body) {
-      plan.chain(stm, subCtx1);
+      plan.chain(stm);
     }
     return plan;
   }
