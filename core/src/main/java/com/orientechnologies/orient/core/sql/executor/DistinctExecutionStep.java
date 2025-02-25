@@ -80,14 +80,6 @@ public class DistinctExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void sendTimeout() {}
-
-  @Override
-  public void close() {
-    prev.ifPresent(x -> x.close());
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     String result = OExecutionStepInternal.getIndent(ctx) + "+ DISTINCT";
     if (ctx.isProfilingEnabled()) {

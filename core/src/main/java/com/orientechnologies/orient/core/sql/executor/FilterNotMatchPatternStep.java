@@ -86,9 +86,4 @@ public class FilterNotMatchPatternStep extends AbstractExecutionStep {
     result.append("  )");
     return result.toString();
   }
-
-  @Override
-  public void close() {
-    super.close();
-  }
 }

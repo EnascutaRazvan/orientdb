@@ -18,7 +18,6 @@ public class FetchFromVariableStep extends AbstractExecutionStep {
   public FetchFromVariableStep(OFromItem variableName, OCommandContext ctx) {
     super(ctx);
     this.variableName = variableName;
-    reset();
   }
 
   @Override
@@ -77,7 +76,6 @@ public class FetchFromVariableStep extends AbstractExecutionStep {
         this.variableName = new OFromItem(-1);
         this.variableName.deserialize(fromResult.getProperty("variableName"));
       }
-      reset();
     } catch (Exception e) {
       throw OException.wrapException(new OCommandExecutionException(""), e);
     }

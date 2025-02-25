@@ -23,11 +23,6 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
   public OSelectExecutionPlan() {}
 
   @Override
-  public void close() {
-    lastStep.close();
-  }
-
-  @Override
   public OExecutionStream start(OCommandContext ctx) {
     return lastStep.start(ctx);
   }
@@ -43,11 +38,6 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
       }
     }
     return result.toString();
-  }
-
-  @Override
-  public void reset(OCommandContext ctx) {
-    steps.forEach(OExecutionStepInternal::reset);
   }
 
   public void chain(OExecutionStepInternal nextStep) {

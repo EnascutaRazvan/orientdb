@@ -39,9 +39,6 @@ public class OProfileExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public void close() {}
-
-  @Override
   public OExecutionStream start(OCommandContext ctx) {
     ((OBasicCommandContext) ctx).enableProfiling();
     OExecutionStream stream = toProfile.start(ctx);
@@ -53,9 +50,6 @@ public class OProfileExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("dbStats", dbStats.toResult());
     return OExecutionStream.singleton(result);
   }
-
-  @Override
-  public void reset(OCommandContext ctx) {}
 
   @Override
   public long getCost() {

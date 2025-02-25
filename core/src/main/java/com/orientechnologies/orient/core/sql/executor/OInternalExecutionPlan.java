@@ -10,8 +10,6 @@ public interface OInternalExecutionPlan extends OExecutionPlanContextOps {
 
   public static final String JAVA_TYPE = "javaType";
 
-  void close();
-
   /**
    * if the execution can still return N elements, then the result will contain them all. If the
    * execution contains less than N elements, then the result will contain them all, next result(s)
@@ -21,8 +19,6 @@ public interface OInternalExecutionPlan extends OExecutionPlanContextOps {
    * @return
    */
   OExecutionStream start(OCommandContext ctx);
-
-  void reset(OCommandContext ctx);
 
   long getCost();
 

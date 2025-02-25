@@ -53,7 +53,6 @@ public class FetchFromRidsStep extends AbstractExecutionStep {
         List<String> ser = fromResult.getProperty("rids");
         rids = ser.stream().map(x -> new ORecordId(x)).collect(Collectors.toList());
       }
-      reset();
     } catch (Exception e) {
       throw OException.wrapException(new OCommandExecutionException(""), e);
     }

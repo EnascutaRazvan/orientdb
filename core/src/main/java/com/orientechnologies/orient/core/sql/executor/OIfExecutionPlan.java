@@ -1,6 +1,5 @@
 package com.orientechnologies.orient.core.sql.executor;
 
-/** Created by luigidellaquila on 08/08/16. */
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.Collections;
@@ -12,21 +11,10 @@ import java.util.Set;
 public class OIfExecutionPlan implements OInternalExecutionPlan {
 
   protected IfStep step;
-  private OCommandContext context;
   private String genericStatement;
   private String statement;
 
   public OIfExecutionPlan() {}
-
-  @Override
-  public void reset(OCommandContext ctx) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void close() {
-    step.close();
-  }
 
   @Override
   public OExecutionStream start(OCommandContext ctx) {

@@ -19,14 +19,9 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public void close() {}
-
-  @Override
   public OExecutionStream start(OCommandContext ctx) {
     return statement.executeDDL(ctx);
   }
-
-  public void reset(OCommandContext ctx) {}
 
   @Override
   public long getCost() {

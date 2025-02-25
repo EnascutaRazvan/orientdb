@@ -28,14 +28,6 @@ public class SkipExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void sendTimeout() {}
-
-  @Override
-  public void close() {
-    prev.ifPresent(x -> x.close());
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     return OExecutionStepInternal.getIndent(ctx) + "+ SKIP (" + skip.toString() + ")";
   }

@@ -22,12 +22,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   public OScriptExecutionPlan() {}
 
   @Override
-  public void reset(OCommandContext ctx) {}
-
-  @Override
-  public void close() {}
-
-  @Override
   public OExecutionStream start(OCommandContext ctx) {
 
     for (int i = 0; i < steps.size(); i++) {
@@ -88,12 +82,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
           }
 
           public void setPrevious(OExecutionStepInternal step) {}
-
-          @Override
-          public void sendTimeout() {}
-
-          @Override
-          public void close() {}
         };
     steps.add(nextStep);
   }

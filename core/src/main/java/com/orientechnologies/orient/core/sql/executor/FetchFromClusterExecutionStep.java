@@ -133,16 +133,6 @@ public class FetchFromClusterExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void sendTimeout() {
-    super.sendTimeout();
-  }
-
-  @Override
-  public void close() {
-    super.close();
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     String orderString = ORDER_DESC.equals(order) ? "DESC" : "ASC";
     String result =

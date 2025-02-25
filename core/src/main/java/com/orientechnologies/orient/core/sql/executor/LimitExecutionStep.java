@@ -25,14 +25,6 @@ public class LimitExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void sendTimeout() {}
-
-  @Override
-  public void close() {
-    prev.ifPresent(x -> x.close());
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     return OExecutionStepInternal.getIndent(ctx) + "+ LIMIT (" + limit.toString() + ")";
   }

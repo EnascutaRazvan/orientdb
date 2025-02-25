@@ -19,14 +19,9 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public void close() {}
-
-  @Override
   public OExecutionStream start(OCommandContext ctx) {
     return statement.executeSimple(ctx);
   }
-
-  public void reset(OCommandContext ctx) {}
 
   @Override
   public long getCost() {

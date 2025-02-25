@@ -112,7 +112,6 @@ public class OExecutionPlanCache implements OMetadataUpdateListener {
       OBasicCommandContext ctx = new OBasicCommandContext(db);
       plan = plan.copy(ctx);
       // this copy is never used, so it has to be closed to free resources
-      plan.close();
       map.put(statement, plan);
     }
   }

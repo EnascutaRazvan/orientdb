@@ -33,11 +33,6 @@ public class FetchFromViewExecutionStep extends FetchFromClassExecutionStep {
     }
   }
 
-  @Override
-  public void close() {
-    super.close();
-  }
-
   protected OView loadClassFromSchema(String className, OCommandContext ctx) {
     OView clazz =
         ((ODatabaseDocumentInternal) ctx.getDatabase())

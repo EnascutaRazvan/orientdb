@@ -32,11 +32,6 @@ public class DistributedExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void close() {
-    super.close();
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     StringBuilder builder = new StringBuilder();
     String ind = OExecutionStepInternal.getIndent(ctx);

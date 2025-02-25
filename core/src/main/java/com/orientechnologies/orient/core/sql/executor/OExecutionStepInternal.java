@@ -32,22 +32,9 @@ import java.util.stream.Collectors;
  */
 public interface OExecutionStepInternal {
 
-  /**
-   * returns the absolute cost (in nanoseconds) of the execution of this step
-   *
-   * @return the absolute cost (in nanoseconds) of the execution of this step, -1 if not calculated
-   */
-  default long getCost() {
-    return -1l;
-  }
-
   OExecutionStream start(OCommandContext ctx) throws OTimeoutException;
 
-  void sendTimeout();
-
   void setPrevious(OExecutionStepInternal step);
-
-  void close();
 
   static String getIndent(OPrintContext ctx) {
     StringBuilder result = new StringBuilder();
@@ -72,10 +59,6 @@ public interface OExecutionStepInternal {
     return getClass().getSimpleName();
   }
 
-  default String getDescription() {
-    return prettyPrint(new OPrintContexImpl(null, 0, 3));
-  }
-
   default String getTargetNode() {
     return "<local>";
   }
@@ -86,10 +69,6 @@ public interface OExecutionStepInternal {
 
   default List<OInternalExecutionPlan> getSubExecutionPlans() {
     return Collections.EMPTY_LIST;
-  }
-
-  default void reset() {
-    // do nothing
   }
 
   default OResult serialize() {
@@ -184,7 +163,8 @@ public interface OExecutionStepInternal {
             : getSubSteps().stream()
                 .map(x -> ((OExecutionStepInternal) x).toResult(ctx))
                 .collect(Collectors.toList()));
-    result.setProperty("description", getDescription());
+    String description = prettyPrint(new OPrintContexImpl(ctx.getContext(), 0, 3));
+    result.setProperty("description", description);
     serializeToResult(result, ctx);
     return result;
   }

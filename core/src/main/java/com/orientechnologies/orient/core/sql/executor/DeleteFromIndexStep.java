@@ -119,11 +119,6 @@ public class DeleteFromIndexStep extends AbstractExecutionStep {
     }
   }
 
-  @Override
-  public void close() {
-    super.close();
-  }
-
   private Set<Stream<ORawPair<Object, ORID>>> init(
       OBooleanExpression condition, OCommandContext ctx) {
     Set<Stream<ORawPair<Object, ORID>>> acquiredStreams =

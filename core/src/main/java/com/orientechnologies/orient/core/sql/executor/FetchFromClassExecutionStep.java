@@ -139,22 +139,6 @@ public class FetchFromClassExecutionStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void sendTimeout() {
-    for (OExecutionStepInternal step : getSubSteps()) {
-      ((AbstractExecutionStep) step).sendTimeout();
-    }
-    prev.ifPresent(p -> p.sendTimeout());
-  }
-
-  @Override
-  public void close() {
-    for (OExecutionStepInternal step : getSubSteps()) {
-      ((AbstractExecutionStep) step).close();
-    }
-    prev.ifPresent(p -> p.close());
-  }
-
-  @Override
   public String prettyPrint(OPrintContext ctx) {
     StringBuilder builder = new StringBuilder();
     String ind = OExecutionStepInternal.getIndent(ctx);

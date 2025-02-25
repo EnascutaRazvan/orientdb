@@ -65,7 +65,6 @@ public class LetExpressionStep extends AbstractExecutionStep {
         expression = new OExpression(-1);
         expression.deserialize(fromResult.getProperty("expression"));
       }
-      reset();
     } catch (Exception e) {
       throw OException.wrapException(new OCommandExecutionException(""), e);
     }

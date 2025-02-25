@@ -22,11 +22,6 @@ public class MatchPrefetchStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {
-    prefetchExecutionPlan.reset(ctx);
-  }
-
-  @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     getPrev().ifPresent(x -> x.start(ctx).close(ctx));
 
@@ -36,7 +31,6 @@ public class MatchPrefetchStep extends AbstractExecutionStep {
       prefetched.add(nextBlock.next(ctx));
     }
     nextBlock.close(ctx);
-    prefetchExecutionPlan.close();
     ctx.setVariable(PREFETCHED_MATCH_ALIAS_PREFIX + alias, prefetched);
     return OExecutionStream.empty();
   }

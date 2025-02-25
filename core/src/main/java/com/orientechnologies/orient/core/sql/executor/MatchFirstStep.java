@@ -21,13 +21,6 @@ public class MatchFirstStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {
-    if (executionPlan != null) {
-      executionPlan.reset(this.getContext());
-    }
-  }
-
-  @Override
   public OExecutionStream internalStart(OCommandContext ctx) throws OTimeoutException {
     getPrev().ifPresent(x -> x.start(ctx).close(ctx));
     OExecutionStream data;

@@ -771,9 +771,6 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   }
 
   @Override
-  public void reset() {}
-
-  @Override
   public boolean canBeCached() {
     return true;
   }
@@ -781,11 +778,6 @@ public class FetchFromIndexStep extends AbstractExecutionStep {
   @Override
   public OExecutionStepInternal copy(OCommandContext ctx) {
     return new FetchFromIndexStep(desc, this.orderAsc, ctx);
-  }
-
-  @Override
-  public void close() {
-    super.close();
   }
 
   public String getIndexName() {

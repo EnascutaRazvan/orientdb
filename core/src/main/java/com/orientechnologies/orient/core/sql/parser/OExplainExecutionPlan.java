@@ -36,18 +36,12 @@ public class OExplainExecutionPlan implements OInternalExecutionPlan {
   }
 
   @Override
-  public void close() {}
-
-  @Override
   public OExecutionStream start(OCommandContext ctx) {
     OResultInternal result = new OResultInternal();
     result.setProperty("executionPlan", toResult(new OToResultContextImpl(ctx)));
     result.setProperty("executionPlanAsString", prettyPrint(new OPrintContexImpl(ctx)));
     return OExecutionStream.singleton(result);
   }
-
-  @Override
-  public void reset(OCommandContext ctx) {}
 
   @Override
   public long getCost() {

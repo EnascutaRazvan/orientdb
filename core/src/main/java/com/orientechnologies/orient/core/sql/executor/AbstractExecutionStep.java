@@ -20,28 +20,8 @@ public abstract class AbstractExecutionStep implements OExecutionStepInternal {
     this.prev = Optional.ofNullable(step);
   }
 
-  public OCommandContext getContext() {
-    return ctx;
-  }
-
   public Optional<OExecutionStepInternal> getPrev() {
     return prev;
-  }
-
-  @Override
-  public void sendTimeout() {
-    prev.ifPresent(p -> p.sendTimeout());
-  }
-
-  private boolean alreadyClosed = false;
-
-  @Override
-  public void close() {
-    if (alreadyClosed) {
-      return;
-    }
-    alreadyClosed = true;
-    prev.ifPresent(p -> p.close());
   }
 
   public OExecutionStream start(OCommandContext ctx) throws OTimeoutException {
