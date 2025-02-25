@@ -11,7 +11,6 @@ import java.util.Set;
 public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   private final ODDLStatement statement;
-  private OCommandContext context;
   private String genericStatement;
   private String stringStatement;
 
@@ -46,7 +45,7 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(context, depth, indent));
+    return prettyPrint(new OPrintContexImpl(null, depth, indent));
   }
 
   @Override
@@ -67,17 +66,12 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
-    return toResult(new OToResultContextImpl(this.context));
+    return toResult(new OToResultContextImpl(null));
   }
 
   @Override
   public Set<String> getIndexes() {
     return Collections.emptySet();
-  }
-
-  @Override
-  public void fillContext(OCommandContext context) {
-    this.context = context;
   }
 
   @Override
@@ -88,7 +82,7 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("stmText", statement.toString());
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(ctx.getContext(), 0, 2)));
     return result;
   }
 

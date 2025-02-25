@@ -14,7 +14,6 @@ import java.util.Set;
 public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
 
   protected final OSimpleExecServerStatement statement;
-  private OCommandContext context;
 
   public OSingleOpServerExecutionPlan(OSimpleExecServerStatement stm) {
     this.statement = stm;
@@ -68,13 +67,18 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
 
   @Override
   public OResult toResult() {
+    return toResult(new OToResultContextImpl());
+  }
+
+  @Override
+  public OResult toResult(OToResultContext ctx) {
     OResultInternal result = new OResultInternal();
     result.setProperty("type", "QueryExecutionPlan");
     result.setProperty("javaType", getClass().getName());
     result.setProperty("stmText", statement.toString());
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(ctx.getContext(), 0, 2)));
     result.setProperty("steps", null);
     return result;
   }
@@ -86,9 +90,4 @@ public class OSingleOpServerExecutionPlan implements OServerExecutionPlan {
 
   @Override
   public void close() {}
-
-  @Override
-  public void fillContext(OCommandContext context) {
-    this.context = context;
-  }
 }

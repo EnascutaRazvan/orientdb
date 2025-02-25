@@ -75,7 +75,7 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("type", "IfExecutionPlan");
     result.setProperty("javaType", getClass().getName());
     result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(ctx.getContext(), 0, 2)));
     result.setProperty("stmText", getStatement());
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty("steps", Collections.singletonList(step.toResult(ctx)));
@@ -97,11 +97,6 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
     Set<String> indexes = new HashSet<>();
     OExecutionStepInternal.fillIndexes(step, indexes);
     return indexes;
-  }
-
-  @Override
-  public void fillContext(OCommandContext context) {
-    this.context = context;
   }
 
   @Override

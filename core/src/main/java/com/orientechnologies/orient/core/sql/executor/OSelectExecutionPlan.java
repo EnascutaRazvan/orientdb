@@ -20,8 +20,6 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
   private String statement;
   private String genericStatement;
 
-  private OCommandContext context;
-
   public OSelectExecutionPlan() {}
 
   @Override
@@ -36,7 +34,7 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(context, depth, indent));
+    return prettyPrint(new OPrintContexImpl(null, depth, indent));
   }
 
   @Override
@@ -87,7 +85,7 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
-    return toResult(new OToResultContextImpl(this.context));
+    return toResult(new OToResultContextImpl(null));
   }
 
   @Override
@@ -96,7 +94,7 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("type", "QueryExecutionPlan");
     result.setProperty(JAVA_TYPE, getClass().getName());
     result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(ctx.getContext(), 0, 2)));
     result.setProperty("stmText", getStatement());
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty(
@@ -117,7 +115,7 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("type", "QueryExecutionPlan");
     result.setProperty(JAVA_TYPE, getClass().getName());
     result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(null, 0, 2)));
     result.setProperty(
         "steps",
         steps == null ? null : steps.stream().map(x -> x.serialize()).collect(Collectors.toList()));
@@ -199,10 +197,5 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
       OExecutionStepInternal.fillIndexes(chilStep, indexes);
     }
     return indexes;
-  }
-
-  @Override
-  public void fillContext(OCommandContext context) {
-    this.context = context;
   }
 }

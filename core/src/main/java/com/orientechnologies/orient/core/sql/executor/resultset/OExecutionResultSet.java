@@ -20,7 +20,6 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
   private final OExecutionStream stream;
   private final OCommandContext context;
   private final OInternalExecutionPlan plan;
-  private final Optional<OExecutionPlan> publicPlan;
   private boolean closed = false;
   private long startTime = System.currentTimeMillis();
   private long elapsedTime = -1;
@@ -30,16 +29,7 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
     super();
     this.stream = stream;
     this.context = context;
-    if (plan != null) {
-      plan.fillContext(context);
-    }
     this.plan = plan;
-    this.publicPlan =
-        Optional.ofNullable(plan)
-            .map(
-                (p) ->
-                    OInfoExecutionPlan.fromResult(
-                        p.toResult(new OToResultContextImpl(this.context))));
   }
 
   @Override
@@ -97,7 +87,10 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
 
   @Override
   public Optional<OExecutionPlan> getExecutionPlan() {
-    return publicPlan;
+    return Optional.ofNullable(plan)
+        .map(
+            (p) ->
+                OInfoExecutionPlan.fromResult(p.toResult(new OToResultContextImpl(this.context))));
   }
 
   @Override

@@ -1,6 +1,5 @@
 package com.orientechnologies.orient.core.sql.executor;
 
-import com.orientechnologies.orient.core.command.OCommandContext;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +16,6 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
   private String stmText;
   private String genericStatement;
   private OResult result;
-  private OCommandContext context;
 
   @Override
   public List<OExecutionStep> getSteps() {
@@ -35,6 +33,11 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
 
   @Override
   public OResult toResult() {
+    return result;
+  }
+
+  @Override
+  public OResult toResult(OToResultContext ctx) {
     return result;
   }
 
@@ -94,11 +97,6 @@ public class OInfoExecutionPlan implements OExecutionPlanContextOps {
       OExecutionStepInternal.fillIndexes(chilStep, indexes);
     }
     return indexes;
-  }
-
-  @Override
-  public void fillContext(OCommandContext context) {
-    this.context = context;
   }
 
   public String getGenericStatement() {

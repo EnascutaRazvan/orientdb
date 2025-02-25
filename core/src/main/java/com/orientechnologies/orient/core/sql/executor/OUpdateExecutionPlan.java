@@ -16,8 +16,8 @@ public class OUpdateExecutionPlan extends OSelectExecutionPlan {
   }
 
   @Override
-  public OResult toResult() {
-    OResultInternal res = (OResultInternal) super.toResult();
+  public OResult toResult(OToResultContext ctx) {
+    OResultInternal res = (OResultInternal) super.toResult(ctx);
     res.setProperty("type", "UpdateExecutionPlan");
     return res;
   }

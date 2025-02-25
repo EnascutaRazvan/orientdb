@@ -26,4 +26,9 @@ public class OToResultContextImpl implements OToResultContext {
       return -1;
     }
   }
+
+  @Override
+  public OCommandContext getContext() {
+    return context;
+  }
 }

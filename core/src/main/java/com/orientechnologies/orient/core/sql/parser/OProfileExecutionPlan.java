@@ -22,17 +22,11 @@ import java.util.stream.Collectors;
 public class OProfileExecutionPlan implements OInternalExecutionPlan {
 
   private OInternalExecutionPlan toProfile;
-  private OCommandContext context;
   private String genericStatement;
   private String statement;
 
   public OProfileExecutionPlan(OInternalExecutionPlan toProfile) {
     this.toProfile = toProfile;
-  }
-
-  @Override
-  public void fillContext(OCommandContext context) {
-    this.context = context;
   }
 
   @Override
@@ -42,17 +36,17 @@ public class OProfileExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(context, depth, indent));
+    return prettyPrint(new OPrintContexImpl(null, depth, indent));
   }
 
   @Override
   public String prettyPrint() {
-    return prettyPrint(new OPrintContexImpl(context));
+    return prettyPrint(new OPrintContexImpl(null));
   }
 
   @Override
   public OResult toResult() {
-    return toResult(new OToResultContextImpl(context));
+    return toResult(new OToResultContextImpl(null));
   }
 
   @Override
@@ -110,7 +104,7 @@ public class OProfileExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("type", "ProfileExecutionPlan");
     result.setProperty(JAVA_TYPE, getClass().getName());
     result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(ctx.getContext())));
     result.setProperty("stmText", getStatement());
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty("statement", Arrays.asList(toProfile.toResult(ctx)));

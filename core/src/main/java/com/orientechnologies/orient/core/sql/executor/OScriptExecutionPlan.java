@@ -17,7 +17,6 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
   protected List<OExecutionStepInternal> steps = new ArrayList<>();
   private String statement;
   private String genericStatement;
-  private OCommandContext context;
   private boolean idempotent = true;
 
   public OScriptExecutionPlan() {}
@@ -57,7 +56,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public String prettyPrint(int depth, int indent) {
-    return prettyPrint(new OPrintContexImpl(context, depth, indent));
+    return prettyPrint(new OPrintContexImpl(null, depth, indent));
   }
 
   @Override
@@ -121,7 +120,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
 
   @Override
   public OResult toResult() {
-    return toResult(new OToResultContextImpl(this.context));
+    return toResult(new OToResultContextImpl(null));
   }
 
   @Override
@@ -130,7 +129,7 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("type", "ScriptExecutionPlan");
     result.setProperty("javaType", getClass().getName());
     result.setProperty("cost", getCost());
-    result.setProperty("prettyPrint", prettyPrint(0, 2));
+    result.setProperty("prettyPrint", prettyPrint(new OPrintContexImpl(ctx.getContext(), 0, 2)));
     result.setProperty("stmText", getStatement());
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty(
@@ -178,10 +177,5 @@ public class OScriptExecutionPlan implements OInternalExecutionPlan {
       OExecutionStepInternal.fillIndexes(chilStep, indexes);
     }
     return indexes;
-  }
-
-  @Override
-  public void fillContext(OCommandContext context) {
-    this.context = context;
   }
 }

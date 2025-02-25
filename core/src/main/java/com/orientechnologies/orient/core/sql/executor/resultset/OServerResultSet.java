@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OInfoExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
+import com.orientechnologies.orient.core.sql.executor.OToResultContextImpl;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -22,10 +23,11 @@ public class OServerResultSet implements OResultSetInternal {
     super();
     this.stream = stream;
     this.context = context;
-    if (plan != null) {
-      plan.fillContext(context);
-    }
-    this.plan = Optional.ofNullable(plan).map((p) -> OInfoExecutionPlan.fromResult(p.toResult()));
+    this.plan =
+        Optional.ofNullable(plan)
+            .map(
+                (p) ->
+                    OInfoExecutionPlan.fromResult(p.toResult(new OToResultContextImpl(context))));
   }
 
   @Override
