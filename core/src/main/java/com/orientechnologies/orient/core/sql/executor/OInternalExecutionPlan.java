@@ -53,4 +53,8 @@ public interface OInternalExecutionPlan extends OExecutionPlanContextOps {
   public String prettyPrint(OPrintContext ctx);
 
   public OResult toResult(OToResultContext ctx);
+
+  default boolean isExplain() {
+    return false;
+  }
 }

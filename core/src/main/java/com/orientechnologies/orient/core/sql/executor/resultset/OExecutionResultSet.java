@@ -5,7 +5,6 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.metadata.security.OSecurityUser;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
-import com.orientechnologies.orient.core.sql.executor.OExecutionPlanContextOps;
 import com.orientechnologies.orient.core.sql.executor.OInfoExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OQueryMetrics;
@@ -19,20 +18,23 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
 
   private final OExecutionStream stream;
   private final OCommandContext context;
-  private final Optional<OExecutionPlan> plan;
+  private final OInternalExecutionPlan plan;
+  private final Optional<OExecutionPlan> publicPlan;
   private boolean closed = false;
   private long startTime = System.currentTimeMillis();
   private long elapsedTime = -1;
 
   public OExecutionResultSet(
-      OExecutionStream stream, OCommandContext context, OExecutionPlanContextOps plan) {
+      OExecutionStream stream, OCommandContext context, OInternalExecutionPlan plan) {
     super();
     this.stream = stream;
     this.context = context;
     if (plan != null) {
       plan.fillContext(context);
     }
-    this.plan = Optional.ofNullable(plan).map((p) -> OInfoExecutionPlan.fromResult(p.toResult()));
+    this.plan = plan;
+    this.publicPlan =
+        Optional.ofNullable(plan).map((p) -> OInfoExecutionPlan.fromResult(p.toResult()));
   }
 
   @Override
@@ -64,9 +66,8 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
 
   private void logProfiling() {
     computeElapsed();
-    if (plan.isPresent() && plan.get() instanceof OInternalExecutionPlan) {
-      var executionPlan = (OInternalExecutionPlan) plan.get();
-      if (executionPlan.getStatement() != null && Orient.instance().getProfiler().isRecording()) {
+    if (plan != null) {
+      if (plan.getStatement() != null && Orient.instance().getProfiler().isRecording()) {
         final ODatabaseDocumentInternal db = (ODatabaseDocumentInternal) context.getDatabase();
         if (db != null) {
           final OSecurityUser user = db.getUser();
@@ -74,7 +75,7 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
           Orient.instance()
               .getProfiler()
               .stopChrono(
-                  "db." + db.getName() + ".command.sql." + executionPlan.getStatement(),
+                  "db." + db.getName() + ".command.sql." + plan.getStatement(),
                   "Command executed against the database",
                   elapsedTime,
                   "db.*.command.*",
@@ -91,7 +92,7 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
 
   @Override
   public Optional<OExecutionPlan> getExecutionPlan() {
-    return plan;
+    return publicPlan;
   }
 
   @Override
@@ -106,7 +107,11 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
 
   @Override
   public boolean isExplain() {
-    return false;
+    if (plan != null) {
+      return plan.isExplain();
+    } else {
+      return false;
+    }
   }
 
   @Override
@@ -124,15 +129,8 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
 
   @Override
   public String getStatement() {
-    if (plan.isPresent()) {
-      OExecutionPlan rp = plan.get();
-      if (rp instanceof OInternalExecutionPlan) {
-        return ((OInternalExecutionPlan) rp).getGenericStatement();
-      } else if (rp instanceof OInfoExecutionPlan) {
-        return ((OInfoExecutionPlan) rp).getGenericStatement();
-      } else {
-        return rp.toString();
-      }
+    if (plan != null) {
+      return plan.getGenericStatement();
     } else {
       return "";
     }
