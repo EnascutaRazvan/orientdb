@@ -130,7 +130,8 @@ public class OSelectExecutionPlan implements OInternalExecutionPlan {
       try {
         String className = serializedStep.getProperty(JAVA_TYPE);
         OExecutionStepInternal step =
-            (OExecutionStepInternal) Class.forName(className).newInstance();
+            (OExecutionStepInternal)
+                Class.forName(className).getDeclaredConstructor().newInstance();
         step.deserialize(serializedStep);
         chain(step);
       } catch (Exception e) {
