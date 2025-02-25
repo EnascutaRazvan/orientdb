@@ -13,6 +13,8 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
 
   protected IfStep step;
   private OCommandContext context;
+  private String genericStatement;
+  private String statement;
 
   public OIfExecutionPlan() {}
 
@@ -100,5 +102,25 @@ public class OIfExecutionPlan implements OInternalExecutionPlan {
   @Override
   public void fillContext(OCommandContext context) {
     this.context = context;
+  }
+
+  @Override
+  public void setGenericStatement(String stm) {
+    this.genericStatement = stm;
+  }
+
+  @Override
+  public String getGenericStatement() {
+    return this.genericStatement;
+  }
+
+  @Override
+  public void setStatement(String stm) {
+    this.statement = stm;
+  }
+
+  @Override
+  public String getStatement() {
+    return statement;
   }
 }

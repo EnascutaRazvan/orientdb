@@ -20,7 +20,10 @@ public abstract class ODDLStatement extends OStatement {
   public abstract OExecutionStream executeDDL(OCommandContext ctx);
 
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
-    return new ODDLExecutionPlan(this);
+    var result = new ODDLExecutionPlan(this);
+    result.setStatement(this.originalStatement);
+    result.setGenericStatement(this.toGenericStatement());
+    return result;
   }
 
   public String prettyPrint(OPrintContext ctx) {

@@ -3,7 +3,6 @@
 package com.orientechnologies.orient.core.sql.parser;
 
 import com.orientechnologies.common.collection.OMultiValue;
-import com.orientechnologies.orient.core.command.OBasicCommandContext;
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.sql.executor.OIndexSearchInfo;
@@ -94,9 +93,8 @@ public class OInCondition extends OBooleanExpression {
   }
 
   protected static Object executeQuery(OSelectStatement rightStatement, OCommandContext ctx) {
-    OBasicCommandContext subCtx = new OBasicCommandContext(ctx.getDatabase());
-    subCtx.setParentWithoutOverridingChild(ctx);
-    OResultSet result = rightStatement.execute(ctx.getDatabase(), ctx.getInputParameters(), false);
+    OResultSet result =
+        rightStatement.execute(ctx.getDatabase(), ctx.getInputParameters(), ctx, false);
     return result.stream().collect(Collectors.toSet());
   }
 

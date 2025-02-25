@@ -12,6 +12,8 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
 
   private final ODDLStatement statement;
   private OCommandContext context;
+  private String genericStatement;
+  private String stringStatement;
 
   public ODDLExecutionPlan(ODDLStatement stm) {
     this.statement = stm;
@@ -88,5 +90,25 @@ public class ODDLExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("cost", getCost());
     result.setProperty("prettyPrint", prettyPrint(0, 2));
     return result;
+  }
+
+  @Override
+  public void setGenericStatement(String stm) {
+    this.genericStatement = stm;
+  }
+
+  @Override
+  public String getGenericStatement() {
+    return this.genericStatement;
+  }
+
+  @Override
+  public void setStatement(String stm) {
+    this.stringStatement = stm;
+  }
+
+  @Override
+  public String getStatement() {
+    return stringStatement;
   }
 }

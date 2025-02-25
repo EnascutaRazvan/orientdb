@@ -10,6 +10,7 @@ import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OQueryMetrics;
 import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultSetInternal;
+import com.orientechnologies.orient.core.sql.executor.OToResultContextImpl;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -34,7 +35,11 @@ public class OExecutionResultSet implements OResultSetInternal, OQueryMetrics {
     }
     this.plan = plan;
     this.publicPlan =
-        Optional.ofNullable(plan).map((p) -> OInfoExecutionPlan.fromResult(p.toResult()));
+        Optional.ofNullable(plan)
+            .map(
+                (p) ->
+                    OInfoExecutionPlan.fromResult(
+                        p.toResult(new OToResultContextImpl(this.context))));
   }
 
   @Override

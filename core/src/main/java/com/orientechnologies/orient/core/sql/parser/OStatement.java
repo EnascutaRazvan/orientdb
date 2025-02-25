@@ -8,6 +8,7 @@ import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseSession;
 import com.orientechnologies.orient.core.exception.OCommandExecutionException;
+import com.orientechnologies.orient.core.exception.OQueryParsingException;
 import com.orientechnologies.orient.core.sql.OCommandSQLParsingException;
 import com.orientechnologies.orient.core.sql.executor.OExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
@@ -15,7 +16,6 @@ import com.orientechnologies.orient.core.sql.executor.OResult;
 import com.orientechnologies.orient.core.sql.executor.OResultInternal;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionResultSet;
-import com.orientechnologies.orient.core.sql.executor.resultset.OExecutionStream;
 import java.util.Map;
 
 public class OStatement extends SimpleNode {
@@ -70,10 +70,6 @@ public class OStatement extends SimpleNode {
     return new OExecutionResultSet(executionPlan.start(ctx), ctx, executionPlan);
   }
 
-  public static OResultSet executeAll(OCommandContext ctx, OInternalExecutionPlan plan) {
-    return new OExecutionResultSet(OExecutionStream.collectAll(plan.start(ctx), ctx), ctx, plan);
-  }
-
   public OInternalExecutionPlan resolvePlan(boolean useCache, OCommandContext ctx) {
     if (useCache && !ctx.isProfiling() && executinPlanCanBeCached()) {
       OExecutionPlan plan =
@@ -106,11 +102,7 @@ public class OStatement extends SimpleNode {
    * @return an execution plan
    */
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
-    return createExecutionPlan(ctx);
-  }
-
-  public OInternalExecutionPlan createExecutionPlanNoCache(OCommandContext ctx) {
-    return createExecutionPlan(ctx);
+    throw new OQueryParsingException("Cannot create execution plan for:" + getOriginalStatement());
   }
 
   public OStatement copy() {

@@ -26,13 +26,10 @@ public class LetQueryStep extends AbstractExecutionStep {
     OBasicCommandContext subCtx = new OBasicCommandContext(ctx.getDatabase());
     subCtx.setParentWithoutOverridingChild(ctx);
     OInternalExecutionPlan subExecutionPlan;
-    if (query.toString().contains("?")) {
-      // with positional parameters, you cannot know if a parameter has the same ordinal as the
-      // one cached
-      subExecutionPlan = query.createExecutionPlan(subCtx);
-    } else {
-      subExecutionPlan = query.resolvePlan(true, subCtx);
-    }
+    // with positional parameters, you cannot know if a parameter has the same ordinal as the
+    // one cached
+    boolean useCache = !query.toString().contains("?");
+    subExecutionPlan = query.resolvePlan(useCache, subCtx);
     result.setMetadata(varName.getStringValue(), toList(subExecutionPlan, ctx));
     return result;
   }

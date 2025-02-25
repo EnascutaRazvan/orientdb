@@ -38,17 +38,13 @@ public interface OInternalExecutionPlan extends OExecutionPlanContextOps {
 
   boolean canBeCached();
 
-  default String getStatement() {
-    return null;
-  }
+  String getStatement();
 
-  default void setStatement(String stm) {}
+  void setStatement(String stm);
 
-  default String getGenericStatement() {
-    return null;
-  }
+  String getGenericStatement();
 
-  default void setGenericStatement(String stm) {}
+  void setGenericStatement(String stm);
 
   public String prettyPrint(OPrintContext ctx);
 

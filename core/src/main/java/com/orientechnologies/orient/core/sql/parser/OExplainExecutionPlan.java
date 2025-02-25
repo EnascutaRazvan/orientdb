@@ -2,6 +2,7 @@ package com.orientechnologies.orient.core.sql.parser;
 
 import com.orientechnologies.orient.core.command.OCommandContext;
 import com.orientechnologies.orient.core.sql.executor.OExecutionStep;
+import com.orientechnologies.orient.core.sql.executor.OExecutionStepInternal;
 import com.orientechnologies.orient.core.sql.executor.OInternalExecutionPlan;
 import com.orientechnologies.orient.core.sql.executor.OPrintContexImpl;
 import com.orientechnologies.orient.core.sql.executor.OPrintContext;
@@ -19,6 +20,8 @@ public class OExplainExecutionPlan implements OInternalExecutionPlan {
 
   private OInternalExecutionPlan toProfile;
   private OCommandContext context;
+  private String genericStatement;
+  private String statement;
 
   public OExplainExecutionPlan(OInternalExecutionPlan toProfile) {
     this.toProfile = toProfile;
@@ -104,9 +107,35 @@ public class OExplainExecutionPlan implements OInternalExecutionPlan {
     result.setProperty("genericStm", getGenericStatement());
     result.setProperty("statement", Arrays.asList(toProfile.toResult(ctx)));
     List<OExecutionStep> steps = toProfile.getSteps();
-    result.setProperty(
-        "steps",
-        steps == null ? null : steps.stream().map(x -> x.toResult()).collect(Collectors.toList()));
+    if (steps != null) {
+      var resultSteps =
+          steps.stream()
+              .map(x -> ((OExecutionStepInternal) x).toResult(ctx))
+              .collect(Collectors.toList());
+      result.setProperty("steps", resultSteps);
+    } else {
+      result.setProperty("steps", null);
+    }
     return result;
+  }
+
+  @Override
+  public void setGenericStatement(String stm) {
+    this.genericStatement = stm;
+  }
+
+  @Override
+  public String getGenericStatement() {
+    return this.genericStatement;
+  }
+
+  @Override
+  public void setStatement(String stm) {
+    this.statement = stm;
+  }
+
+  @Override
+  public String getStatement() {
+    return statement;
   }
 }

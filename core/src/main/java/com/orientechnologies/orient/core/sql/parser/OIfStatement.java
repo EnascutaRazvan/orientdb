@@ -64,6 +64,8 @@ public class OIfStatement extends OStatement {
 
     step.positiveStatements = statements;
     step.negativeStatements = elseStatements;
+    plan.setStatement(this.originalStatement);
+    plan.setGenericStatement(this.toGenericStatement());
     return plan;
   }
 

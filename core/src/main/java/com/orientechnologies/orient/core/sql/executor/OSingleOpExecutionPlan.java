@@ -12,6 +12,8 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
 
   protected final OSimpleExecStatement statement;
   private OCommandContext context;
+  private String genericStatement;
+  private String stringStatement;
 
   public OSingleOpExecutionPlan(OSimpleExecStatement stm) {
     this.statement = stm;
@@ -88,5 +90,25 @@ public class OSingleOpExecutionPlan implements OInternalExecutionPlan {
   @Override
   public void fillContext(OCommandContext context) {
     this.context = context;
+  }
+
+  @Override
+  public void setGenericStatement(String stm) {
+    this.genericStatement = stm;
+  }
+
+  @Override
+  public String getGenericStatement() {
+    return this.genericStatement;
+  }
+
+  @Override
+  public void setStatement(String stm) {
+    this.stringStatement = stm;
+  }
+
+  @Override
+  public String getStatement() {
+    return stringStatement;
   }
 }

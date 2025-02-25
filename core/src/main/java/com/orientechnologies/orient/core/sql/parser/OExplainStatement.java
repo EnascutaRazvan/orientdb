@@ -32,7 +32,10 @@ public class OExplainStatement extends OStatement {
 
   @Override
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
-    return new OExplainExecutionPlan(statement.createExecutionPlan(ctx));
+    var result = new OExplainExecutionPlan(statement.createExecutionPlan(ctx));
+    result.setStatement(this.originalStatement);
+    result.setGenericStatement(this.toGenericStatement());
+    return result;
   }
 
   @Override

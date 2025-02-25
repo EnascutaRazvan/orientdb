@@ -32,7 +32,10 @@ public class OProfileStatement extends OStatement {
 
   @Override
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
-    return new OProfileExecutionPlan(statement.createExecutionPlan(ctx));
+    var result = new OProfileExecutionPlan(statement.createExecutionPlan(ctx));
+    result.setStatement(this.originalStatement);
+    result.setGenericStatement(this.toGenericStatement());
+    return result;
   }
 
   @Override

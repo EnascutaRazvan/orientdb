@@ -26,13 +26,10 @@ public class GlobalLetQueryStep extends AbstractExecutionStep {
       scriptVars.forEach(x -> subCtx.declareScriptVariable(x));
     }
     subCtx.setParent(ctx);
-    if (query.toString().contains("?")) {
-      // with positional parameters, you cannot know if a parameter has the same ordinal as the one
-      // cached
-      subExecutionPlan = query.createExecutionPlan(subCtx);
-    } else {
-      subExecutionPlan = query.resolvePlan(true, subCtx);
-    }
+    boolean useCache = !query.toString().contains("?");
+    // with positional parameters, you cannot know if a parameter has the same ordinal as the one
+    // cached
+    subExecutionPlan = query.resolvePlan(useCache, subCtx);
   }
 
   @Override

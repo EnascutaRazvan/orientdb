@@ -25,7 +25,10 @@ public abstract class OSimpleExecStatement extends OStatement {
   public abstract OExecutionStream executeSimple(OCommandContext ctx);
 
   public OInternalExecutionPlan createExecutionPlan(OCommandContext ctx) {
-    return new OSingleOpExecutionPlan(this);
+    var result = new OSingleOpExecutionPlan(this);
+    result.setStatement(this.originalStatement);
+    result.setGenericStatement(this.toGenericStatement());
+    return result;
   }
 
   public String prettyPrint(OPrintContext ctx) {
