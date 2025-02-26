@@ -270,19 +270,6 @@ public abstract class OIndexAbstract implements OIndexInternal {
       try {
         indexId = storage.loadIndexEngine(im.getName());
         apiVersion = OAbstractPaginatedStorage.extractEngineAPIVersion(indexId);
-
-        if (indexId == -1) {
-          Map<String, String> engineProperties = new HashMap<>();
-          // this property is used for autosharded index
-          if (im.getMetadata() != null && im.getMetadata().containsField("partitions")) {
-            engineProperties.put("partitions", im.getMetadata().field("partitions"));
-          } else {
-            engineProperties.put("partitions", Integer.toString(clustersToIndex.size()));
-          }
-          indexId = storage.loadExternalIndexEngine(indexMetadata, engineProperties);
-          apiVersion = OAbstractPaginatedStorage.extractEngineAPIVersion(indexId);
-        }
-
         if (indexId == -1) {
           return false;
         }

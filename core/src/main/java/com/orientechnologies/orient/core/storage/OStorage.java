@@ -320,9 +320,6 @@ public interface OStorage extends OBackupable, OStorageInfo {
 
   int loadIndexEngine(final String name);
 
-  int loadExternalIndexEngine(
-      final OIndexMetadata indexMetadata, final Map<String, String> engineProperties);
-
   void clearIndex(final int indexId) throws OInvalidIndexEngineIdException;
 
   void deleteIndexEngine(int indexId) throws OInvalidIndexEngineIdException;
