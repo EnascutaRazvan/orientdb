@@ -1,7 +1,7 @@
 package com.orientechnologies.orient.client.remote.message;
 
 import com.orientechnologies.orient.client.remote.OBinaryResponse;
-import com.orientechnologies.orient.client.remote.OStorageRemoteSession;
+import com.orientechnologies.orient.client.remote.ORemoteClientSession;
 import com.orientechnologies.orient.client.remote.message.tx.IndexChange;
 import com.orientechnologies.orient.client.remote.message.tx.ORecordOperation38Response;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
@@ -126,7 +126,7 @@ public class OFetchTransaction38Response implements OBinaryResponse {
   }
 
   @Override
-  public void read(OChannelDataInput network, OStorageRemoteSession session) throws IOException {
+  public void read(OChannelDataInput network, ORemoteClientSession session) throws IOException {
     ORecordSerializerNetworkV37Client serializer = ORecordSerializerNetworkV37Client.INSTANCE;
     txId = network.readInt();
     operations = new ArrayList<>();

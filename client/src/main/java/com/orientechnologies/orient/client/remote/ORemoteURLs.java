@@ -189,7 +189,7 @@ public class ORemoteURLs {
   }
 
   private synchronized String getNextConnectUrl(
-      OStorageRemoteSession session, OContextConfiguration contextConfiguration) {
+      ORemoteClientSession session, OContextConfiguration contextConfiguration) {
     if (serverURLs.isEmpty()) {
       reloadOriginalURLs();
       if (serverURLs.isEmpty())
@@ -213,7 +213,7 @@ public class ORemoteURLs {
 
   public synchronized String getServerURFromList(
       boolean iNextAvailable,
-      OStorageRemoteSession session,
+      ORemoteClientSession session,
       OContextConfiguration contextConfiguration) {
     if (session != null && session.getCurrentUrl() != null && !iNextAvailable) {
       return session.getCurrentUrl();
@@ -248,7 +248,7 @@ public class ORemoteURLs {
 
   public synchronized String getNextAvailableServerURL(
       boolean iIsConnectOperation,
-      OStorageRemoteSession session,
+      ORemoteClientSession session,
       OContextConfiguration contextConfiguration,
       CONNECTION_STRATEGY strategy) {
     String url = null;

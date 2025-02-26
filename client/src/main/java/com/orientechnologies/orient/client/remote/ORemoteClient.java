@@ -212,12 +212,12 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   private OCluster[] clusters = OCommonConst.EMPTY_CLUSTER_ARRAY;
   private int defaultClusterId;
   public ORemoteConnectionManager connectionManager;
-  private final Set<OStorageRemoteSession> sessions =
-      Collections.newSetFromMap(new ConcurrentHashMap<OStorageRemoteSession, Boolean>());
+  private final Set<ORemoteClientSession> sessions =
+      Collections.newSetFromMap(new ConcurrentHashMap<ORemoteClientSession, Boolean>());
 
   private final Map<Integer, OLiveQueryClientListener> liveQueryListener =
       new ConcurrentHashMap<>();
-  private volatile OStorageRemotePushThread pushThread;
+  private volatile ORemoteClientPushThread pushThread;
   protected final OrientDBRemote context;
   protected OSharedContext sharedContext = null;
   protected final String url;
@@ -409,8 +409,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public <T> T baseNetworkOperation(
-      final OStorageRemoteOperation<T> operation, final String errorMessage, int retry) {
-    OStorageRemoteSession session = getCurrentSession();
+      final ORemoteClientOperation<T> operation, final String errorMessage, int retry) {
+    ORemoteClientSession session = getCurrentSession();
     if (session.commandExecuting)
       throw new ODatabaseException(
           "Cannot execute the request because an asynchronous operation is in progress. Please use"
@@ -442,7 +442,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
         // In case i do not have a token or i'm switching between server i've to execute a open
         // operation.
-        OStorageRemoteNodeSession nodeSession = session.getServerSession(network.getServerURL());
+        ORemoteClientNodeSession nodeSession = session.getServerSession(network.getServerURL());
         if (nodeSession == null || !nodeSession.isValid() && !session.isStickToSession()) {
           if (nodeSession != null) {
             session.removeServerSession(nodeSession.getServerURL());
@@ -480,7 +480,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         connectionManager.release(network);
         // Remove the current url because the node is offline
         this.serverURLs.remove(serverUrl);
-        for (OStorageRemoteSession activeSession : sessions) {
+        for (ORemoteClientSession activeSession : sessions) {
           // Not thread Safe ...
           activeSession.removeServerSession(serverUrl);
         }
@@ -518,12 +518,12 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public int getSessionId() {
-    OStorageRemoteSession session = getCurrentSession();
+    ORemoteClientSession session = getCurrentSession();
     return session != null ? session.getSessionId() : -1;
   }
 
   public String getServerURL() {
-    OStorageRemoteSession session = getCurrentSession();
+    ORemoteClientSession session = getCurrentSession();
     return session != null ? session.getServerUrl() : null;
   }
 
@@ -532,7 +532,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
     addUser();
     try {
-      OStorageRemoteSession session = getCurrentSession();
+      ORemoteClientSession session = getCurrentSession();
       if (status == STATUS.CLOSED
           || !iUserName.equals(session.connectionUserName)
           || !iUserPassword.equals(session.connectionUserPassword)
@@ -594,9 +594,9 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   public void close(final boolean iForce) {
     if (status == STATUS.CLOSED) return;
 
-    final OStorageRemoteSession session = getCurrentSession();
+    final ORemoteClientSession session = getCurrentSession();
     if (session != null) {
-      final Collection<OStorageRemoteNodeSession> nodes = session.getAllServerSessions();
+      final Collection<ORemoteClientNodeSession> nodes = session.getAllServerSessions();
       if (!nodes.isEmpty()) {
         OContextConfiguration config = null;
         if (configuration != null) {
@@ -907,12 +907,12 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public void stickToSession() {
-    OStorageRemoteSession session = getCurrentSession();
+    ORemoteClientSession session = getCurrentSession();
     session.stickToSession();
   }
 
   public void unstickToSession() {
-    OStorageRemoteSession session = getCurrentSession();
+    ORemoteClientSession session = getCurrentSession();
     session.unStickToSession();
   }
 
@@ -1401,7 +1401,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public String getUserName() {
-    final OStorageRemoteSession session = getCurrentSession();
+    final ORemoteClientSession session = getCurrentSession();
     if (session == null) return null;
     return session.connectionUserName;
   }
@@ -1412,8 +1412,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       do {
         final OChannelBinaryAsynchClient network = getNetwork(currentURL);
         try {
-          OStorageRemoteSession session = getCurrentSession();
-          OStorageRemoteNodeSession nodeSession =
+          ORemoteClientSession session = getCurrentSession();
+          ORemoteClientNodeSession nodeSession =
               session.getOrCreateServerSession(network.getServerURL());
           if (nodeSession == null || !nodeSession.isValid()) {
             openRemoteDatabase(network);
@@ -1464,7 +1464,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
           logger.debug("Cannot open database with url %s", e, currentURL);
         } catch (OSecurityException ex) {
           logger.debug("Invalidate token for url=%s", ex, currentURL);
-          OStorageRemoteSession session = getCurrentSession();
+          ORemoteClientSession session = getCurrentSession();
           session.removeServerSession(currentURL);
 
           if (network != null) {
@@ -1513,9 +1513,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
   public void openRemoteDatabase(OChannelBinaryAsynchClient network) throws IOException {
 
-    OStorageRemoteSession session = getCurrentSession();
-    OStorageRemoteNodeSession nodeSession =
-        session.getOrCreateServerSession(network.getServerURL());
+    ORemoteClientSession session = getCurrentSession();
+    ORemoteClientNodeSession nodeSession = session.getOrCreateServerSession(network.getServerURL());
     OOpen37Request request =
         new OOpen37Request(name, session.connectionUserName, session.connectionUserPassword);
     try {
@@ -1558,13 +1557,13 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  private void initPush(OStorageRemoteSession session) {
+  private void initPush(ORemoteClientSession session) {
     if (pushThread == null) {
       stateLock.writeLock().lock();
       try {
         if (pushThread == null) {
           pushThread =
-              new OStorageRemotePushThread(
+              new ORemoteClientPushThread(
                   this,
                   getCurrentServerURL(),
                   connectionRetryDelay,
@@ -1585,27 +1584,27 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  private void subscribeDistributedConfiguration(OStorageRemoteSession nodeSession) {
+  private void subscribeDistributedConfiguration(ORemoteClientSession nodeSession) {
     pushThread.subscribe(new OSubscribeDistributedConfigurationRequest(), nodeSession);
   }
 
-  private void subscribeStorageConfiguration(OStorageRemoteSession nodeSession) {
+  private void subscribeStorageConfiguration(ORemoteClientSession nodeSession) {
     pushThread.subscribe(new OSubscribeStorageConfigurationRequest(), nodeSession);
   }
 
-  private void subscribeSchema(OStorageRemoteSession nodeSession) {
+  private void subscribeSchema(ORemoteClientSession nodeSession) {
     pushThread.subscribe(new OSubscribeSchemaRequest(), nodeSession);
   }
 
-  private void subscribeFunctions(OStorageRemoteSession nodeSession) {
+  private void subscribeFunctions(ORemoteClientSession nodeSession) {
     pushThread.subscribe(new OSubscribeFunctionsRequest(), nodeSession);
   }
 
-  private void subscribeSequences(OStorageRemoteSession nodeSession) {
+  private void subscribeSequences(ORemoteClientSession nodeSession) {
     pushThread.subscribe(new OSubscribeSequencesRequest(), nodeSession);
   }
 
-  private void subscribeIndexManager(OStorageRemoteSession nodeSession) {
+  private void subscribeIndexManager(ORemoteClientSession nodeSession) {
     pushThread.subscribe(new OSubscribeIndexManagerRequest(), nodeSession);
   }
 
@@ -1675,7 +1674,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
     final String url = pos > -1 ? iUrl.substring(0, pos) : iUrl;
     String newUrl = serverURLs.removeAndGet(url);
-    OStorageRemoteSession session = getCurrentSession();
+    ORemoteClientSession session = getCurrentSession();
     if (session != null) {
       session.currentUrl = newUrl;
       session.serverURLIndex = 0;
@@ -1696,14 +1695,14 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
    * @return connection to server
    */
   public OChannelBinaryAsynchClient beginRequest(
-      final OChannelBinaryAsynchClient network, final byte iCommand, OStorageRemoteSession session)
+      final OChannelBinaryAsynchClient network, final byte iCommand, ORemoteClientSession session)
       throws IOException {
     network.beginRequest(iCommand, session);
     return network;
   }
 
   protected String getNextAvailableServerURL(
-      boolean iIsConnectOperation, OStorageRemoteSession session) {
+      boolean iIsConnectOperation, ORemoteClientSession session) {
 
     OContextConfiguration config = null;
     if (configuration != null) config = configuration.getContextConfiguration();
@@ -1748,8 +1747,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public static void beginResponse(
-      OChannelBinaryAsynchClient iNetwork, OStorageRemoteSession session) throws IOException {
-    OStorageRemoteNodeSession nodeSession = session.getServerSession(iNetwork.getServerURL());
+      OChannelBinaryAsynchClient iNetwork, ORemoteClientSession session) throws IOException {
+    ORemoteClientNodeSession nodeSession = session.getServerSession(iNetwork.getServerURL());
     byte[] newToken = iNetwork.beginResponse(nodeSession.getSessionId(), true);
     if (newToken != null && newToken.length > 0) {
       nodeSession.setSession(nodeSession.getSessionId(), newToken);
@@ -1810,16 +1809,16 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  protected OStorageRemoteSession getCurrentSession() {
+  protected ORemoteClientSession getCurrentSession() {
     ODatabaseDocumentInternal db = null;
     if (ODatabaseRecordThreadLocal.instance() != null)
       db = ODatabaseRecordThreadLocal.instance().getIfDefined();
     ODatabaseDocumentInternal internal = db;
     if (internal == null || !(internal instanceof ODatabaseDocumentRemote)) return null;
     ODatabaseDocumentRemote remote = (ODatabaseDocumentRemote) internal;
-    OStorageRemoteSession session = remote.getSessionMetadata();
+    ORemoteClientSession session = remote.getSessionMetadata();
     if (session == null) {
-      session = new OStorageRemoteSession(sessionSerialId.decrementAndGet());
+      session = new ORemoteClientSession(sessionSerialId.decrementAndGet());
       sessions.add(session);
       remote.setSessionMetadata(session);
     }
@@ -1828,7 +1827,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
   public boolean isClosed() {
     if (status == STATUS.CLOSED) return true;
-    final OStorageRemoteSession session = getCurrentSession();
+    final ORemoteClientSession session = getCurrentSession();
     if (session == null) return false;
     return session.isClosed();
   }
@@ -1839,11 +1838,11 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     if (ODatabaseRecordThreadLocal.instance() != null)
       origin = ODatabaseRecordThreadLocal.instance().getIfDefined();
 
-    final OStorageRemoteSession session = source.getSessionMetadata();
+    final ORemoteClientSession session = source.getSessionMetadata();
     if (session != null) {
       // TODO:may run a session reopen
-      final OStorageRemoteSession newSession =
-          new OStorageRemoteSession(sessionSerialId.decrementAndGet());
+      final ORemoteClientSession newSession =
+          new ORemoteClientSession(sessionSerialId.decrementAndGet());
       newSession.connectionUserName = session.connectionUserName;
       newSession.connectionUserPassword = session.connectionUserPassword;
       dest.setSessionMetadata(newSession);
@@ -2063,8 +2062,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       // AVOID RECONNECT ON CLOSE
       return;
     }
-    OStorageRemoteSession aValidSession = null;
-    for (OStorageRemoteSession session : sessions) {
+    ORemoteClientSession aValidSession = null;
+    for (ORemoteClientSession session : sessions) {
       if (session.getServerSession(host) != null) {
         aValidSession = session;
         break;
@@ -2078,7 +2077,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
           "Cannot find a valid session for subscribe for event to host '%s' forward the"
               + " subscribe for the next session open ",
           host);
-      OStorageRemotePushThread old;
+      ORemoteClientPushThread old;
       stateLock.writeLock().lock();
       try {
         old = pushThread;

@@ -28,8 +28,8 @@ import com.orientechnologies.common.log.OLogManager;
 import com.orientechnologies.common.log.OLogger;
 import com.orientechnologies.orient.client.remote.OLiveQueryClientListener;
 import com.orientechnologies.orient.client.remote.ORemoteClient;
+import com.orientechnologies.orient.client.remote.ORemoteClientSession;
 import com.orientechnologies.orient.client.remote.ORemoteQueryResult;
-import com.orientechnologies.orient.client.remote.OStorageRemoteSession;
 import com.orientechnologies.orient.client.remote.message.OLockRecordResponse;
 import com.orientechnologies.orient.client.remote.message.ORemoteResultSet;
 import com.orientechnologies.orient.client.remote.metadata.schema.OSchemaRemote;
@@ -113,7 +113,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   private static final OLogger logger =
       OLogManager.instance().logger(ODatabaseDocumentRemote.class);
 
-  protected OStorageRemoteSession sessionMetadata;
+  protected ORemoteClientSession sessionMetadata;
   private OrientDBConfig config;
   private ORemoteClient client;
 
@@ -308,11 +308,11 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     return this;
   }
 
-  public OStorageRemoteSession getSessionMetadata() {
+  public ORemoteClientSession getSessionMetadata() {
     return sessionMetadata;
   }
 
-  public void setSessionMetadata(OStorageRemoteSession sessionMetadata) {
+  public void setSessionMetadata(ORemoteClientSession sessionMetadata) {
     this.sessionMetadata = sessionMetadata;
   }
 

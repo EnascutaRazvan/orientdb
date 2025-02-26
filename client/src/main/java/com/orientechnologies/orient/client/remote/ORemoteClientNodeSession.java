@@ -8,15 +8,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 /** Created by tglman on 12/04/16. */
-public class OStorageRemoteNodeSession {
+public class ORemoteClientNodeSession {
   private static final OLogger logger =
-      OLogManager.instance().logger(OStorageRemoteNodeSession.class);
+      OLogManager.instance().logger(ORemoteClientNodeSession.class);
   private final String serverURL;
   private Integer sessionId = -1;
   private byte[] token = null;
   private OToken tokenInstance = null;
 
-  public OStorageRemoteNodeSession(String serverURL, Integer uniqueClientSessionId) {
+  public ORemoteClientNodeSession(String serverURL, Integer uniqueClientSessionId) {
     this.serverURL = serverURL;
     this.sessionId = uniqueClientSessionId;
   }

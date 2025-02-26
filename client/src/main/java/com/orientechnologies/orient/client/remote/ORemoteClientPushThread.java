@@ -17,9 +17,9 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 /** Created by tglman on 11/01/17. */
-public class OStorageRemotePushThread extends Thread {
+public class ORemoteClientPushThread extends Thread {
   private static final OLogger logger =
-      OLogManager.instance().logger(OStorageRemotePushThread.class);
+      OLogManager.instance().logger(ORemoteClientPushThread.class);
 
   private final ORemotePushHandler pushHandler;
   private final String host;
@@ -30,7 +30,7 @@ public class OStorageRemotePushThread extends Thread {
   private volatile OBinaryRequest currentRequest;
   private volatile boolean shutDown;
 
-  public OStorageRemotePushThread(
+  public ORemoteClientPushThread(
       ORemotePushHandler storage, String host, int retryDelay, long requestTimeout) {
     setDaemon(true);
     this.pushHandler = storage;
@@ -114,7 +114,7 @@ public class OStorageRemotePushThread extends Thread {
   }
 
   public <T extends OBinaryResponse> T subscribe(
-      OBinaryRequest<T> request, OStorageRemoteSession session) {
+      OBinaryRequest<T> request, ORemoteClientSession session) {
     try {
       long timeout;
       synchronized (this) {

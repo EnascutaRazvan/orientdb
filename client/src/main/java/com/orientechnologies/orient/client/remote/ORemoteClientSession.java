@@ -36,14 +36,14 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 /** Created by tglman on 31/03/16. */
-public class OStorageRemoteSession {
-  private static final OLogger logger = OLogManager.instance().logger(OStorageRemoteSession.class);
+public class ORemoteClientSession {
+  private static final OLogger logger = OLogManager.instance().logger(ORemoteClientSession.class);
   public boolean commandExecuting = false;
   protected int serverURLIndex = -1;
   protected String connectionUserName = null;
   protected String connectionUserPassword = null;
-  protected Map<String, OStorageRemoteNodeSession> sessions =
-      new HashMap<String, OStorageRemoteNodeSession>();
+  protected Map<String, ORemoteClientNodeSession> sessions =
+      new HashMap<String, ORemoteClientNodeSession>();
 
   private Set<OChannelBinary> connections =
       Collections.newSetFromMap(new WeakHashMap<OChannelBinary, Boolean>());
@@ -61,7 +61,7 @@ public class OStorageRemoteSession {
 
   protected String currentUrl;
 
-  public OStorageRemoteSession(final int sessionId) {
+  public ORemoteClientSession(final int sessionId) {
     this.uniqueClientSessionId = sessionId;
   }
 
@@ -69,14 +69,14 @@ public class OStorageRemoteSession {
     return connections.contains(connection);
   }
 
-  public OStorageRemoteNodeSession getServerSession(final String serverURL) {
+  public ORemoteClientNodeSession getServerSession(final String serverURL) {
     return sessions.get(serverURL);
   }
 
-  public synchronized OStorageRemoteNodeSession getOrCreateServerSession(final String serverURL) {
-    OStorageRemoteNodeSession session = sessions.get(serverURL);
+  public synchronized ORemoteClientNodeSession getOrCreateServerSession(final String serverURL) {
+    ORemoteClientNodeSession session = sessions.get(serverURL);
     if (session == null) {
-      session = new OStorageRemoteNodeSession(serverURL, uniqueClientSessionId);
+      session = new ORemoteClientNodeSession(serverURL, uniqueClientSessionId);
       sessions.put(serverURL, session);
       closed = false;
     }
@@ -91,7 +91,7 @@ public class OStorageRemoteSession {
     commandExecuting = false;
     serverURLIndex = -1;
     connections = new HashSet<OChannelBinary>();
-    sessions = new HashMap<String, OStorageRemoteNodeSession>();
+    sessions = new HashMap<String, ORemoteClientNodeSession>();
     closed = true;
   }
 
@@ -101,13 +101,13 @@ public class OStorageRemoteSession {
 
   public Integer getSessionId() {
     if (sessions.isEmpty()) return -1;
-    final OStorageRemoteNodeSession curSession = sessions.values().iterator().next();
+    final ORemoteClientNodeSession curSession = sessions.values().iterator().next();
     return curSession.getSessionId();
   }
 
   public String getServerUrl() {
     if (sessions.isEmpty()) return null;
-    final OStorageRemoteNodeSession curSession = sessions.values().iterator().next();
+    final ORemoteClientNodeSession curSession = sessions.values().iterator().next();
     return curSession.getServerURL();
   }
 
@@ -115,7 +115,7 @@ public class OStorageRemoteSession {
     sessions.remove(serverURL);
   }
 
-  public synchronized Collection<OStorageRemoteNodeSession> getAllServerSessions() {
+  public synchronized Collection<ORemoteClientNodeSession> getAllServerSessions() {
     return sessions.values();
   }
 
@@ -133,7 +133,7 @@ public class OStorageRemoteSession {
 
   public void closeAllSessions(
       ORemoteConnectionManager connectionManager, OContextConfiguration clientConfiguration) {
-    for (OStorageRemoteNodeSession nodeSession : getAllServerSessions()) {
+    for (ORemoteClientNodeSession nodeSession : getAllServerSessions()) {
       OChannelBinaryAsynchClient network = null;
       try {
         network =

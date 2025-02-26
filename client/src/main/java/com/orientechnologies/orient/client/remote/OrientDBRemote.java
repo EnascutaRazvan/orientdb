@@ -635,11 +635,11 @@ public class OrientDBRemote implements OrientDBInternal {
   }
 
   public <T extends OBinaryResponse> T networkAdminOperation(
-      final OBinaryRequest<T> request, OStorageRemoteSession session, final String errorMessage) {
+      final OBinaryRequest<T> request, ORemoteClientSession session, final String errorMessage) {
     return networkAdminOperation(
-        new OStorageRemoteOperation<T>() {
+        new ORemoteClientOperation<T>() {
           @Override
-          public T execute(OChannelBinaryAsynchClient network, OStorageRemoteSession session)
+          public T execute(OChannelBinaryAsynchClient network, ORemoteClientSession session)
               throws IOException {
             try {
               network.beginRequest(request.getCommand(), session);
@@ -662,9 +662,9 @@ public class OrientDBRemote implements OrientDBInternal {
   }
 
   public <T> T networkAdminOperation(
-      final OStorageRemoteOperation<T> operation,
+      final ORemoteClientOperation<T> operation,
       final String errorMessage,
-      OStorageRemoteSession session) {
+      ORemoteClientSession session) {
 
     OChannelBinaryAsynchClient network = null;
     OContextConfiguration config = getContextConfiguration();
@@ -691,13 +691,13 @@ public class OrientDBRemote implements OrientDBInternal {
   }
 
   private interface SessionOperation<T> {
-    T execute(OStorageRemoteSession session) throws IOException;
+    T execute(ORemoteClientSession session) throws IOException;
   }
 
   private <T> T connectAndExecute(
       String name, String user, String password, SessionOperation<T> operation) {
     checkOpen();
-    OStorageRemoteSession newSession = new OStorageRemoteSession(-1);
+    ORemoteClientSession newSession = new ORemoteClientSession(-1);
     int retry = configurations.getConfigurations().getValueAsInteger(NETWORK_SOCKET_RETRY);
     while (retry > 0) {
       try {
@@ -718,7 +718,7 @@ public class OrientDBRemote implements OrientDBInternal {
 
         networkAdminOperation(
             (network, session) -> {
-              OStorageRemoteNodeSession nodeSession =
+              ORemoteClientNodeSession nodeSession =
                   session.getOrCreateServerSession(network.getServerURL());
               try {
                 network.beginRequest(request.getCommand(), session);
