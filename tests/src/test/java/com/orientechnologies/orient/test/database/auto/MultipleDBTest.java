@@ -242,7 +242,7 @@ public class MultipleDBTest extends DocumentDBBaseTest {
     if (tx instanceof ODatabaseDocumentRemote)
       return tx.getURL()
           + " - sessionId: "
-          + ((ODatabaseDocumentRemote) tx).getSessionMetadata().getSessionId();
+          + ((ODatabaseDocumentRemote) tx).getSession().getSessionId();
     else return tx.getURL();
   }
 }

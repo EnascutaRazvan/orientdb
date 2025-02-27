@@ -40,11 +40,13 @@ public class ODatabaseImportRemote extends ODatabaseImpExpAbstract {
   }
 
   public void importDatabase() throws ODatabaseImportException {
-    ORemoteClient storage =
-        (ORemoteClient) ((ODatabaseDocumentRemote) getDatabase()).getRemoteClient();
+    ODatabaseDocumentRemote remote = (ODatabaseDocumentRemote) getDatabase();
+    ORemoteClient client = remote.getRemoteClient();
+    ORemoteClientSession session = remote.getSession();
     File file = new File(getFileName());
     try {
-      storage.importDatabase(options, new FileInputStream(file), file.getName(), getListener());
+      client.importDatabase(
+          session, options, new FileInputStream(file), file.getName(), getListener());
     } catch (FileNotFoundException e) {
       throw OException.wrapException(
           new ODatabaseImportException("Error importing the database"), e);

@@ -21,6 +21,7 @@ public class ORemoteImportTest extends BaseServerMemoryDatabase {
     ORemoteClient storage = ((ODatabaseDocumentRemote) db).getRemoteClient();
     final StringBuffer buff = new StringBuffer();
     storage.importDatabase(
+        ((ODatabaseDocumentRemote) db).getSession(),
         "-merge=true",
         new ByteArrayInputStream(content.getBytes("UTF8")),
         "data.json",

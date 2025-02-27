@@ -257,7 +257,13 @@ public class OrientDBRemote implements OrientDBInternal {
       sharedContexts.remove(remote.getName());
     }
     storages.remove(remote.getName());
-    remote.shutdown((ODatabaseDocumentRemote) ODatabaseRecordThreadLocal.instance().getIfDefined());
+    ORemoteClientSession session = null;
+    ODatabaseDocumentRemote db =
+        (ODatabaseDocumentRemote) ODatabaseRecordThreadLocal.instance().getIfDefined();
+    if (db != null) {
+      session = db.getSession();
+    }
+    remote.shutdown(session);
   }
 
   public ODocument getServerInfo(String username, String password) {
@@ -427,8 +433,13 @@ public class OrientDBRemote implements OrientDBInternal {
     for (ORemoteClient stg : storagesCopy) {
       try {
         logger.info("- shutdown storage: %s ...", stg.getName());
-        stg.shutdown(
-            (ODatabaseDocumentRemote) ODatabaseRecordThreadLocal.instance().getIfDefined());
+        ORemoteClientSession session = null;
+        ODatabaseDocumentRemote db =
+            (ODatabaseDocumentRemote) ODatabaseRecordThreadLocal.instance().getIfDefined();
+        if (db != null) {
+          session = db.getSession();
+        }
+        stg.shutdown(session);
       } catch (Exception e) {
         logger.warn("-- error on shutdown storage", e);
       } catch (Error e) {

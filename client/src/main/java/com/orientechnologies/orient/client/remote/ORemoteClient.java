@@ -102,8 +102,6 @@ import com.orientechnologies.orient.client.remote.message.OReopenRequest;
 import com.orientechnologies.orient.client.remote.message.OReopenResponse;
 import com.orientechnologies.orient.client.remote.message.ORollbackTransactionRequest;
 import com.orientechnologies.orient.client.remote.message.ORollbackTransactionResponse;
-import com.orientechnologies.orient.client.remote.message.OServerQueryRequest;
-import com.orientechnologies.orient.client.remote.message.OServerQueryResponse;
 import com.orientechnologies.orient.client.remote.message.OSubscribeDistributedConfigurationRequest;
 import com.orientechnologies.orient.client.remote.message.OSubscribeFunctionsRequest;
 import com.orientechnologies.orient.client.remote.message.OSubscribeIndexManagerRequest;
@@ -146,7 +144,6 @@ import com.orientechnologies.orient.core.security.OCredentialInterceptor;
 import com.orientechnologies.orient.core.security.OSecurityManager;
 import com.orientechnologies.orient.core.serialization.serializer.OStringSerializerHelper;
 import com.orientechnologies.orient.core.serialization.serializer.record.ORecordSerializerFactory;
-import com.orientechnologies.orient.core.serialization.serializer.record.binary.ORecordSerializerNetworkV37Client;
 import com.orientechnologies.orient.core.storage.OCluster;
 import com.orientechnologies.orient.core.storage.OPhysicalPosition;
 import com.orientechnologies.orient.core.storage.ORawBuffer;
@@ -321,18 +318,23 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
   @Deprecated
   public <T extends OBinaryResponse> T networkOperationNoRetry(
-      final OBinaryAsyncRequest<T> request, final ORecordId recordId, final String errorMessage) {
-    return networkOperationRetry(request, recordId, errorMessage, 0);
+      ORemoteClientSession session,
+      final OBinaryAsyncRequest<T> request,
+      final ORecordId recordId,
+      final String errorMessage) {
+    return networkOperationRetry(session, request, recordId, errorMessage, 0);
   }
 
   @Deprecated
   public <T extends OBinaryResponse> T networkOperationRetry(
+      ORemoteClientSession baseSession,
       final OBinaryAsyncRequest<T> request,
       final ORecordId recordId,
       final String errorMessage,
       int retry) {
     request.setMode((byte) 0);
     return baseNetworkOperation(
+        baseSession,
         (network, session) -> {
           // Send The request
           try {
@@ -364,8 +366,13 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public <T extends OBinaryResponse> T networkOperationRetryTimeout(
-      final OBinaryRequest<T> request, final String errorMessage, int retry, int timeout) {
+      ORemoteClientSession baseSession,
+      final OBinaryRequest<T> request,
+      final String errorMessage,
+      int retry,
+      int timeout) {
     return baseNetworkOperation(
+        baseSession,
         (network, session) -> {
           try {
             try {
@@ -399,18 +406,20 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public <T extends OBinaryResponse> T networkOperationNoRetry(
-      final OBinaryRequest<T> request, final String errorMessage) {
-    return networkOperationRetryTimeout(request, errorMessage, 0, 0);
+      ORemoteClientSession session, final OBinaryRequest<T> request, final String errorMessage) {
+    return networkOperationRetryTimeout(session, request, errorMessage, 0, 0);
   }
 
   public <T extends OBinaryResponse> T networkOperation(
-      final OBinaryRequest<T> request, final String errorMessage) {
-    return networkOperationRetryTimeout(request, errorMessage, connectionRetry, 0);
+      ORemoteClientSession session, final OBinaryRequest<T> request, final String errorMessage) {
+    return networkOperationRetryTimeout(session, request, errorMessage, connectionRetry, 0);
   }
 
   public <T> T baseNetworkOperation(
-      final ORemoteClientOperation<T> operation, final String errorMessage, int retry) {
-    ORemoteClientSession session = getCurrentSession();
+      ORemoteClientSession session,
+      final ORemoteClientOperation<T> operation,
+      final String errorMessage,
+      int retry) {
     if (session.commandExecuting)
       throw new ODatabaseException(
           "Cannot execute the request because an asynchronous operation is in progress. Please use"
@@ -429,7 +438,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
           if (session.isStickToSession()) {
             throw e;
           } else {
-            serverUrl = useNewServerURL(serverUrl);
+            serverUrl = useNewServerURL(session, serverUrl);
             if (serverUrl == null) {
               throw e;
             }
@@ -447,7 +456,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
           if (nodeSession != null) {
             session.removeServerSession(nodeSession.getServerURL());
           }
-          openRemoteDatabase(network);
+          openRemoteDatabase(session, network);
           if (!network.tryLock()) continue;
         }
 
@@ -517,25 +526,22 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return false;
   }
 
-  public int getSessionId(ODatabaseDocumentRemote db) {
-    ORemoteClientSession session = getCurrentSession(db);
+  public int getSessionId(ORemoteClientSession session) {
     return session != null ? session.getSessionId() : -1;
   }
 
-  public String getServerURL(ODatabaseDocumentRemote db) {
-    ORemoteClientSession session = getCurrentSession(db);
+  public String getServerURL(ORemoteClientSession session) {
     return session != null ? session.getServerUrl() : null;
   }
 
   public void open(
-      ODatabaseDocumentRemote db,
+      ORemoteClientSession session,
       final String iUserName,
       final String iUserPassword,
       final OContextConfiguration conf) {
 
     addUser();
     try {
-      ORemoteClientSession session = getCurrentSession(db);
       if (status == STATUS.CLOSED
           || !iUserName.equals(session.connectionUserName)
           || !iUserPassword.equals(session.connectionUserPassword)
@@ -557,15 +563,15 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         if (strategy != null)
           connectionStrategy = CONNECTION_STRATEGY.valueOf(strategy.toUpperCase(Locale.ENGLISH));
 
-        openRemoteDatabase(db);
+        openRemoteDatabase(session);
 
-        reload();
-        initPush(db, session);
+        reload(session);
+        initPush(session);
 
         componentsFactory = new OCurrentStorageComponentsFactory(configuration);
 
       } else {
-        reopenRemoteDatabase(db);
+        reopenRemoteDatabase(session);
       }
     } catch (Exception e) {
       removeUser();
@@ -582,9 +588,9 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return sbTreeCollectionManager;
   }
 
-  public void reload() {
+  public void reload(ORemoteClientSession session) {
     OReloadResponse37 res =
-        networkOperation(new OReloadRequest37(), "error loading storage configuration");
+        networkOperation(session, new OReloadRequest37(), "error loading storage configuration");
     final OStorageConfiguration storageConfiguration =
         new OStorageConfigurationRemote(
             ORecordSerializerFactory.instance().getDefaultRecordSerializer().toString(),
@@ -594,10 +600,9 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     updateStorageConfiguration(storageConfiguration);
   }
 
-  public void close(ODatabaseDocumentRemote db, final boolean iForce) {
+  public void close(final ORemoteClientSession session, final boolean iForce) {
     if (status == STATUS.CLOSED) return;
 
-    final ORemoteClientSession session = getCurrentSession(db);
     if (session != null) {
       final Collection<ORemoteClientNodeSession> nodes = session.getAllServerSessions();
       if (!nodes.isEmpty()) {
@@ -615,7 +620,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  public void shutdown(ODatabaseDocumentRemote db) {
+  public void shutdown(final ORemoteClientSession session) {
     if (status == STATUS.CLOSED || status == STATUS.CLOSING) return;
 
     // FROM HERE FORWARD COMPLETELY CLOSE THE STORAGE
@@ -629,7 +634,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       if (status == STATUS.CLOSED) return;
 
       status = STATUS.CLOSING;
-      close(db, true);
+      close(session, true);
     } finally {
       stateLock.writeLock().unlock();
     }
@@ -695,6 +700,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public OStorageOperationResult<OPhysicalPosition> createRecord(
+      ORemoteClientSession session,
       final ORecordId iRid,
       final byte[] iContent,
       final int iRecordVersion,
@@ -709,7 +715,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     final OCreateRecordRequest request = new OCreateRecordRequest(iContent, iRid, iRecordType);
     final OCreateRecordResponse response =
         networkOperationNoRetry(
-            request, iRid, "Error on create record in cluster " + iRid.getClusterId());
+            session, request, iRid, "Error on create record in cluster " + iRid.getClusterId());
     if (response != null) {
       ppos.clusterPosition = response.getIdentity().getClusterPosition();
       ppos.recordVersion = response.getVersion();
@@ -732,59 +738,62 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  public ORecordMetadata getRecordMetadata(final ORID rid) {
+  public ORecordMetadata getRecordMetadata(ORemoteClientSession session, final ORID rid) {
 
     OGetRecordMetadataRequest request = new OGetRecordMetadataRequest(rid);
     OGetRecordMetadataResponse response =
-        networkOperation(request, "Error on record metadata read " + rid);
+        networkOperation(session, request, "Error on record metadata read " + rid);
 
     return response.getMetadata();
   }
 
   public ORawBuffer readRecordIfVersionIsNotLatest(
-      ODatabaseDocumentRemote db,
+      ORemoteClientSession session,
       final ORecordId rid,
       final String fetchPlan,
       final boolean ignoreCache,
       final int recordVersion)
       throws ORecordNotFoundException {
-    if (getCurrentSession(db).commandExecuting)
+    if (session.commandExecuting)
       // PENDING NETWORK OPERATION, CAN'T EXECUTE IT NOW
       return null;
 
     OReadRecordIfVersionIsNotLatestRequest request =
         new OReadRecordIfVersionIsNotLatestRequest(rid, recordVersion, fetchPlan, ignoreCache);
     OReadRecordIfVersionIsNotLatestResponse response =
-        networkOperation(request, "Error on read record " + rid);
+        networkOperation(session, request, "Error on read record " + rid);
 
     return response.getResult();
   }
 
   public ORawBuffer readRecord(
-      ODatabaseDocumentRemote db,
+      ORemoteClientSession session,
       final ORecordId iRid,
       final String iFetchPlan,
       final boolean iIgnoreCache,
       boolean prefetchRecords) {
 
-    if (getCurrentSession(db).commandExecuting)
+    if (session.commandExecuting)
       // PENDING NETWORK OPERATION, CAN'T EXECUTE IT NOW
       return null;
 
     OReadRecordRequest request = new OReadRecordRequest(iIgnoreCache, iRid, iFetchPlan, false);
-    OReadRecordResponse response = networkOperation(request, "Error on read record " + iRid);
+    OReadRecordResponse response =
+        networkOperation(session, request, "Error on read record " + iRid);
 
     return response.getResult();
   }
 
-  public String incrementalBackup(final String backupDirectory, OCallable<Void, Void> started) {
+  public String incrementalBackup(
+      ORemoteClientSession session, final String backupDirectory, OCallable<Void, Void> started) {
     OIncrementalBackupRequest request = new OIncrementalBackupRequest(backupDirectory);
     OIncrementalBackupResponse response =
-        networkOperationNoRetry(request, "Error on incremental backup");
+        networkOperationNoRetry(session, request, "Error on incremental backup");
     return response.getFileName();
   }
 
   public OStorageOperationResult<Integer> updateRecord(
+      ORemoteClientSession session,
       final ORecordId iRid,
       final boolean updateContent,
       final byte[] iContent,
@@ -797,7 +806,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     OUpdateRecordRequest request =
         new OUpdateRecordRequest(iRid, iContent, iVersion, updateContent, iRecordType);
     OUpdateRecordResponse response =
-        networkOperationNoRetry(request, iRid, "Error on update record " + iRid);
+        networkOperationNoRetry(session, request, iRid, "Error on update record " + iRid);
 
     Integer resVersion = null;
     if (response != null) {
@@ -808,20 +817,22 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return new OStorageOperationResult<Integer>(resVersion);
   }
 
-  public OStorageOperationResult<Boolean> deleteRecord(final ORecordId iRid, final int iVersion) {
+  public OStorageOperationResult<Boolean> deleteRecord(
+      ORemoteClientSession session, final ORecordId iRid, final int iVersion) {
     final ODeleteRecordRequest request = new ODeleteRecordRequest(iRid, iVersion);
     final ODeleteRecordResponse response =
-        networkOperationNoRetry(request, iRid, "Error on delete record " + iRid);
+        networkOperationNoRetry(session, request, iRid, "Error on delete record " + iRid);
     Boolean resDelete = null;
     if (response != null) resDelete = response.getResult();
     return new OStorageOperationResult<Boolean>(resDelete);
   }
 
-  public boolean cleanOutRecord(final ORecordId recordId, final int recordVersion) {
+  public boolean cleanOutRecord(
+      ORemoteClientSession session, final ORecordId recordId, final int recordVersion) {
 
     final OCleanOutRecordRequest request = new OCleanOutRecordRequest(recordVersion, recordId);
     final OCleanOutRecordResponse response =
-        networkOperationNoRetry(request, recordId, "Error on delete record " + recordId);
+        networkOperationNoRetry(session, request, recordId, "Error on delete record " + recordId);
     Boolean result = null;
     if (response != null) result = response.getResult();
     return result != null ? result : false;
@@ -831,93 +842,103 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return clientConfiguration;
   }
 
-  public long count(final int iClusterId) {
-    return count(new int[] {iClusterId});
+  public long count(ORemoteClientSession session, final int iClusterId) {
+    return count(session, new int[] {iClusterId});
   }
 
-  public long[] getClusterDataRange(final int iClusterId) {
+  public long[] getClusterDataRange(ORemoteClientSession session, final int iClusterId) {
     OGetClusterDataRangeRequest request = new OGetClusterDataRangeRequest(iClusterId);
     OGetClusterDataRangeResponse response =
         networkOperation(
-            request, "Error on getting last entry position count in cluster: " + iClusterId);
+            session,
+            request,
+            "Error on getting last entry position count in cluster: " + iClusterId);
     return response.getPos();
   }
 
   public OPhysicalPosition[] higherPhysicalPositions(
-      final int iClusterId, final OPhysicalPosition iClusterPosition) {
+      ORemoteClientSession session,
+      final int iClusterId,
+      final OPhysicalPosition iClusterPosition) {
     OHigherPhysicalPositionsRequest request =
         new OHigherPhysicalPositionsRequest(iClusterId, iClusterPosition);
 
     OHigherPhysicalPositionsResponse response =
         networkOperation(
+            session,
             request,
             "Error on retrieving higher positions after " + iClusterPosition.clusterPosition);
     return response.getNextPositions();
   }
 
   public OPhysicalPosition[] ceilingPhysicalPositions(
-      final int clusterId, final OPhysicalPosition physicalPosition) {
+      ORemoteClientSession session, final int clusterId, final OPhysicalPosition physicalPosition) {
 
     OCeilingPhysicalPositionsRequest request =
         new OCeilingPhysicalPositionsRequest(clusterId, physicalPosition);
 
     OCeilingPhysicalPositionsResponse response =
         networkOperation(
+            session,
             request,
             "Error on retrieving ceiling positions after " + physicalPosition.clusterPosition);
     return response.getPositions();
   }
 
   public OPhysicalPosition[] lowerPhysicalPositions(
-      final int iClusterId, final OPhysicalPosition physicalPosition) {
+      ORemoteClientSession session,
+      final int iClusterId,
+      final OPhysicalPosition physicalPosition) {
     OLowerPhysicalPositionsRequest request =
         new OLowerPhysicalPositionsRequest(physicalPosition, iClusterId);
     OLowerPhysicalPositionsResponse response =
         networkOperation(
+            session,
             request,
             "Error on retrieving lower positions after " + physicalPosition.clusterPosition);
     return response.getPreviousPositions();
   }
 
   public OPhysicalPosition[] floorPhysicalPositions(
-      final int clusterId, final OPhysicalPosition physicalPosition) {
+      ORemoteClientSession session, final int clusterId, final OPhysicalPosition physicalPosition) {
     OFloorPhysicalPositionsRequest request =
         new OFloorPhysicalPositionsRequest(physicalPosition, clusterId);
     OFloorPhysicalPositionsResponse response =
         networkOperation(
+            session,
             request,
             "Error on retrieving floor positions after " + physicalPosition.clusterPosition);
     return response.getPositions();
   }
 
-  public long getSize() {
+  public long getSize(ORemoteClientSession session) {
     OGetSizeRequest request = new OGetSizeRequest();
-    OGetSizeResponse response = networkOperation(request, "Error on read database size");
+    OGetSizeResponse response = networkOperation(session, request, "Error on read database size");
     return response.getSize();
   }
 
-  public long countRecords() {
+  public long countRecords(ORemoteClientSession session) {
     OCountRecordsRequest request = new OCountRecordsRequest();
     OCountRecordsResponse response =
-        networkOperation(request, "Error on read database record count");
+        networkOperation(session, request, "Error on read database record count");
     return response.getCountRecords();
   }
 
-  public long count(final int[] iClusterIds) {
+  public long count(ORemoteClientSession session, final int[] iClusterIds) {
     OCountRequest request = new OCountRequest(iClusterIds, false);
     OCountResponse response =
         networkOperation(
-            request, "Error on read record count in clusters: " + Arrays.toString(iClusterIds));
+            session,
+            request,
+            "Error on read record count in clusters: " + Arrays.toString(iClusterIds));
     return response.getCount();
   }
 
-  public void stickToSession(ODatabaseDocumentRemote db) {
-    ORemoteClientSession session = getCurrentSession(db);
+  public void stickToSession(ORemoteClientSession session) {
     session.stickToSession();
   }
 
-  public void unstickToSession(ODatabaseDocumentRemote db) {
-    ORemoteClientSession session = getCurrentSession(db);
+  public void unstickToSession(ORemoteClientSession session) {
     session.unStickToSession();
   }
 
@@ -926,9 +947,11 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     if (recordsPerPage <= 0) {
       recordsPerPage = 100;
     }
+    ORemoteClientSession session = db.getSession();
     OQueryRequest request =
         OQueryRequest.queryArray(query, args, db.getSerializer(), recordsPerPage);
-    OQueryResponse response = networkOperation(request, "Error on executing command: " + query);
+    OQueryResponse response =
+        networkOperation(session, request, "Error on executing command: " + query);
     ORemoteResultSet rs =
         new ORemoteResultSet(
             db,
@@ -938,7 +961,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             response.getQueryStats(),
             response.isHasNextPage());
     if (response.isHasNextPage()) {
-      stickToSession(db);
+      stickToSession(session);
     } else {
       db.queryClosed(response.getQueryId());
     }
@@ -946,12 +969,15 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public ORemoteQueryResult query(ODatabaseDocumentRemote db, String query, Map args) {
+    ORemoteClientSession session = db.getSession();
+
     int recordsPerPage = OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE.getValueAsInteger();
     if (recordsPerPage <= 0) {
       recordsPerPage = 100;
     }
     OQueryRequest request = OQueryRequest.queryMap(query, args, db.getSerializer(), recordsPerPage);
-    OQueryResponse response = networkOperation(request, "Error on executing command: " + query);
+    OQueryResponse response =
+        networkOperation(session, request, "Error on executing command: " + query);
 
     ORemoteResultSet rs =
         new ORemoteResultSet(
@@ -962,7 +988,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             response.getQueryStats(),
             response.isHasNextPage());
     if (response.isHasNextPage()) {
-      stickToSession(db);
+      stickToSession(session);
     } else {
       db.queryClosed(response.getQueryId());
     }
@@ -970,6 +996,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public ORemoteQueryResult command(ODatabaseDocumentRemote db, String query, Object[] args) {
+    ORemoteClientSession session = db.getSession();
     int recordsPerPage = OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE.getValueAsInteger();
     if (recordsPerPage <= 0) {
       recordsPerPage = 100;
@@ -977,7 +1004,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     OQueryRequest request =
         OQueryRequest.commandArray(query, args, db.getSerializer(), recordsPerPage);
     OQueryResponse response =
-        networkOperationNoRetry(request, "Error on executing command: " + query);
+        networkOperationNoRetry(session, request, "Error on executing command: " + query);
     ORemoteResultSet rs =
         new ORemoteResultSet(
             db,
@@ -987,7 +1014,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             response.getQueryStats(),
             response.isHasNextPage());
     if (response.isHasNextPage()) {
-      stickToSession(db);
+      stickToSession(session);
     } else {
       db.queryClosed(response.getQueryId());
     }
@@ -995,6 +1022,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public ORemoteQueryResult command(ODatabaseDocumentRemote db, String query, Map args) {
+    ORemoteClientSession session = db.getSession();
     int recordsPerPage = OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE.getValueAsInteger();
     if (recordsPerPage <= 0) {
       recordsPerPage = 100;
@@ -1002,7 +1030,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     OQueryRequest request =
         OQueryRequest.commandMap(query, args, db.getSerializer(), recordsPerPage);
     OQueryResponse response =
-        networkOperationNoRetry(request, "Error on executing command: " + query);
+        networkOperationNoRetry(session, request, "Error on executing command: " + query);
     ORemoteResultSet rs =
         new ORemoteResultSet(
             db,
@@ -1012,77 +1040,16 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             response.getQueryStats(),
             response.isHasNextPage());
     if (response.isHasNextPage()) {
-      stickToSession(db);
+      stickToSession(session);
     } else {
       db.queryClosed(response.getQueryId());
     }
     return new ORemoteQueryResult(rs, response.isTxChanges(), response.isReloadMetadata());
   }
 
-  public ORemoteQueryResult serverCommand(String query, Object[] args) {
-    int recordsPerPage = OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE.getValueAsInteger();
-    if (recordsPerPage <= 0) {
-      recordsPerPage = 100;
-    }
-    OServerQueryRequest request =
-        new OServerQueryRequest(
-            "sql",
-            query,
-            args,
-            OServerQueryRequest.COMMAND,
-            ORecordSerializerNetworkV37Client.INSTANCE,
-            recordsPerPage);
-    OServerQueryResponse response =
-        networkOperationNoRetry(request, "Error on executing command: " + query);
-    ORemoteResultSet rs =
-        new ORemoteResultSet(
-            null,
-            response.getQueryId(),
-            response.getResult(),
-            response.getExecutionPlan(),
-            response.getQueryStats(),
-            response.isHasNextPage());
-    // if (response.isHasNextPage()) {
-    // stickToSession();
-    // } else {
-    // db.queryClosed(response.getQueryId());
-    // }
-    return new ORemoteQueryResult(rs, response.isTxChanges(), response.isReloadMetadata());
-  }
-
-  public ORemoteQueryResult serverCommand(String query, Map args) {
-    int recordsPerPage = OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE.getValueAsInteger();
-    if (recordsPerPage <= 0) {
-      recordsPerPage = 100;
-    }
-    OServerQueryRequest request =
-        new OServerQueryRequest(
-            "sql",
-            query,
-            args,
-            OServerQueryRequest.COMMAND,
-            ORecordSerializerNetworkV37Client.INSTANCE,
-            recordsPerPage);
-    OServerQueryResponse response =
-        networkOperationNoRetry(request, "Error on executing command: " + query);
-    ORemoteResultSet rs =
-        new ORemoteResultSet(
-            null,
-            response.getQueryId(),
-            response.getResult(),
-            response.getExecutionPlan(),
-            response.getQueryStats(),
-            response.isHasNextPage());
-    // if (response.isHasNextPage()) {
-    // stickToSession();
-    // } else {
-    // db.queryClosed(response.getQueryId());
-    // }
-    return new ORemoteQueryResult(rs, response.isTxChanges(), response.isReloadMetadata());
-  }
-
   public ORemoteQueryResult execute(
       ODatabaseDocumentRemote db, String language, String query, Object[] args) {
+    ORemoteClientSession session = db.getSession();
     int recordsPerPage = OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE.getValueAsInteger();
     if (recordsPerPage <= 0) {
       recordsPerPage = 100;
@@ -1090,7 +1057,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     OQueryRequest request =
         OQueryRequest.executeArray(language, query, args, db.getSerializer(), recordsPerPage);
     OQueryResponse response =
-        networkOperationNoRetry(request, "Error on executing command: " + query);
+        networkOperationNoRetry(session, request, "Error on executing command: " + query);
     ORemoteResultSet rs =
         new ORemoteResultSet(
             db,
@@ -1101,7 +1068,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             response.isHasNextPage());
 
     if (response.isHasNextPage()) {
-      stickToSession(db);
+      stickToSession(session);
     } else {
       db.queryClosed(response.getQueryId());
     }
@@ -1111,6 +1078,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
   public ORemoteQueryResult execute(
       ODatabaseDocumentRemote db, String language, String query, Map args) {
+    ORemoteClientSession session = db.getSession();
     int recordsPerPage =
         db.getConfiguration()
             .getValueAsInteger(OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE);
@@ -1124,7 +1092,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         OQueryRequest.executeMap(language, query, args, db.getSerializer(), recordsPerPage);
     request.setIncludePlan(sendExecutionPlan);
     OQueryResponse response =
-        networkOperationNoRetry(request, "Error on executing command: " + query);
+        networkOperationNoRetry(session, request, "Error on executing command: " + query);
     ORemoteResultSet rs =
         new ORemoteResultSet(
             db,
@@ -1134,7 +1102,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             response.getQueryStats(),
             response.isHasNextPage());
     if (response.isHasNextPage()) {
-      stickToSession(db);
+      stickToSession(session);
     } else {
       db.queryClosed(response.getQueryId());
     }
@@ -1142,12 +1110,14 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public void closeQuery(ODatabaseDocumentRemote db, String queryId) {
-    unstickToSession(db);
+    ORemoteClientSession session = db.getSession();
+    unstickToSession(session);
     OCloseQueryRequest request = new OCloseQueryRequest(queryId);
-    networkOperation(request, "Error closing query: " + queryId);
+    networkOperation(session, request, "Error closing query: " + queryId);
   }
 
   public void fetchNextPage(ODatabaseDocumentRemote db, ORemoteResultSet rs) {
+    ORemoteClientSession session = db.getSession();
     int recordsPerPage =
         db.getConfiguration()
             .getValueAsInteger(OGlobalConfiguration.QUERY_REMOTE_RESULTSET_PAGE_SIZE);
@@ -1156,7 +1126,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
     OQueryNextPageRequest request = new OQueryNextPageRequest(rs.getQueryId(), recordsPerPage);
     OQueryResponse response =
-        networkOperation(request, "Error on fetching next page for statment: " + rs.getQueryId());
+        networkOperation(
+            session, request, "Error on fetching next page for statment: " + rs.getQueryId());
 
     rs.fetched(
         response.getResult(),
@@ -1164,18 +1135,19 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         response.getExecutionPlan(),
         response.getQueryStats());
     if (!response.isHasNextPage()) {
-      unstickToSession(db);
+      unstickToSession(session);
       db.queryClosed(response.getQueryId());
     }
   }
 
   public List<ORecordOperation> commit(ODatabaseDocumentRemote db, final OTransactionInternal iTx) {
-    unstickToSession(db);
+    ORemoteClientSession session = db.getSession();
+    unstickToSession(session);
     final OCommit38Request request =
         new OCommit38Request(
             iTx.getId(), true, true, iTx.getRecordOperations(), iTx.getIndexOperations());
 
-    final OCommit37Response response = networkOperationNoRetry(request, "Error on commit");
+    final OCommit37Response response = networkOperationNoRetry(session, request, "Error on commit");
     for (OCommit37Response.OCreatedRecordResponse created : response.getCreated()) {
       iTx.updateIdentityAfterCommit(created.getCurrentRid(), created.getCreatedRid());
       ORecordOperation rop = iTx.getRecordEntry(created.getCurrentRid());
@@ -1207,17 +1179,18 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return null;
   }
 
-  public void rollback(ODatabaseDocumentRemote db, OTransactionInternal iTx) {
+  public void rollback(ORemoteClientSession session, OTransactionInternal iTx) {
     try {
       if (((OTransactionOptimistic) iTx).isAlreadyCleared()
-          && getCurrentSession(db).getAllServerSessions().size() > 0) {
+          && session.getAllServerSessions().size() > 0) {
         ORollbackTransactionRequest request = new ORollbackTransactionRequest(iTx.getId());
 
         ORollbackTransactionResponse response =
-            networkOperation(request, "Error on fetching next page for statment: " + request);
+            networkOperation(
+                session, request, "Error on fetching next page for statment: " + request);
       }
     } finally {
-      unstickToSession(db);
+      unstickToSession(session);
     }
   }
 
@@ -1247,13 +1220,16 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     this.defaultClusterId = defaultClusterId;
   }
 
-  public int addCluster(final String iClusterName, final Object... iArguments) {
-    return addCluster(iClusterName, -1);
+  public int addCluster(
+      ORemoteClientSession session, final String iClusterName, final Object... iArguments) {
+    return addCluster(session, iClusterName, -1);
   }
 
-  public int addCluster(final String iClusterName, final int iRequestedId) {
+  public int addCluster(
+      ORemoteClientSession session, final String iClusterName, final int iRequestedId) {
     OAddClusterRequest request = new OAddClusterRequest(iRequestedId, iClusterName);
-    OAddClusterResponse response = networkOperationNoRetry(request, "Error on add new cluster");
+    OAddClusterResponse response =
+        networkOperationNoRetry(session, request, "Error on add new cluster");
     addNewClusterToConfiguration(response.getClusterId(), iClusterName);
     return response.getClusterId();
   }
@@ -1280,17 +1256,17 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     throw new UnsupportedOperationException();
   }
 
-  public boolean dropCluster(final int iClusterId) {
+  public boolean dropCluster(ORemoteClientSession session, final int iClusterId) {
 
     ODropClusterRequest request = new ODropClusterRequest(iClusterId);
 
     ODropClusterResponse response =
-        networkOperationNoRetry(request, "Error on removing of cluster");
+        networkOperationNoRetry(session, request, "Error on removing of cluster");
     if (response.getResult()) removeClusterFromConfiguration(iClusterId);
     return response.getResult();
   }
 
-  public String getClusterName(int clusterId) {
+  public String getClusterName(ORemoteClientSession session, int clusterId) {
     stateLock.readLock().lock();
     try {
 
@@ -1300,7 +1276,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
       if (clusterId >= clusters.length) {
         stateLock.readLock().unlock();
-        reload();
+        reload(session);
         stateLock.readLock().lock();
       }
 
@@ -1404,23 +1380,21 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return ORemoteClient.TYPE;
   }
 
-  public String getUserName(ODatabaseDocumentRemote db) {
-    final ORemoteClientSession session = getCurrentSession(db);
+  public String getUserName(ORemoteClientSession session) {
     if (session == null) return null;
     return session.connectionUserName;
   }
 
-  protected String reopenRemoteDatabase(ODatabaseDocumentRemote db) throws IOException {
-    String currentURL = getCurrentServerURL(db);
+  protected String reopenRemoteDatabase(ORemoteClientSession session) throws IOException {
+    String currentURL = getCurrentServerURL(session);
     do {
       do {
         final OChannelBinaryAsynchClient network = getNetwork(currentURL);
         try {
-          ORemoteClientSession session = getCurrentSession(db);
           ORemoteClientNodeSession nodeSession =
               session.getOrCreateServerSession(network.getServerURL());
           if (nodeSession == null || !nodeSession.isValid()) {
-            openRemoteDatabase(network);
+            openRemoteDatabase(session, network);
             return network.getServerURL();
           } else {
             OReopenRequest request = new OReopenRequest();
@@ -1468,7 +1442,6 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
           logger.debug("Cannot open database with url %s", e, currentURL);
         } catch (OSecurityException ex) {
           logger.debug("Invalidate token for url=%s", ex, currentURL);
-          ORemoteClientSession session = getCurrentSession(db);
           session.removeServerSession(currentURL);
 
           if (network != null) {
@@ -1499,7 +1472,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         }
       } while (connectionManager.getAvailableConnections(currentURL) > 0);
 
-      currentURL = useNewServerURL(currentURL);
+      currentURL = useNewServerURL(session, currentURL);
 
     } while (currentURL != null);
 
@@ -1510,14 +1483,14 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         "Cannot create a connection to remote server address(es): " + serverURLs.getUrls());
   }
 
-  protected void openRemoteDatabase(ODatabaseDocumentRemote db) throws IOException {
-    final String currentURL = getNextAvailableServerURL(true, getCurrentSession(db));
-    openRemoteDatabase(currentURL);
+  protected void openRemoteDatabase(ORemoteClientSession session) throws IOException {
+    final String currentURL = getNextAvailableServerURL(true, session);
+    openRemoteDatabase(session, currentURL);
   }
 
-  public void openRemoteDatabase(OChannelBinaryAsynchClient network) throws IOException {
+  public void openRemoteDatabase(ORemoteClientSession session, OChannelBinaryAsynchClient network)
+      throws IOException {
 
-    ORemoteClientSession session = getCurrentSession();
     ORemoteClientNodeSession nodeSession = session.getOrCreateServerSession(network.getServerURL());
     OOpen37Request request =
         new OOpen37Request(name, session.connectionUserName, session.connectionUserPassword);
@@ -1561,7 +1534,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  private void initPush(ODatabaseDocumentRemote db, ORemoteClientSession session) {
+  private void initPush(ORemoteClientSession session) {
     if (pushThread == null) {
       stateLock.writeLock().lock();
       try {
@@ -1569,7 +1542,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
           pushThread =
               new ORemoteClientPushThread(
                   this,
-                  getCurrentServerURL(db),
+                  getCurrentServerURL(session),
                   connectionRetryDelay,
                   configuration
                       .getContextConfiguration()
@@ -1612,13 +1585,13 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     pushThread.subscribe(new OSubscribeIndexManagerRequest(), nodeSession);
   }
 
-  protected void openRemoteDatabase(String currentURL) {
+  protected void openRemoteDatabase(ORemoteClientSession session, String currentURL) {
     do {
       do {
         OChannelBinaryAsynchClient network = null;
         try {
           network = getNetwork(currentURL);
-          openRemoteDatabase(network);
+          openRemoteDatabase(session, network);
           return;
         } catch (ODistributedRedirectException e) {
           connectionManager.release(network);
@@ -1627,10 +1600,10 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         } catch (OModificationOperationProhibitedException mope) {
           connectionManager.release(network);
           handleDBFreeze();
-          currentURL = useNewServerURL(currentURL);
+          currentURL = useNewServerURL(session, currentURL);
         } catch (OOfflineNodeException e) {
           connectionManager.release(network);
-          currentURL = useNewServerURL(currentURL);
+          currentURL = useNewServerURL(session, currentURL);
         } catch (OIOException e) {
           if (network != null) {
             // REMOVE THE NETWORK CONNECTION IF ANY
@@ -1658,7 +1631,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       } while (connectionManager.getReusableConnections(currentURL) > 0);
 
       if (currentURL != null) {
-        currentURL = useNewServerURL(currentURL);
+        currentURL = useNewServerURL(session, currentURL);
       }
 
     } while (currentURL != null);
@@ -1670,7 +1643,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         "Cannot create a connection to remote server address(es): " + serverURLs.getUrls());
   }
 
-  protected String useNewServerURL(final String iUrl) {
+  protected String useNewServerURL(ORemoteClientSession session, final String iUrl) {
     int pos = iUrl.indexOf('/');
     if (pos >= iUrl.length() - 1)
       // IGNORE ENDING /
@@ -1678,7 +1651,6 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
     final String url = pos > -1 ? iUrl.substring(0, pos) : iUrl;
     String newUrl = serverURLs.removeAndGet(url);
-    ORemoteClientSession session = getCurrentSession();
     if (session != null) {
       session.currentUrl = newUrl;
       session.serverURLIndex = 0;
@@ -1714,9 +1686,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         iIsConnectOperation, session, config, connectionStrategy);
   }
 
-  protected String getCurrentServerURL(ODatabaseDocumentRemote db) {
-    return serverURLs.getServerURFromList(
-        false, getCurrentSession(db), configuration.getContextConfiguration());
+  protected String getCurrentServerURL(ORemoteClientSession session) {
+    return serverURLs.getServerURFromList(false, session, configuration.getContextConfiguration());
   }
 
   public OChannelBinaryAsynchClient getNetwork(final String iCurrentURL) {
@@ -1813,30 +1784,18 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  protected ORemoteClientSession getCurrentSession() {
-    ODatabaseDocumentInternal db = null;
-    if (ODatabaseRecordThreadLocal.instance() != null)
-      db = ODatabaseRecordThreadLocal.instance().getIfDefined();
-    ODatabaseDocumentInternal internal = db;
-    if (internal == null || !(internal instanceof ODatabaseDocumentRemote)) return null;
-    ODatabaseDocumentRemote remote = (ODatabaseDocumentRemote) internal;
-    return getCurrentSession(remote);
+  public int nextInitialSessionId() {
+    return sessionSerialId.decrementAndGet();
   }
 
-  protected ORemoteClientSession getCurrentSession(ODatabaseDocumentRemote db) {
-    if (db == null) return null;
-    ORemoteClientSession session = db.getSessionMetadata();
-    if (session == null) {
-      session = new ORemoteClientSession(sessionSerialId.decrementAndGet());
-      sessions.add(session);
-      db.setSessionMetadata(session);
-    }
+  public ORemoteClientSession newInitialSession() {
+    ORemoteClientSession session = new ORemoteClientSession(nextInitialSessionId());
+    sessions.add(session);
     return session;
   }
 
-  public boolean isClosed(ODatabaseDocumentRemote db) {
+  public boolean isClosed(ORemoteClientSession session) {
     if (status == STATUS.CLOSED) return true;
-    final ORemoteClientSession session = getCurrentSession(db);
     if (session == null) return false;
     return session.isClosed();
   }
@@ -1847,18 +1806,17 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     if (ODatabaseRecordThreadLocal.instance() != null)
       origin = ODatabaseRecordThreadLocal.instance().getIfDefined();
 
-    final ORemoteClientSession session = source.getSessionMetadata();
+    final ORemoteClientSession session = source.getSession();
     if (session != null) {
       // TODO:may run a session reopen
-      final ORemoteClientSession newSession =
-          new ORemoteClientSession(sessionSerialId.decrementAndGet());
+      final ORemoteClientSession newSession = new ORemoteClientSession(nextInitialSessionId());
       newSession.connectionUserName = session.connectionUserName;
       newSession.connectionUserPassword = session.connectionUserPassword;
       dest.setSessionMetadata(newSession);
     }
     try {
       dest.activateOnCurrentThread();
-      openRemoteDatabase(dest);
+      openRemoteDatabase(dest.getSession());
     } catch (IOException e) {
       logger.error("Error during database open", e);
     } finally {
@@ -1868,6 +1826,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public void importDatabase(
+      ORemoteClientSession session,
       final String options,
       final InputStream inputStream,
       final String name,
@@ -1876,6 +1835,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
     OImportResponse response =
         networkOperationRetryTimeout(
+            session,
             request,
             "Error sending import request",
             0,
@@ -1905,7 +1865,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  public void beginTransaction(ODatabaseDocumentRemote db, OTransactionOptimistic transaction) {
+  public void beginTransaction(ORemoteClientSession session, OTransactionOptimistic transaction) {
     OBeginTransaction38Request request =
         new OBeginTransaction38Request(
             transaction.getId(),
@@ -1914,14 +1874,14 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             transaction.getRecordOperations(),
             transaction.getIndexOperations());
     OBeginTransactionResponse response =
-        networkOperationNoRetry(request, "Error on remote transaction begin");
+        networkOperationNoRetry(session, request, "Error on remote transaction begin");
     for (Map.Entry<ORID, ORID> entry : response.getUpdatedIds().entrySet()) {
       transaction.updateIdentityAfterCommit(entry.getKey(), entry.getValue());
     }
-    stickToSession(db);
+    stickToSession(session);
   }
 
-  public void reBeginTransaction(ODatabaseDocumentRemote db, OTransactionOptimistic transaction) {
+  public void reBeginTransaction(ORemoteClientSession session, OTransactionOptimistic transaction) {
     ORebeginTransaction38Request request =
         new ORebeginTransaction38Request(
             transaction.getId(),
@@ -1929,17 +1889,18 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
             transaction.getRecordOperations(),
             transaction.getIndexOperations());
     OBeginTransactionResponse response =
-        networkOperationNoRetry(request, "Error on remote transaction begin");
+        networkOperationNoRetry(session, request, "Error on remote transaction begin");
     for (Map.Entry<ORID, ORID> entry : response.getUpdatedIds().entrySet()) {
       transaction.updateIdentityAfterCommit(entry.getKey(), entry.getValue());
     }
   }
 
   public void fetchTransaction(ODatabaseDocumentRemote db) {
+    ORemoteClientSession session = db.getSession();
     OTransactionOptimisticClient transaction = db.getActiveTx();
     OFetchTransaction38Request request = new OFetchTransaction38Request(transaction.getId());
     OFetchTransaction38Response response =
-        networkOperation(request, "Error fetching transaction from server side");
+        networkOperation(session, request, "Error fetching transaction from server side");
     transaction.replaceContent(response.getOperations(), response.getIndexChanges());
   }
 
@@ -2012,7 +1973,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       Object[] params) {
 
     OSubscribeLiveQueryRequest request = new OSubscribeLiveQueryRequest(query, params);
-    OSubscribeLiveQueryResponse response = pushThread.subscribe(request, getCurrentSession(db));
+    OSubscribeLiveQueryResponse response = pushThread.subscribe(request, db.getSession());
     if (response == null) {
       throw new ODatabaseException(
           "Impossible to start the live query, check server log for additional information");
@@ -2028,7 +1989,7 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       Map<String, ?> params) {
     OSubscribeLiveQueryRequest request =
         new OSubscribeLiveQueryRequest(query, (Map<String, Object>) params);
-    OSubscribeLiveQueryResponse response = pushThread.subscribe(request, getCurrentSession(db));
+    OSubscribeLiveQueryResponse response = pushThread.subscribe(request, db.getSession());
     if (response == null) {
       throw new ODatabaseException(
           "Impossible to start the live query, check server log for additional information");
@@ -2037,10 +1998,10 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return new OLiveQueryMonitorRemote(db, response.getMonitorId());
   }
 
-  public void unsubscribeLive(ODatabaseDocumentRemote db, int monitorId) {
+  public void unsubscribeLive(ORemoteClientSession session, int monitorId) {
     OUnsubscribeRequest request =
         new OUnsubscribeRequest(new OUnsubscribeLiveQueryRequest(monitorId));
-    networkOperation(request, "Error on unsubscribe of live query");
+    networkOperation(session, request, "Error on unsubscribe of live query");
   }
 
   public void registerLiveListener(int monitorId, OLiveQueryClientListener listener) {
@@ -2118,19 +2079,22 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
   }
 
   public OLockRecordResponse lockRecord(
-      OIdentifiable iRecord, LOCKING_STRATEGY lockingStrategy, long timeout) {
+      ORemoteClientSession session,
+      OIdentifiable iRecord,
+      LOCKING_STRATEGY lockingStrategy,
+      long timeout) {
     OExperimentalRequest request =
         new OExperimentalRequest(
             new OLockRecordRequest(iRecord.getIdentity(), lockingStrategy, timeout));
-    OExperimentalResponse response = networkOperation(request, "Error locking record");
+    OExperimentalResponse response = networkOperation(session, request, "Error locking record");
     OLockRecordResponse realResponse = (OLockRecordResponse) response.getResponse();
     return realResponse;
   }
 
-  public void unlockRecord(OIdentifiable iRecord) {
+  public void unlockRecord(ORemoteClientSession session, OIdentifiable iRecord) {
     OExperimentalRequest request =
         new OExperimentalRequest(new OUnlockRecordRequest(iRecord.getIdentity()));
-    OExperimentalResponse response = networkOperation(request, "Error locking record");
+    OExperimentalResponse response = networkOperation(session, request, "Error locking record");
     OUnlockRecordResponse realResponse = (OUnlockRecordResponse) response.getResponse();
   }
 
@@ -2154,12 +2118,12 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return status;
   }
 
-  public void close(ODatabaseDocumentRemote db) {
-    close(db, false);
+  public void close(ORemoteClientSession session) {
+    close(session, false);
   }
 
-  public boolean dropCluster(final String iClusterName) {
-    return dropCluster(getClusterIdByName(iClusterName));
+  public boolean dropCluster(ORemoteClientSession session, final String iClusterName) {
+    return dropCluster(session, getClusterIdByName(iClusterName));
   }
 
   public OCurrentStorageComponentsFactory getComponentsFactory() {

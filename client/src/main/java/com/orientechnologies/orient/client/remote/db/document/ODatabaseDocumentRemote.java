@@ -169,7 +169,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
       // Bypass the database command for avoid transaction management
       ORemoteQueryResult result = getRemoteClient().command(this, query, new Object[] {iValue});
       result.getResult().close();
-      getRemoteClient().reload();
+      getRemoteClient().reload(getSession());
     }
 
     return (DB) this;
@@ -187,7 +187,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
       // Bypass the database command for avoid transaction management
       ORemoteQueryResult result = getRemoteClient().command(this, query, new Object[] {iValue});
       result.getResult().close();
-      getRemoteClient().reload();
+      getRemoteClient().reload(getSession());
     }
     return (DB) this;
   }
@@ -210,7 +210,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     applyListeners(config);
     try {
 
-      client.open(this, user, password, config.getConfigurations());
+      client.open(this.getSession(), user, password, config.getConfigurations());
 
       status = STATUS.OPEN;
 
@@ -308,7 +308,10 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     return this;
   }
 
-  public ORemoteClientSession getSessionMetadata() {
+  public ORemoteClientSession getSession() {
+    if (sessionMetadata == null) {
+      sessionMetadata = client.newInitialSession();
+    }
     return sessionMetadata;
   }
 
@@ -338,8 +341,8 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   private void checkAndSendTransaction() {
     if (this.currentTx.isActive() && ((OTransactionOptimistic) this.currentTx).isChanged()) {
       if (((OTransactionOptimistic) this.getTransaction()).isAlreadyCleared())
-        client.reBeginTransaction(this, (OTransactionOptimistic) this.currentTx);
-      else client.beginTransaction(this, (OTransactionOptimistic) this.currentTx);
+        client.reBeginTransaction(getSession(), (OTransactionOptimistic) this.currentTx);
+      else client.beginTransaction(getSession(), (OTransactionOptimistic) this.currentTx);
       ((OTransactionOptimistic) this.currentTx).resetChangesTracking();
       ((OTransactionOptimistic) this.currentTx).setSentToServer(true);
     }
@@ -727,13 +730,13 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     checkAndSendTransaction();
     ORemoteClient remote = getRemoteClient();
     // -1 value means default timeout
-    remote.lockRecord(iRecord, lockingStrategy, -1);
+    remote.lockRecord(getSession(), iRecord, lockingStrategy, -1);
   }
 
   @Override
   public void internalUnlockRecord(OIdentifiable iRecord) {
     ORemoteClient remote = getRemoteClient();
-    remote.unlockRecord(iRecord.getIdentity());
+    remote.unlockRecord(getSession(), iRecord.getIdentity());
   }
 
   @Override
@@ -744,7 +747,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     checkAndSendTransaction();
     ORemoteClient remote = getRemoteClient();
     // -1 value means default timeout
-    OLockRecordResponse response = remote.lockRecord(recordId, EXCLUSIVE_LOCK, -1);
+    OLockRecordResponse response = remote.lockRecord(getSession(), recordId, EXCLUSIVE_LOCK, -1);
     ORecord record =
         fillRecordFromNetwork(
             recordId, response.getRecordType(), response.getVersion(), response.getRecord());
@@ -760,7 +763,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     checkAndSendTransaction();
     ORemoteClient remote = getRemoteClient();
     OLockRecordResponse response =
-        remote.lockRecord(recordId, EXCLUSIVE_LOCK, timeoutUnit.toMillis(timeout));
+        remote.lockRecord(getSession(), recordId, EXCLUSIVE_LOCK, timeoutUnit.toMillis(timeout));
     ORecord record =
         fillRecordFromNetwork(
             recordId, response.getRecordType(), response.getVersion(), response.getRecord());
@@ -831,13 +834,13 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   @Override
   public int addCluster(final String iClusterName, final Object... iParameters) {
     checkIfActive();
-    return getRemoteClient().addCluster(iClusterName, iParameters);
+    return getRemoteClient().addCluster(getSession(), iClusterName, iParameters);
   }
 
   @Override
   public int addCluster(final String iClusterName, final int iRequestedId) {
     checkIfActive();
-    return getRemoteClient().addCluster(iClusterName, iRequestedId);
+    return getRemoteClient().addCluster(getSession(), iClusterName, iRequestedId);
   }
 
   public ORecordConflictStrategy getConflictStrategy() {
@@ -863,14 +866,14 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   @Override
   public long countClusterElements(int iClusterId) {
     checkIfActive();
-    return getRemoteClient().count(iClusterId);
+    return getRemoteClient().count(getSession(), iClusterId);
   }
 
   /** {@inheritDoc} */
   @Override
   public long countClusterElements(int[] iClusterIds) {
     checkIfActive();
-    return getRemoteClient().count(iClusterIds);
+    return getRemoteClient().count(getSession(), iClusterIds);
   }
 
   /** {@inheritDoc} */
@@ -881,7 +884,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     final int clusterId = getClusterIdByName(iClusterName);
     if (clusterId < 0)
       throw new IllegalArgumentException("Cluster '" + iClusterName + "' was not found");
-    return getRemoteClient().count(clusterId);
+    return getRemoteClient().count(getSession(), clusterId);
   }
 
   @Override
@@ -906,7 +909,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     if (schema.getBlobClusters().contains(clusterId)) schema.removeBlobCluster(iClusterName);
     getLocalCache().freeCluster(clusterId);
     checkForClusterPermissions(iClusterName);
-    return getRemoteClient().dropCluster(iClusterName);
+    return getRemoteClient().dropCluster(getSession(), iClusterName);
   }
 
   @Override
@@ -937,11 +940,11 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
       this.delete(document);
     }
 
-    return getRemoteClient().dropCluster(clusterId);
+    return getRemoteClient().dropCluster(getSession(), clusterId);
   }
 
   public boolean dropClusterInternal(int clusterId) {
-    return getRemoteClient().dropCluster(clusterId);
+    return getRemoteClient().dropCluster(getSession(), clusterId);
   }
 
   @Override
@@ -960,7 +963,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   @Override
   public long getSize() {
     checkIfActive();
-    return getRemoteClient().getSize();
+    return getRemoteClient().getSize(getSession());
   }
 
   @Override
@@ -992,13 +995,13 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     checkIfActive();
     checkSecurity(ORule.ResourceGeneric.DATABASE, "backup", ORole.PERMISSION_EXECUTE);
 
-    return getRemoteClient().incrementalBackup(path, null);
+    return getRemoteClient().incrementalBackup(getSession(), path, null);
   }
 
   @Override
   public ORecordMetadata getRecordMetadata(final ORID rid) {
     checkIfActive();
-    return getRemoteClient().getRecordMetadata(rid);
+    return getRemoteClient().getRecordMetadata(getSession(), rid);
   }
 
   /** {@inheritDoc} */
@@ -1067,7 +1070,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
       throw new ODatabaseException("Cannot reload a closed db");
     }
     metadata.reload();
-    getRemoteClient().reload();
+    getRemoteClient().reload(getSession());
   }
 
   @Override
@@ -1077,7 +1080,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
 
   @Override
   public boolean isClosed() {
-    return status == STATUS.CLOSED || getRemoteClient().isClosed(this);
+    return status == STATUS.CLOSED || getRemoteClient().isClosed(getSession());
   }
 
   public void internalClose(boolean recycle) {
@@ -1108,7 +1111,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
       if (!recycle) {
         sharedContext = null;
 
-        if (getRemoteClient() != null) getRemoteClient().close(this);
+        if (getRemoteClient() != null) getRemoteClient().close(getSession());
       }
 
     } finally {
@@ -1119,7 +1122,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
 
   @Override
   public long[] getClusterDataRange(int currentClusterId) {
-    return getRemoteClient().getClusterDataRange(currentClusterId);
+    return getRemoteClient().getClusterDataRange(getSession(), currentClusterId);
   }
 
   @Override
@@ -1200,37 +1203,37 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
 
   @Override
   public void remoteRollback(OTransactionOptimistic oTransactionOptimistic) {
-    client.rollback(this, oTransactionOptimistic);
+    client.rollback(getSession(), oTransactionOptimistic);
   }
 
   public OPhysicalPosition[] higherPhysicalPositions(
       int clusterId, OPhysicalPosition physicalPosition) {
-    return getRemoteClient().higherPhysicalPositions(clusterId, physicalPosition);
+    return getRemoteClient().higherPhysicalPositions(getSession(), clusterId, physicalPosition);
   }
 
   public OPhysicalPosition[] lowerPhysicalPositions(
       int clusterId, OPhysicalPosition physicalPosition) {
-    return getRemoteClient().lowerPhysicalPositions(clusterId, physicalPosition);
+    return getRemoteClient().lowerPhysicalPositions(getSession(), clusterId, physicalPosition);
   }
 
   public OPhysicalPosition[] ceilingPhysicalPositions(
       int clusterId, OPhysicalPosition physicalPosition) {
-    return getRemoteClient().ceilingPhysicalPositions(clusterId, physicalPosition);
+    return getRemoteClient().ceilingPhysicalPositions(getSession(), clusterId, physicalPosition);
   }
 
   public OPhysicalPosition[] floorPhysicalPositions(
       int clusterId, OPhysicalPosition physicalPosition) {
-    return getRemoteClient().floorPhysicalPositions(clusterId, physicalPosition);
+    return getRemoteClient().floorPhysicalPositions(getSession(), clusterId, physicalPosition);
   }
 
   @Override
   public long countRecords() {
-    return getRemoteClient().countRecords();
+    return getRemoteClient().countRecords(getSession());
   }
 
   @Override
   public boolean isReusable() {
-    return !getRemoteClient().isClosed(this);
+    return !getRemoteClient().isClosed(getSession());
   }
 
   @Override
@@ -1240,12 +1243,12 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
 
   public ORawBuffer directRead(
       ORecordId rid, String fetchPlan, boolean ignoreCache, int recordVersion) {
-    return getRemoteClient().readRecord(this, rid, fetchPlan, ignoreCache, ignoreCache);
+    return getRemoteClient().readRecord(getSession(), rid, fetchPlan, ignoreCache, ignoreCache);
   }
 
   public ORawBuffer readIfVersionIsNotLatest(
       ORecordId rid, String fetchPlan, boolean ignoreCache, int recordVersion) {
     return getRemoteClient()
-        .readRecordIfVersionIsNotLatest(this, rid, fetchPlan, ignoreCache, recordVersion);
+        .readRecordIfVersionIsNotLatest(getSession(), rid, fetchPlan, ignoreCache, recordVersion);
   }
 }
