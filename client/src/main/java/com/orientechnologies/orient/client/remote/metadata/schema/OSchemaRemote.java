@@ -6,6 +6,7 @@ import com.orientechnologies.orient.core.db.ODatabaseLifecycleListener;
 import com.orientechnologies.orient.core.db.ODatabaseListener;
 import com.orientechnologies.orient.core.db.viewmanager.ViewCreationListener;
 import com.orientechnologies.orient.core.exception.OSchemaException;
+import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
 import com.orientechnologies.orient.core.metadata.schema.OClassImpl;
 import com.orientechnologies.orient.core.metadata.schema.OSchemaShared;
@@ -14,6 +15,7 @@ import com.orientechnologies.orient.core.metadata.schema.OViewConfig;
 import com.orientechnologies.orient.core.metadata.schema.OViewImpl;
 import com.orientechnologies.orient.core.metadata.security.ORole;
 import com.orientechnologies.orient.core.metadata.security.ORule;
+import com.orientechnologies.orient.core.record.ORecordInternal;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sql.executor.OResultSet;
 import java.util.ArrayList;
@@ -491,6 +493,7 @@ public class OSchemaRemote extends OSchemaShared {
 
   public void update(ODocument schema) {
     if (!skipPush.get()) {
+      ORecordInternal.setIdentity(schema, new ORecordId(getIdentity()));
       fromStream(schema);
       this.snapshot = null;
     }

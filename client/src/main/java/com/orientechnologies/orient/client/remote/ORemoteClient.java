@@ -32,13 +32,13 @@ import com.orientechnologies.orient.client.ONotSendRequestException;
 import com.orientechnologies.orient.client.binary.OChannelBinaryAsynchClient;
 import com.orientechnologies.orient.client.remote.db.document.ODatabaseDocumentRemote;
 import com.orientechnologies.orient.client.remote.db.document.OLiveQueryMonitorRemote;
+import com.orientechnologies.orient.client.remote.db.document.OMetadataPushListener;
 import com.orientechnologies.orient.client.remote.db.document.OTransactionOptimisticClient;
 import com.orientechnologies.orient.client.remote.message.OAddClusterRequest;
 import com.orientechnologies.orient.client.remote.message.OAddClusterResponse;
 import com.orientechnologies.orient.client.remote.message.OBeginTransaction38Request;
 import com.orientechnologies.orient.client.remote.message.OBeginTransactionResponse;
 import com.orientechnologies.orient.client.remote.message.OBinaryPushRequest;
-import com.orientechnologies.orient.client.remote.message.OBinaryPushResponse;
 import com.orientechnologies.orient.client.remote.message.OCeilingPhysicalPositionsRequest;
 import com.orientechnologies.orient.client.remote.message.OCeilingPhysicalPositionsResponse;
 import com.orientechnologies.orient.client.remote.message.OCleanOutRecordRequest;
@@ -116,6 +116,7 @@ import com.orientechnologies.orient.client.remote.message.OUnsubscribeLiveQueryR
 import com.orientechnologies.orient.client.remote.message.OUnsubscribeRequest;
 import com.orientechnologies.orient.client.remote.message.OUpdateRecordRequest;
 import com.orientechnologies.orient.client.remote.message.OUpdateRecordResponse;
+import com.orientechnologies.orient.client.remote.message.push.OStorageConfigurationPayload;
 import com.orientechnologies.orient.core.command.OCommandOutputListener;
 import com.orientechnologies.orient.core.config.OContextConfiguration;
 import com.orientechnologies.orient.core.config.OGlobalConfiguration;
@@ -125,7 +126,6 @@ import com.orientechnologies.orient.core.conflict.ORecordConflictStrategy;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.OLiveQueryMonitor;
-import com.orientechnologies.orient.core.db.OSharedContext;
 import com.orientechnologies.orient.core.db.OrientDBConfig;
 import com.orientechnologies.orient.core.db.OrientDBInternal;
 import com.orientechnologies.orient.core.db.record.OCurrentStorageComponentsFactory;
@@ -181,7 +181,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /** This object is bound to each remote ODatabase instances. */
-public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
+public class ORemoteClient implements OStorageInfo {
   private static final OLogger logger = OLogManager.instance().logger(ORemoteClient.class);
   @Deprecated public static final String PARAM_CONNECTION_STRATEGY = "connectionStrategy";
 
@@ -216,7 +216,6 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       new ConcurrentHashMap<>();
   private volatile ORemoteClientPushThread pushThread;
   protected final OrientDBRemote context;
-  protected OSharedContext sharedContext = null;
   protected final String url;
   protected final ReentrantReadWriteLock stateLock;
 
@@ -310,10 +309,6 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
   public String getName() {
     return name;
-  }
-
-  public void setSharedContext(OSharedContext sharedContext) {
-    this.sharedContext = sharedContext;
   }
 
   @Deprecated
@@ -566,7 +561,6 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
         openRemoteDatabase(session);
 
         reload(session);
-        initPush(session);
 
         componentsFactory = new OCurrentStorageComponentsFactory(configuration);
 
@@ -1534,14 +1528,14 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     }
   }
 
-  private void initPush(ORemoteClientSession session) {
+  public void initPush(ORemoteClientSession session, OMetadataPushListener handler) {
     if (pushThread == null) {
       stateLock.writeLock().lock();
       try {
         if (pushThread == null) {
           pushThread =
               new ORemoteClientPushThread(
-                  this,
+                  new ORemotePushHandlerImpl(this, handler),
                   getCurrentServerURL(session),
                   connectionRetryDelay,
                   configuration
@@ -1749,6 +1743,15 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return retry;
   }
 
+  public void updateStorageConfiguration(OStorageConfigurationPayload updatedConfiguration) {
+    final OStorageConfiguration storageConfiguration =
+        new OStorageConfigurationRemote(
+            ORecordSerializerFactory.instance().getDefaultRecordSerializer().toString(),
+            updatedConfiguration,
+            clientConfiguration);
+    updateStorageConfiguration(storageConfiguration);
+  }
+
   public void updateStorageConfiguration(OStorageConfiguration storageConfiguration) {
     if (status != STATUS.OPEN) return;
     stateLock.writeLock().lock();
@@ -1924,48 +1927,6 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return null;
   }
 
-  public OBinaryPushResponse executeUpdateDistributedConfig(
-      OPushDistributedConfigurationRequest request) {
-    serverURLs.updateDistributedNodes(request.getHosts(), configuration.getContextConfiguration());
-    return null;
-  }
-
-  public OBinaryPushResponse executeUpdateFunction(OPushFunctionsRequest request) {
-    ODatabaseDocumentRemote.updateFunction(this);
-    return null;
-  }
-
-  public OBinaryPushResponse executeUpdateSequences(OPushSequencesRequest request) {
-    ODatabaseDocumentRemote.updateSequences(this);
-    return null;
-  }
-
-  public OBinaryPushResponse executeUpdateStorageConfig(OPushStorageConfigurationRequest payload) {
-    final OStorageConfiguration storageConfiguration =
-        new OStorageConfigurationRemote(
-            ORecordSerializerFactory.instance().getDefaultRecordSerializer().toString(),
-            payload.getPayload(),
-            clientConfiguration);
-
-    updateStorageConfiguration(storageConfiguration);
-    return null;
-  }
-
-  public OBinaryPushResponse executeUpdateSchema(OPushSchemaRequest request) {
-    ODocument schema = request.getSchema();
-    ORecordInternal.setIdentity(schema, new ORecordId(getConfiguration().getSchemaRecordId()));
-    ODatabaseDocumentRemote.updateSchema(this, schema);
-    return null;
-  }
-
-  public OBinaryPushResponse executeUpdateIndexManager(OPushIndexManagerRequest request) {
-    ODocument indexManager = request.getIndexManager();
-    ORecordInternal.setIdentity(
-        indexManager, new ORecordId(getConfiguration().getIndexMgrRecordId()));
-    ODatabaseDocumentRemote.updateIndexManager(this, indexManager);
-    return null;
-  }
-
   public OLiveQueryMonitor liveQuery(
       ODatabaseDocumentRemote db,
       String query,
@@ -2016,13 +1977,6 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
       }
     }
     return params;
-  }
-
-  public void executeLiveQueryPush(OLiveQueryPushRequest pushRequest) {
-    OLiveQueryClientListener listener = liveQueryListener.get(pushRequest.getMonitorId());
-    if (listener.onEvent(pushRequest)) {
-      liveQueryListener.remove(pushRequest.getMonitorId());
-    }
   }
 
   public void onPushReconnect(String host) {
@@ -2106,8 +2060,8 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
     return serverURLs.getUrls();
   }
 
-  public OSharedContext getSharedContext() {
-    return sharedContext;
+  public ORemoteURLs getRemoteURLs() {
+    return this.serverURLs;
   }
 
   public boolean isDistributed() {
@@ -2141,5 +2095,9 @@ public class ORemoteClient implements ORemotePushHandler, OStorageInfo {
 
   public void setConflictStrategy(ORecordConflictStrategy strategy) {
     throw new UnsupportedOperationException("setConflictStrategy");
+  }
+
+  public Map<Integer, OLiveQueryClientListener> getLiveQueryListener() {
+    return liveQueryListener;
   }
 }

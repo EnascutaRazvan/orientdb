@@ -32,7 +32,6 @@ import com.orientechnologies.orient.client.remote.ORemoteClientSession;
 import com.orientechnologies.orient.client.remote.ORemoteQueryResult;
 import com.orientechnologies.orient.client.remote.message.OLockRecordResponse;
 import com.orientechnologies.orient.client.remote.message.ORemoteResultSet;
-import com.orientechnologies.orient.client.remote.metadata.schema.OSchemaRemote;
 import com.orientechnologies.orient.core.Orient;
 import com.orientechnologies.orient.core.cache.OLocalRecordCache;
 import com.orientechnologies.orient.core.command.OCommandOutputListener;
@@ -60,7 +59,6 @@ import com.orientechnologies.orient.core.hook.ORecordHook;
 import com.orientechnologies.orient.core.id.ORID;
 import com.orientechnologies.orient.core.id.ORecordId;
 import com.orientechnologies.orient.core.index.OClassIndexManager;
-import com.orientechnologies.orient.core.index.OIndexManagerRemote;
 import com.orientechnologies.orient.core.iterator.ORecordIteratorCluster;
 import com.orientechnologies.orient.core.metadata.OMetadataDefault;
 import com.orientechnologies.orient.core.metadata.schema.OClass;
@@ -113,7 +111,7 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   private static final OLogger logger =
       OLogManager.instance().logger(ODatabaseDocumentRemote.class);
 
-  protected ORemoteClientSession sessionMetadata;
+  protected ORemoteClientSession session;
   private OrientDBConfig config;
   private ORemoteClient client;
 
@@ -235,6 +233,10 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
     }
   }
 
+  public void initPush(OMetadataPushListener handler) {
+    getRemoteClient().initPush(getSession(), handler);
+  }
+
   private void applyAttributes(OrientDBConfig config) {
     for (Entry<ATTRIBUTES, Object> attrs : config.getAttributes().entrySet()) {
       this.set(attrs.getKey(), attrs.getValue());
@@ -309,14 +311,14 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   }
 
   public ORemoteClientSession getSession() {
-    if (sessionMetadata == null) {
-      sessionMetadata = client.newInitialSession();
+    if (session == null) {
+      session = client.newInitialSession();
     }
-    return sessionMetadata;
+    return session;
   }
 
   public void setSessionMetadata(ORemoteClientSession sessionMetadata) {
-    this.sessionMetadata = sessionMetadata;
+    this.session = sessionMetadata;
   }
 
   @Override
@@ -451,35 +453,6 @@ public class ODatabaseDocumentRemote extends ODatabaseDocumentAbstract {
   public OLiveQueryMonitor live(
       String query, OLiveQueryResultListener listener, Map<String, ?> args) {
     return client.liveQuery(this, query, new OLiveQueryClientListener(this.copy(), listener), args);
-  }
-
-  public static void updateSchema(ORemoteClient storage, ODocument schema) {
-    //    storage.get
-    OSharedContext shared = storage.getSharedContext();
-    if (shared != null) {
-      ((OSchemaRemote) shared.getSchema()).update(schema);
-    }
-  }
-
-  public static void updateIndexManager(ORemoteClient storage, ODocument indexManager) {
-    OSharedContext shared = storage.getSharedContext();
-    if (shared != null) {
-      ((OIndexManagerRemote) shared.getIndexManager()).update(indexManager);
-    }
-  }
-
-  public static void updateFunction(ORemoteClient storage) {
-    OSharedContext shared = storage.getSharedContext();
-    if (shared != null) {
-      (shared.getFunctionLibrary()).update();
-    }
-  }
-
-  public static void updateSequences(ORemoteClient storage) {
-    OSharedContext shared = storage.getSharedContext();
-    if (shared != null) {
-      (shared.getSequenceLibrary()).update();
-    }
   }
 
   @Override

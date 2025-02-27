@@ -85,7 +85,7 @@ public class ORemoteLiveQueryPushTest {
 
     OLiveQueryPushRequest request =
         new OLiveQueryPushRequest(10, OLiveQueryPushRequest.END, events);
-    request.execute(storage);
+    request.execute(new ORemotePushHandlerImpl(storage, null));
     assertEquals(mock.countCreate, 1);
     assertEquals(mock.countUpdate, 1);
     assertEquals(mock.countDelete, 1);

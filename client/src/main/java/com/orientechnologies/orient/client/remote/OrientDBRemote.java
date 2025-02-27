@@ -540,7 +540,6 @@ public class OrientDBRemote implements OrientDBInternal {
 
   private OSharedContext createSharedContext(ORemoteClient storage) {
     OSharedContextRemote context = new OSharedContextRemote(storage, this);
-    storage.setSharedContext(context);
     return context;
   }
 

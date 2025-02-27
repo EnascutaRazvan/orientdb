@@ -34,6 +34,7 @@ import com.orientechnologies.orient.core.metadata.OMetadata;
 import com.orientechnologies.orient.core.metadata.OMetadataDefault;
 import com.orientechnologies.orient.core.metadata.OMetadataInternal;
 import com.orientechnologies.orient.core.record.ORecord;
+import com.orientechnologies.orient.core.record.ORecordInternal;
 import com.orientechnologies.orient.core.record.impl.ODocument;
 import com.orientechnologies.orient.core.sharding.auto.OAutoShardingIndexFactory;
 import com.orientechnologies.orient.core.storage.OStorageInfo;
@@ -593,6 +594,8 @@ public class OIndexManagerRemote implements OIndexManagerAbstract {
   }
 
   public void update(ODocument indexManager) {
+    ORecordInternal.setIdentity(
+        indexManager, new ORecordId(storage.getConfiguration().getIndexMgrRecordId()));
     if (!skipPush.get()) {
       realAcquireExclusiveLock();
       try {
