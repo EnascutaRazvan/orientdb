@@ -67,6 +67,7 @@ import com.orientechnologies.orient.core.db.OCachedDatabasePoolFactoryImpl;
 import com.orientechnologies.orient.core.db.ODatabaseDocumentInternal;
 import com.orientechnologies.orient.core.db.ODatabasePoolImpl;
 import com.orientechnologies.orient.core.db.ODatabasePoolInternal;
+import com.orientechnologies.orient.core.db.ODatabaseRecordThreadLocal;
 import com.orientechnologies.orient.core.db.ODatabaseTask;
 import com.orientechnologies.orient.core.db.ODatabaseType;
 import com.orientechnologies.orient.core.db.OSharedContext;
@@ -256,7 +257,7 @@ public class OrientDBRemote implements OrientDBInternal {
       sharedContexts.remove(remote.getName());
     }
     storages.remove(remote.getName());
-    remote.shutdown();
+    remote.shutdown((ODatabaseDocumentRemote) ODatabaseRecordThreadLocal.instance().getIfDefined());
   }
 
   public ODocument getServerInfo(String username, String password) {
@@ -426,7 +427,8 @@ public class OrientDBRemote implements OrientDBInternal {
     for (ORemoteClient stg : storagesCopy) {
       try {
         logger.info("- shutdown storage: %s ...", stg.getName());
-        stg.shutdown();
+        stg.shutdown(
+            (ODatabaseDocumentRemote) ODatabaseRecordThreadLocal.instance().getIfDefined());
       } catch (Exception e) {
         logger.warn("-- error on shutdown storage", e);
       } catch (Error e) {

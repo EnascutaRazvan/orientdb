@@ -150,7 +150,7 @@ public class SimpleConnectionStrategiesIT {
             OrientDBConfig.builder().addConfig(CLIENT_CONNECTION_FETCH_HOST_LIST, false).build());
     ODatabaseSession session = remote.open(databaseName, "admin", "admin");
     assertEquals(
-        ((ORemoteClient) ((ODatabaseDocumentRemote) session).getRemoteClinet())
+        ((ORemoteClient) ((ODatabaseDocumentRemote) session).getRemoteClient())
             .getServerURLs()
             .size(),
         1);
@@ -163,7 +163,7 @@ public class SimpleConnectionStrategiesIT {
             OrientDBConfig.builder().addConfig(CLIENT_CONNECTION_FETCH_HOST_LIST, true).build());
     ODatabaseSession session1 = remote1.open(databaseName, "admin", "admin");
     assertTrue(
-        ((ORemoteClient) ((ODatabaseDocumentRemote) session1).getRemoteClinet())
+        ((ORemoteClient) ((ODatabaseDocumentRemote) session1).getRemoteClient())
                 .getServerURLs()
                 .size()
             > 1);
@@ -181,7 +181,7 @@ public class SimpleConnectionStrategiesIT {
     ODatabasePool pool = new ODatabasePool(remote, databaseName, "admin", "admin");
     ODatabaseSession session = pool.acquire();
     assertEquals(
-        ((ORemoteClient) ((ODatabaseDocumentRemote) session).getRemoteClinet())
+        ((ORemoteClient) ((ODatabaseDocumentRemote) session).getRemoteClient())
             .getServerURLs()
             .size(),
         1);
@@ -196,7 +196,7 @@ public class SimpleConnectionStrategiesIT {
     ODatabasePool pool1 = new ODatabasePool(remote1, databaseName, "admin", "admin");
     ODatabaseSession session1 = pool1.acquire();
     assertTrue(
-        ((ORemoteClient) ((ODatabaseDocumentRemote) session1).getRemoteClinet())
+        ((ORemoteClient) ((ODatabaseDocumentRemote) session1).getRemoteClient())
                 .getServerURLs()
                 .size()
             > 1);

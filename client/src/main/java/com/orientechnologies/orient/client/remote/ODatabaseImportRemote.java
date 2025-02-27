@@ -41,7 +41,7 @@ public class ODatabaseImportRemote extends ODatabaseImpExpAbstract {
 
   public void importDatabase() throws ODatabaseImportException {
     ORemoteClient storage =
-        (ORemoteClient) ((ODatabaseDocumentRemote) getDatabase()).getRemoteClinet();
+        (ORemoteClient) ((ODatabaseDocumentRemote) getDatabase()).getRemoteClient();
     File file = new File(getFileName());
     try {
       storage.importDatabase(options, new FileInputStream(file), file.getName(), getListener());

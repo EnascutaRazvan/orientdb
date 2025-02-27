@@ -18,7 +18,7 @@ public class ORemoteImportTest extends BaseServerMemoryDatabase {
     String content =
         "{\"records\": [{\"@type\": \"d\", \"@rid\": \"#9:0\",\"@version\": 1,\"@class\": \"V\"}]}";
 
-    ORemoteClient storage = ((ODatabaseDocumentRemote) db).getRemoteClinet();
+    ORemoteClient storage = ((ODatabaseDocumentRemote) db).getRemoteClient();
     final StringBuffer buff = new StringBuffer();
     storage.importDatabase(
         "-merge=true",

@@ -3277,7 +3277,7 @@ public class OConsoleDatabaseApp extends OConsoleApplication
     if (currentDatabase == null) return;
 
     if (currentDatabase.isRemote()) {
-      final ORemoteClient stg = ((ODatabaseDocumentRemote) currentDatabase).getRemoteClinet();
+      final ORemoteClient stg = ((ODatabaseDocumentRemote) currentDatabase).getRemoteClient();
       final ODocument distributedCfg = stg.getClusterConfiguration();
       if (distributedCfg != null && !distributedCfg.isEmpty()) {
         message("\n\nDISTRIBUTED CONFIGURATION:\n" + distributedCfg.toJSON("prettyPrint"));
