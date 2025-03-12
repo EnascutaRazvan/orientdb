@@ -260,8 +260,10 @@ public class ODatabaseDocumentEmbedded extends ODatabaseDocumentAbstract
 
         if (checkPassword) {
           usr = security.securityAuthenticate(this, iUserName, iUserPassword);
-        } else {
+        } else if (iUserName != null) {
           usr = security.getUser(this, iUserName);
+        } else {
+          usr = null;
         }
         if (usr != null) user = new OImmutableUser(security.getVersion(this), usr);
         else user = null;
