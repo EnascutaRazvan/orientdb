@@ -40,11 +40,7 @@ public class OFloatingPoint extends ONumber {
     } else {
       try {
         double returnValue = Double.parseDouble(stringValue) * sign;
-        if (Math.abs(returnValue) < Float.MAX_VALUE) {
-          finalValue = (float) returnValue;
-        } else {
-          finalValue = returnValue;
-        }
+        finalValue = returnValue;
       } catch (Exception ignore) {
         return null; // TODO NaN?
       }
