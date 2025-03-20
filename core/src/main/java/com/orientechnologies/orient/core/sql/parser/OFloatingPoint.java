@@ -42,8 +42,8 @@ public class OFloatingPoint extends ONumber {
         double returnValue = Double.parseDouble(stringValue) * sign;
         float floatValue = (float) returnValue;
         double check = (double) floatValue;
-        if(check == returnValue) {
-         finalValue= floatValue;
+        if (check == returnValue) {
+         finalValue = floatValue;
         } else {
         finalValue = returnValue;
         }
